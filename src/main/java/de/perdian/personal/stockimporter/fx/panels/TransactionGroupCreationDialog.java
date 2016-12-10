@@ -2,7 +2,7 @@ package de.perdian.personal.stockimporter.fx.panels;
 
 import java.util.Optional;
 
-import de.perdian.personal.stockimporter.model.BuyingTime;
+import de.perdian.personal.stockimporter.model.TransactionGroup;
 import javafx.application.Platform;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -14,32 +14,32 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Window;
 
-class BuyingTimeCreationDialog extends BorderPane {
+class TransactionGroupCreationDialog extends BorderPane {
 
-    static BuyingTime createBuyingTime(Window parentWindow) {
+    static TransactionGroup createTransactionGroup(Window parentWindow) {
 
-        BuyingTime newBuyingTime = new BuyingTime();
+        TransactionGroup newTransactionGroup = new TransactionGroup();
         TextField titleField = new TextField();
-        titleField.textProperty().bindBidirectional(newBuyingTime.titleProperty());
+        titleField.textProperty().bindBidirectional(newTransactionGroup.titleProperty());
         titleField.setMaxWidth(Double.MAX_VALUE);
         GridPane.setHgrow(titleField, Priority.ALWAYS);
-        GridPane newBuyingTimeGrid = new GridPane();
-        newBuyingTimeGrid.setHgap(10);
-        newBuyingTimeGrid.setVgap(10);
-        newBuyingTimeGrid.add(new Label("Title"), 0, 0);
-        newBuyingTimeGrid.add(titleField, 1, 0);
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.add(new Label("Title"), 0, 0);
+        grid.add(titleField, 1, 0);
         Platform.runLater(() -> titleField.requestFocus());
 
         ButtonType saveButtonType = new ButtonType("Save", ButtonData.FINISH);
         ButtonType cancelButtonType = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
 
-        Dialog<BuyingTime> dialog = new Dialog<>();
-        dialog.setTitle("Create new buying time");
-        dialog.setHeaderText("Define the data for the new buying time");
-        dialog.setResultConverter(dialogButton -> dialogButton == saveButtonType ? newBuyingTime : null);
+        Dialog<TransactionGroup> dialog = new Dialog<>();
+        dialog.setTitle("Create new transaction grouo");
+        dialog.setHeaderText("Define the data for the new transaction group");
+        dialog.setResultConverter(dialogButton -> dialogButton == saveButtonType ? newTransactionGroup : null);
         dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, cancelButtonType);
-        dialog.getDialogPane().setContent(newBuyingTimeGrid);
-        Optional<BuyingTime> dialogResult = dialog.showAndWait();
+        dialog.getDialogPane().setContent(grid);
+        Optional<TransactionGroup> dialogResult = dialog.showAndWait();
 
         return dialogResult.orElse(null);
 

@@ -9,6 +9,7 @@ import de.perdian.personal.stockimporter.model.StockModelFactory;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -42,8 +43,8 @@ public class StockimporterApplication extends Application {
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.setTitle("StockImporter");
-        primaryStage.setWidth(1024);
-        primaryStage.setHeight(768);
+        primaryStage.setWidth(1200);
+        primaryStage.setHeight(Math.min(Screen.getPrimary().getBounds().getHeight() - 100, 900));
         primaryStage.show();
 
     }

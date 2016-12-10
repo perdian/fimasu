@@ -21,8 +21,8 @@ public class StockModelFactory {
     public static StockModel createStockModel() {
         StockModel stockModel = new StockModel();
         StockModelBean stockModelBean = StockModelFactory.loadStockModelBean();
-        if (stockModelBean != null) {
-            stockModel.buyingTimesProperty().addAll(stockModelBean.getBuyingTimes().stream().map(BuyingTimeBean::toBuyingTime).collect(Collectors.toList()));
+        if (stockModelBean != null && stockModelBean.getTransactionGroups() != null) {
+            stockModel.transactionGroupsProperty().addAll(stockModelBean.getTransactionGroups().stream().map(TransactionGroupBean::toTransactionGroup).collect(Collectors.toList()));
         }
         stockModel.addChangeListener((x, oldValue, newValue) -> StockModelFactory.saveStockModel(stockModel));
         return stockModel;
@@ -77,38 +77,38 @@ public class StockModelFactory {
 
         static final long serialVersionUID = 1L;
 
-        private List<BuyingTimeBean> buyingTimes = null;
+        private List<TransactionGroupBean> transactionGroups = null;
 
         StockModelBean(StockModel stockModel) {
-            this.setBuyingTimes(stockModel.buyingTimesProperty().stream().map(BuyingTimeBean::new).collect(Collectors.toList()));
+            this.setTransactionGroups(stockModel.transactionGroupsProperty().stream().map(TransactionGroupBean::new).collect(Collectors.toList()));
         }
 
-        List<BuyingTimeBean> getBuyingTimes() {
-            return this.buyingTimes;
+        List<TransactionGroupBean> getTransactionGroups() {
+            return this.transactionGroups;
         }
-        void setBuyingTimes(List<BuyingTimeBean> buyingTimes) {
-            this.buyingTimes = buyingTimes;
+        void setTransactionGroups(List<TransactionGroupBean> transactionGroups) {
+            this.transactionGroups = transactionGroups;
         }
 
     }
 
-    static class BuyingTimeBean implements Serializable {
+    static class TransactionGroupBean implements Serializable {
 
         static final long serialVersionUID = 1L;
 
         private String title = null;
-        private List<ShareBean> shares = null;
+        private List<TransactionBean> transactions = null;
 
-        BuyingTimeBean(BuyingTime buyingTime) {
-            this.setTitle(buyingTime.titleProperty().getValue());
-            this.setShares(buyingTime.sharesProperty().stream().map(ShareBean::new).collect(Collectors.toList()));
+        TransactionGroupBean(TransactionGroup transactionGroup) {
+            this.setTitle(transactionGroup.titleProperty().getValue());
+            this.setTransactions(transactionGroup.transactionsProperty().stream().map(TransactionBean::new).collect(Collectors.toList()));
         }
 
-        BuyingTime toBuyingTime() {
-            BuyingTime buyingTime = new BuyingTime();
-            buyingTime.titleProperty().setValue(this.getTitle());
-            buyingTime.sharesProperty().addAll(this.getShares().stream().map(ShareBean::toShare).collect(Collectors.toList()));
-            return buyingTime;
+        TransactionGroup toTransactionGroup() {
+            TransactionGroup transactionGroup = new TransactionGroup();
+            transactionGroup.titleProperty().setValue(this.getTitle());
+            transactionGroup.transactionsProperty().addAll(this.getTransactions().stream().map(TransactionBean::toTransaction).collect(Collectors.toList()));
+            return transactionGroup;
         }
 
         String getTitle() {
@@ -118,16 +118,16 @@ public class StockModelFactory {
             this.title = title;
         }
 
-        List<ShareBean> getShares() {
-            return this.shares;
+        List<TransactionBean> getTransactions() {
+            return this.transactions;
         }
-        void setShares(List<ShareBean> shares) {
-            this.shares = shares;
+        void setTransactions(List<TransactionBean> transactions) {
+            this.transactions = transactions;
         }
 
     }
 
-    static class ShareBean implements Serializable {
+    static class TransactionBean implements Serializable {
 
         static final long serialVersionUID = 1L;
 
@@ -135,24 +135,24 @@ public class StockModelFactory {
         private String isin = null;
         private String title = null;
         private Double value = null;
-        private Double discount = null;
+        private Double charges = null;
 
-        ShareBean(Share share) {
-            this.setDiscount(share.discountProperty().getValue());
-            this.setIsin(share.isinProperty().getValue());
-            this.setTitle(share.titleProperty().getValue());
-            this.setValue(share.valueProperty().getValue());
-            this.setWkn(share.wknProperty().getValue());
+        TransactionBean(Transaction transaction) {
+            this.setIsin(transaction.isinProperty().getValue());
+            this.setTitle(transaction.titleProperty().getValue());
+            this.setValue(transaction.valueProperty().getValue());
+            this.setWkn(transaction.wknProperty().getValue());
+            this.setCharges(transaction.chargesProperty().getValue());
         }
 
-        Share toShare() {
-            Share share = new Share();
-            share.discountProperty().setValue(this.getDiscount());
-            share.isinProperty().setValue(this.getIsin());
-            share.titleProperty().setValue(this.getTitle());
-            share.valueProperty().setValue(this.getValue());
-            share.wknProperty().setValue(this.getWkn());
-            return share;
+        Transaction toTransaction() {
+            Transaction transaction = new Transaction();
+            transaction.isinProperty().setValue(this.getIsin());
+            transaction.titleProperty().setValue(this.getTitle());
+            transaction.valueProperty().setValue(this.getValue());
+            transaction.wknProperty().setValue(this.getWkn());
+            transaction.chargesProperty().setValue(this.getCharges());
+            return transaction;
         }
 
         String getWkn() {
@@ -183,11 +183,11 @@ public class StockModelFactory {
             this.value = value;
         }
 
-        Double getDiscount() {
-            return this.discount;
+        Double getCharges() {
+            return this.charges;
         }
-        void setDiscount(Double discount) {
-            this.discount = discount;
+        void setCharges(Double charges) {
+            this.charges = charges;
         }
 
     }

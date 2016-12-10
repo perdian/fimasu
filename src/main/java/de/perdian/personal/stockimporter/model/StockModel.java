@@ -12,26 +12,26 @@ public class StockModel {
 
     static final long serialVersionUID = 1L;
 
-    private final ObservableList<BuyingTime> buyingTimes = FXCollections.observableArrayList();
+    private final ObservableList<TransactionGroup> transactionGroups = FXCollections.observableArrayList();
     private final List<ChangeListener<StockModel>> changeListeners = new ArrayList<>();
 
     StockModel() {
-        ChangeListener<BuyingTime> buyingTimeChangeListener = (x, oldValue, newValue) -> this.fireChange();
-        this.buyingTimesProperty().addListener((ListChangeListener<BuyingTime>)event -> {
+        ChangeListener<TransactionGroup> transactionGroupChangeListener = (x, oldValue, newValue) -> this.fireChange();
+        this.transactionGroupsProperty().addListener((ListChangeListener<TransactionGroup>)event -> {
             while (event.next()) {
-                for (BuyingTime removedBuyingTime : event.getRemoved()) {
-                    removedBuyingTime.removeChangeListener(buyingTimeChangeListener);
+                for (TransactionGroup removedTransactionGroup : event.getRemoved()) {
+                    removedTransactionGroup.removeChangeListener(transactionGroupChangeListener);
                 }
-                for (BuyingTime addedBuyingTime : event.getAddedSubList()) {
-                    addedBuyingTime.addChangeListener(buyingTimeChangeListener);
+                for (TransactionGroup addedTransactionGroup : event.getAddedSubList()) {
+                    addedTransactionGroup.addChangeListener(transactionGroupChangeListener);
                 }
             }
             this.fireChange();
         });
     }
 
-    public ObservableList<BuyingTime> buyingTimesProperty() {
-        return this.buyingTimes;
+    public ObservableList<TransactionGroup> transactionGroupsProperty() {
+        return this.transactionGroups;
     }
 
     void fireChange() {
