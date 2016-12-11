@@ -2,6 +2,7 @@ package de.perdian.personal.stockqifgenerator.fx;
 
 import de.perdian.personal.stockqifgenerator.fx.actions.ExportEventHandler;
 import de.perdian.personal.stockqifgenerator.fx.support.ComponentBuilder;
+import de.perdian.personal.stockqifgenerator.fx.support.converters.FileStringConverter;
 import de.perdian.personal.stockqifgenerator.model.Transaction;
 import de.perdian.personal.stockqifgenerator.model.TransactionGroup;
 import javafx.application.Platform;
@@ -43,12 +44,17 @@ class TransactionGroupPane extends BorderPane {
         titleTextField.setPrefWidth(150);
         TextField accountTextField = componentBuilder.createTextField(transactionGroup.accountProperty(), new DefaultStringConverter());
         GridPane.setHgrow(accountTextField, Priority.ALWAYS);
+        TextField targetFileField = componentBuilder.createTextField(transactionGroup.targetFileProperty(), new FileStringConverter());
+        GridPane.setHgrow(targetFileField, Priority.ALWAYS);
         GridPane transactionGroupDetailsPane = new GridPane();
         transactionGroupDetailsPane.setHgap(5);
         transactionGroupDetailsPane.add(componentBuilder.createLabel("Transaction group title"), 0, 0);
         transactionGroupDetailsPane.add(titleTextField, 0, 1);
         transactionGroupDetailsPane.add(componentBuilder.createLabel("Account name"), 1, 0);
         transactionGroupDetailsPane.add(accountTextField, 1, 1);
+        transactionGroupDetailsPane.add(componentBuilder.createLabel("Target file"), 0, 2, 2, 1);
+        transactionGroupDetailsPane.add(targetFileField, 0, 3, 2, 1);
+
         TitledPane transactionGroupDetailsTitledPane = new TitledPane("Transaction group details", transactionGroupDetailsPane);
         transactionGroupDetailsTitledPane.setExpanded(true);
         transactionGroupDetailsTitledPane.setCollapsible(false);

@@ -1,21 +1,11 @@
 package de.perdian.personal.stockqifgenerator.fx;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.perdian.personal.stockqifgenerator.fx.support.ComponentBuilder;
+import de.perdian.personal.stockqifgenerator.fx.support.converters.DoubleStringConverter;
+import de.perdian.personal.stockqifgenerator.fx.support.converters.LocalDateStringConverter;
 import de.perdian.personal.stockqifgenerator.model.Transaction;
 import de.perdian.personal.stockqifgenerator.model.TransactionType;
 import javafx.collections.ObservableList;
@@ -33,7 +23,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.util.StringConverter;
 import javafx.util.converter.DefaultStringConverter;
 
 class TransactionPane extends VBox {
@@ -77,11 +66,11 @@ class TransactionPane extends VBox {
         this.append(topPane, componentBuilder.createLabel("Title"), 3, 0, 1, 1, null, Priority.ALWAYS, false);
         this.append(topPane, componentBuilder.createTextField(transaction.titleProperty(), new DefaultStringConverter()), 3, 1, 1, 1, 200, Priority.ALWAYS, false);
         this.append(topPane, componentBuilder.createLabel("Value (EUR)"), 4, 0, 1, 1, null, Priority.NEVER, false);
-        this.append(topPane, componentBuilder.createTextField(transaction.valueProperty(), new DoubleConverter("0")), 4, 1, 1, 1, 75, Priority.NEVER, false);
+        this.append(topPane, componentBuilder.createTextField(transaction.valueProperty(), new DoubleStringConverter("0")), 4, 1, 1, 1, 75, Priority.NEVER, false);
 
-        TextField marketValueField = componentBuilder.createTextField(transaction.marketValueProperty(), new DoubleConverter("0.00"));
+        TextField marketValueField = componentBuilder.createTextField(transaction.marketValueProperty(), new DoubleStringConverter("0.00"));
         marketValueField.setDisable(true);
-        TextField totalValueField = componentBuilder.createTextField(transaction.totalValueProperty(), new DoubleConverter("0.00"));
+        TextField totalValueField = componentBuilder.createTextField(transaction.totalValueProperty(), new DoubleStringConverter("0.00"));
         totalValueField.setDisable(true);
         GridPane bottomPane = new GridPane();
         bottomPane.setHgap(5);
@@ -93,17 +82,17 @@ class TransactionPane extends VBox {
         this.append(bottomPane, componentBuilder.createLabel("Valuta date"), 2, 0, 1, 1, null, Priority.NEVER, false);
         this.append(bottomPane, componentBuilder.createTextField(transaction.valutaDateProperty(), new LocalDateStringConverter()), 2, 1, 1, 1, 95, Priority.NEVER, true);
         this.append(bottomPane, componentBuilder.createLabel("# Shares"), 3, 0, 1, 1, null, Priority.NEVER, false);
-        this.append(bottomPane, componentBuilder.createTextField(transaction.numberOfSharesProperty(), new DoubleConverter("0.00000")), 3, 1, 1, 1, 70, Priority.NEVER, true);
+        this.append(bottomPane, componentBuilder.createTextField(transaction.numberOfSharesProperty(), new DoubleStringConverter("0.00000")), 3, 1, 1, 1, 70, Priority.NEVER, true);
         this.append(bottomPane, componentBuilder.createLabel("Market Price (EUR)"), 4, 0, 1, 1, null, Priority.NEVER, false);
-        this.append(bottomPane, componentBuilder.createTextField(transaction.marketPriceProperty(), new DoubleConverter("0.00000")), 4, 1, 1, 1, 110, Priority.NEVER, true);
+        this.append(bottomPane, componentBuilder.createTextField(transaction.marketPriceProperty(), new DoubleStringConverter("0.00000")), 4, 1, 1, 1, 110, Priority.NEVER, true);
         this.append(bottomPane, componentBuilder.createLabel("Market Value (EUR)"), 5, 0, 1, 1, null, Priority.NEVER, false);
         this.append(bottomPane, marketValueField, 5, 1, 1, 1, 110, Priority.NEVER, false);
         this.append(bottomPane, componentBuilder.createLabel("Charges (EUR)"), 6, 0, 1, 1, null, Priority.NEVER, false);
-        this.append(bottomPane, componentBuilder.createTextField(transaction.chargesProperty(), new DoubleConverter("0.00")), 6, 1, 1, 1, 85, Priority.NEVER, true);
+        this.append(bottomPane, componentBuilder.createTextField(transaction.chargesProperty(), new DoubleStringConverter("0.00")), 6, 1, 1, 1, 85, Priority.NEVER, true);
         this.append(bottomPane, componentBuilder.createLabel("Fin. Tax (EUR)"), 7, 0, 1, 1, null, Priority.NEVER, false);
-        this.append(bottomPane, componentBuilder.createTextField(transaction.financeTaxProperty(), new DoubleConverter("0.00")), 7, 1, 1, 1, 85, Priority.NEVER, true);
+        this.append(bottomPane, componentBuilder.createTextField(transaction.financeTaxProperty(), new DoubleStringConverter("0.00")), 7, 1, 1, 1, 85, Priority.NEVER, true);
         this.append(bottomPane, componentBuilder.createLabel("Sol. Tax (EUR)"), 8, 0, 1, 1, null, Priority.NEVER, false);
-        this.append(bottomPane, componentBuilder.createTextField(transaction.solidarityTaxProperty(), new DoubleConverter("0.00")), 8, 1, 1, 1, 85, Priority.NEVER, true);
+        this.append(bottomPane, componentBuilder.createTextField(transaction.solidarityTaxProperty(), new DoubleStringConverter("0.00")), 8, 1, 1, 1, 85, Priority.NEVER, true);
         this.append(bottomPane, componentBuilder.createLabel("Total Value (EUR)"), 9, 0, 1, 1, null, Priority.NEVER, false);
         this.append(bottomPane, totalValueField, 9, 1, 1, 1, 110, Priority.ALWAYS, false);
 
@@ -194,84 +183,6 @@ class TransactionPane extends VBox {
             transactions.add(Math.min(transactions.size(), currentIndex + direction), transaction);
         }
     }
-
-    static class DoubleConverter extends StringConverter<Number> {
-
-        private static final Logger log = LoggerFactory.getLogger(DoubleConverter.class);
-        private NumberFormat numberFormat = null;
-
-        public DoubleConverter(String format) {
-            this.setNumberFormat(new DecimalFormat(format, new DecimalFormatSymbols(Locale.GERMANY)));
-        }
-
-        @Override
-        public String toString(Number object) {
-            return object == null || object.doubleValue() == 0d ? "" : this.getNumberFormat().format(object);
-        }
-
-        @Override
-        public Double fromString(String string) {
-            if (!StringUtils.isEmpty(string)) {
-                try {
-                    return this.getNumberFormat().parse(string).doubleValue();
-                } catch (ParseException e) {
-                    log.debug("Invalid string value to convert into Double: {}", string, e);
-                }
-            }
-            return null;
-        }
-
-        private NumberFormat getNumberFormat() {
-            return this.numberFormat;
-        }
-        private void setNumberFormat(NumberFormat numberFormat) {
-            this.numberFormat = numberFormat;
-        }
-
-    }
-
-    static class LocalDateStringConverter extends StringConverter<LocalDate> {
-
-        private static final Logger log = LoggerFactory.getLogger(LocalDateStringConverter.class);
-
-        private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        private final List<DateTimeFormatter> dateTimeParsers = Arrays.asList(
-            DateTimeFormatter.ofPattern("yyyy-MM-dd"),
-            DateTimeFormatter.ofPattern("yyyyMMdd"),
-            DateTimeFormatter.ofPattern("dd.MM.yyyy"),
-            DateTimeFormatter.ofPattern("dd-MM-yyyy")
-        );
-
-        @Override
-        public String toString(LocalDate object) {
-            return object == null ? null : this.getDateTimeFormatter().format(object);
-        }
-
-        @Override
-        public LocalDate fromString(String string) {
-
-            for (DateTimeFormatter parser : this.getDateTimeParsers()) {
-                try {
-                    return LocalDate.parse(string, parser);
-                } catch (Exception e) {
-                    log.trace("Cannot parse date '{}' using formatter '{}'", string, parser);
-                }
-            }
-
-            log.trace("Cannot parse date '{}' using formatters", string);
-            return null;
-
-        }
-
-        private DateTimeFormatter getDateTimeFormatter() {
-            return this.dateTimeFormatter;
-        }
-        private List<DateTimeFormatter> getDateTimeParsers() {
-            return this.dateTimeParsers;
-        }
-
-    }
-
 
     Transaction getTransaction() {
         return this.transaction;

@@ -1,8 +1,11 @@
 package de.perdian.personal.stockqifgenerator.model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -16,6 +19,7 @@ public class TransactionGroup {
 
     private final StringProperty title = new SimpleStringProperty();
     private final StringProperty account = new SimpleStringProperty();
+    private final Property<File> targetFile = new SimpleObjectProperty<>();
     private final ObservableList<Transaction> transactions = FXCollections.observableArrayList();
     private final List<ChangeListener<TransactionGroup>> changeListeners = new ArrayList<>();
 
@@ -33,7 +37,9 @@ public class TransactionGroup {
             }
             this.fireChange();
         });
+        this.titleProperty().addListener((x, oldValue, newValue) -> this.fireChange());
         this.accountProperty().addListener((x, oldValue, newValue) -> this.fireChange());
+        this.targetFileProperty().addListener((x, oldValue, newValue) -> this.fireChange());
     }
 
     public StringProperty titleProperty() {
@@ -42,6 +48,10 @@ public class TransactionGroup {
 
     public StringProperty accountProperty() {
         return this.account;
+    }
+
+    public Property<File> targetFileProperty() {
+        return this.targetFile;
     }
 
     public ObservableList<Transaction> transactionsProperty() {
