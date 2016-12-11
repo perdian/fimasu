@@ -46,6 +46,7 @@ public class Transaction {
         this.chargesProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.marketValueProperty().getValue(), newValue, this.financeTaxProperty().getValue(), this.solidarityTaxProperty().getValue()));
         this.financeTaxProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.marketValueProperty().getValue(), this.chargesProperty().getValue(), newValue, this.solidarityTaxProperty().getValue()));
         this.solidarityTaxProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.marketValueProperty().getValue(), this.chargesProperty().getValue(), this.financeTaxProperty().getValue(), newValue));
+        this.typeProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.marketValueProperty().getValue(), this.chargesProperty().getValue(), this.financeTaxProperty().getValue(), this.solidarityTaxProperty().getValue()));
     }
 
     private void recomputeMarketValue(Number numberOfShares, Number marketPrice) {
@@ -60,10 +61,11 @@ public class Transaction {
         if (marketValue == null || marketValue.doubleValue() == 0d) {
             this.totalValueProperty().setValue(null);
         } else {
+            double factor = this.typeProperty().getValue().equals(TransactionType.BUY) ? 1d : -1d;
             double totalValue = marketValue.doubleValue();
-            totalValue -= charges == null ? 0d : charges.doubleValue();
-            totalValue -= financeTax == null ? 0d : financeTax.doubleValue();
-            totalValue -= solidarityTax == null ? 0d : solidarityTax.doubleValue();
+            totalValue += factor * (charges == null ? 0d : charges.doubleValue());
+            totalValue += factor * (financeTax == null ? 0d : financeTax.doubleValue());
+            totalValue += factor * (solidarityTax == null ? 0d : solidarityTax.doubleValue());
             this.totalValueProperty().setValue(totalValue);
         }
     }

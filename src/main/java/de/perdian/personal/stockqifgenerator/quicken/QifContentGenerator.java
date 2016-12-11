@@ -44,6 +44,7 @@ public class QifContentGenerator {
         out.append("L").append("|[").append(transactionGroup.accountProperty().getValue()).append("]").append("\n");
         out.append("$").append(SHORT_NUMBER_FORMAT.format(transaction.totalValueProperty().getValue())).append("\n");
         out.append("B").append("0.00|0.00|0.00").append("\n");
+        out.append("M").append(this.resolveMemo(transaction)).append("\n");
         out.append("^\n");
     }
 
@@ -56,6 +57,15 @@ public class QifContentGenerator {
             default:
                 return "Kauf";
         }
+    }
+
+    private String resolveMemo(Transaction transaction) {
+        StringBuilder result = new StringBuilder();
+        result.append(transaction.titleProperty().getValue()).append(" ");
+        result.append(LONG_NUMBER_FORMAT.format(transaction.numberOfSharesProperty().getValue())).append(" a ");
+        result.append(LONG_NUMBER_FORMAT.format(transaction.marketPriceProperty().getValue())).append(" = ");
+        result.append(SHORT_NUMBER_FORMAT.format(transaction.marketValueProperty().getValue()));
+        return result.toString();
     }
 
 }

@@ -76,6 +76,7 @@ public class ExportEventHandler implements EventHandler<ActionEvent> {
             });
 
         } catch (Exception e) {
+            log.warn("Cannot execute export", e);
             Platform.runLater(() -> {
 
                 Label exceptionDetailLabel = new Label("The exception was:");
