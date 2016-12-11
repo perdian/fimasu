@@ -97,15 +97,18 @@ public class StockModelFactory {
         static final long serialVersionUID = 1L;
 
         private String title = null;
+        private String account = null;
         private List<TransactionBean> transactions = null;
 
         TransactionGroupBean(TransactionGroup transactionGroup) {
+            this.setAccount(transactionGroup.accountProperty().getValue());
             this.setTitle(transactionGroup.titleProperty().getValue());
             this.setTransactions(transactionGroup.transactionsProperty().stream().map(TransactionBean::new).collect(Collectors.toList()));
         }
 
         TransactionGroup toTransactionGroup() {
             TransactionGroup transactionGroup = new TransactionGroup();
+            transactionGroup.accountProperty().setValue(this.getAccount());
             transactionGroup.titleProperty().setValue(this.getTitle());
             transactionGroup.transactionsProperty().addAll(this.getTransactions().stream().map(TransactionBean::toTransaction).collect(Collectors.toList()));
             return transactionGroup;
@@ -116,6 +119,13 @@ public class StockModelFactory {
         }
         void setTitle(String title) {
             this.title = title;
+        }
+
+        String getAccount() {
+            return this.account;
+        }
+        void setAccount(String account) {
+            this.account = account;
         }
 
         List<TransactionBean> getTransactions() {

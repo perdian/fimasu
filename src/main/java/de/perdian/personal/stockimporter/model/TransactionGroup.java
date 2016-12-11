@@ -15,6 +15,7 @@ public class TransactionGroup {
     static final long serialVersionUID = 1L;
 
     private final StringProperty title = new SimpleStringProperty();
+    private final StringProperty account = new SimpleStringProperty();
     private final ObservableList<Transaction> transactions = FXCollections.observableArrayList();
     private final List<ChangeListener<TransactionGroup>> changeListeners = new ArrayList<>();
 
@@ -31,10 +32,15 @@ public class TransactionGroup {
             }
             this.fireChange();
         });
+        this.accountProperty().addListener((x, oldValue, newValue) -> this.fireChange());
     }
 
     public StringProperty titleProperty() {
         return this.title;
+    }
+
+    public StringProperty accountProperty() {
+        return this.account;
     }
 
     public ObservableList<Transaction> transactionsProperty() {

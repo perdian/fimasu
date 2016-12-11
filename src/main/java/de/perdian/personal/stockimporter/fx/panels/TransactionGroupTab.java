@@ -22,7 +22,7 @@ class TransactionGroupTab extends Tab {
                 event.consume();
             }
         });
-        this.setContent(new TransactionListPane(transactionGroup.transactionsProperty()));
+        this.setContent(new TransactionGroupPane(transactionGroup));
     }
 
 }
