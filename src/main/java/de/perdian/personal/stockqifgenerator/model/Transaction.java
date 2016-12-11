@@ -61,9 +61,9 @@ public class Transaction {
             this.totalValueProperty().setValue(null);
         } else {
             double totalValue = marketValue.doubleValue();
-            totalValue += charges == null ? 0d : charges.doubleValue();
-            totalValue += financeTax == null ? 0d : financeTax.doubleValue();
-            totalValue += solidarityTax == null ? 0d : solidarityTax.doubleValue();
+            totalValue -= charges == null ? 0d : charges.doubleValue();
+            totalValue -= financeTax == null ? 0d : financeTax.doubleValue();
+            totalValue -= solidarityTax == null ? 0d : solidarityTax.doubleValue();
             this.totalValueProperty().setValue(totalValue);
         }
     }
