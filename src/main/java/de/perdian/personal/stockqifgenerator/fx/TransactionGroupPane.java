@@ -1,5 +1,6 @@
 package de.perdian.personal.stockqifgenerator.fx;
 
+import de.perdian.personal.stockqifgenerator.fx.actions.ExportEventHandler;
 import de.perdian.personal.stockqifgenerator.fx.support.ComponentBuilder;
 import de.perdian.personal.stockqifgenerator.model.Transaction;
 import de.perdian.personal.stockqifgenerator.model.TransactionGroup;
@@ -63,6 +64,7 @@ class TransactionGroupPane extends BorderPane {
         addButton.setFocusTraversable(false);
         Button exportButton = new Button("Export");
         exportButton.setGraphic(new ImageView(new Image(TransactionGroupPane.class.getClassLoader().getResourceAsStream("icons/16/save.png"))));
+        exportButton.setOnAction(new ExportEventHandler(transactionGroup));
         exportButton.setMaxWidth(Double.MAX_VALUE);
         exportButton.setFocusTraversable(false);
         VBox transactionsButtonBox = new VBox(addButton, exportButton);
