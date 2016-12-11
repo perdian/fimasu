@@ -1,8 +1,8 @@
-package de.perdian.personal.stockimporter.fx.panels;
+package de.perdian.personal.stockqifgenerator.fx;
 
 import java.util.Optional;
 
-import de.perdian.personal.stockimporter.model.TransactionGroup;
+import de.perdian.personal.stockqifgenerator.model.TransactionGroup;
 import javafx.application.Platform;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -18,7 +18,7 @@ class TransactionGroupCreationDialog extends BorderPane {
 
     static TransactionGroup createTransactionGroup(Window parentWindow) {
 
-        TransactionGroup newTransactionGroup = new TransactionGroup();
+        TransactionGroup newTransactionGroup = new TransactionGroup(null);
         TextField titleField = new TextField();
         titleField.textProperty().bindBidirectional(newTransactionGroup.titleProperty());
         titleField.setMaxWidth(Double.MAX_VALUE);

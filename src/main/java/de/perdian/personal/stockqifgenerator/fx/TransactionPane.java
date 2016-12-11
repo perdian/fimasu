@@ -1,4 +1,4 @@
-package de.perdian.personal.stockimporter.fx.panels;
+package de.perdian.personal.stockqifgenerator.fx;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -15,9 +15,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.personal.stockimporter.fx.support.ComponentBuilder;
-import de.perdian.personal.stockimporter.model.Transaction;
-import de.perdian.personal.stockimporter.model.TransactionType;
+import de.perdian.personal.stockqifgenerator.fx.support.ComponentBuilder;
+import de.perdian.personal.stockqifgenerator.model.Transaction;
+import de.perdian.personal.stockqifgenerator.model.TransactionType;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

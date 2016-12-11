@@ -1,8 +1,8 @@
-package de.perdian.personal.stockimporter.fx.panels;
+package de.perdian.personal.stockqifgenerator.fx;
 
-import de.perdian.personal.stockimporter.fx.support.ComponentBuilder;
-import de.perdian.personal.stockimporter.model.Transaction;
-import de.perdian.personal.stockimporter.model.TransactionGroup;
+import de.perdian.personal.stockqifgenerator.fx.support.ComponentBuilder;
+import de.perdian.personal.stockqifgenerator.model.Transaction;
+import de.perdian.personal.stockqifgenerator.model.TransactionGroup;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
@@ -38,12 +38,16 @@ class TransactionGroupPane extends BorderPane {
         transactionsScrollTitledPane.setMaxHeight(Double.MAX_VALUE);
         transactionsScrollTitledPane.setCollapsible(false);
 
+        TextField titleTextField = componentBuilder.createTextField(transactionGroup.titleProperty(), new DefaultStringConverter());
+        titleTextField.setPrefWidth(150);
         TextField accountTextField = componentBuilder.createTextField(transactionGroup.accountProperty(), new DefaultStringConverter());
-        accountTextField.setFocusTraversable(false);
         GridPane.setHgrow(accountTextField, Priority.ALWAYS);
         GridPane transactionGroupDetailsPane = new GridPane();
-        transactionGroupDetailsPane.add(componentBuilder.createLabel("Account name"), 0, 0);
-        transactionGroupDetailsPane.add(accountTextField, 0, 1);
+        transactionGroupDetailsPane.setHgap(5);
+        transactionGroupDetailsPane.add(componentBuilder.createLabel("Transaction group title"), 0, 0);
+        transactionGroupDetailsPane.add(titleTextField, 0, 1);
+        transactionGroupDetailsPane.add(componentBuilder.createLabel("Account name"), 1, 0);
+        transactionGroupDetailsPane.add(accountTextField, 1, 1);
         TitledPane transactionGroupDetailsTitledPane = new TitledPane("Transaction group details", transactionGroupDetailsPane);
         transactionGroupDetailsTitledPane.setExpanded(true);
         transactionGroupDetailsTitledPane.setCollapsible(false);

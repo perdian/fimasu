@@ -1,4 +1,4 @@
-package de.perdian.personal.stockimporter.model;
+package de.perdian.personal.stockqifgenerator.model;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -14,27 +14,30 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StockModelFactory {
+public class StockQifGeneratorModelHelper {
 
-    private static final Logger log = LoggerFactory.getLogger(StockModelFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(StockQifGeneratorModelHelper.class);
 
-    public static StockModel createStockModel() {
-        StockModel stockModel = new StockModel();
-        StockModelBean stockModelBean = StockModelFactory.loadStockModelBean();
-        if (stockModelBean != null && stockModelBean.getTransactionGroups() != null) {
-            stockModel.transactionGroupsProperty().addAll(stockModelBean.getTransactionGroups().stream().map(TransactionGroupBean::toTransactionGroup).collect(Collectors.toList()));
+    public static StockQifGeneratorModel createStockModel() {
+        StockQifGeneratorModel generatorModel = new StockQifGeneratorModel();
+        StockQifGeneratorModelBean generatorModelBean = StockQifGeneratorModelHelper.loadStockModelBean();
+        if (generatorModelBean != null && generatorModelBean.getTransactionGroups() != null) {
+            generatorModel.transactionGroupsProperty().addAll(generatorModelBean.getTransactionGroups().stream().map(TransactionGroupBean::toTransactionGroup).collect(Collectors.toList()));
         }
-        stockModel.addChangeListener((x, oldValue, newValue) -> StockModelFactory.saveStockModel(stockModel));
-        return stockModel;
+        if (generatorModel.transactionGroupsProperty().isEmpty()) {
+            generatorModel.transactionGroupsProperty().add(new TransactionGroup("New transaction group"));
+        }
+        generatorModel.addChangeListener((x, oldValue, newValue) -> StockQifGeneratorModelHelper.saveStockModel(generatorModel));
+        return generatorModel;
     }
 
-    private static StockModelBean loadStockModelBean() {
-        File stockModelFile = StockModelFactory.resolveStockModelFile();
+    private static StockQifGeneratorModelBean loadStockModelBean() {
+        File stockModelFile = StockQifGeneratorModelHelper.resolveStockModelFile();
         if (stockModelFile.exists() && stockModelFile.length() > 0) {
             try {
                 log.debug("Loading model from file at: {}", stockModelFile.getAbsolutePath());
                 try (ObjectInputStream objectStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(stockModelFile)))) {
-                    return (StockModelBean)objectStream.readObject();
+                    return (StockQifGeneratorModelBean)objectStream.readObject();
                 }
             } catch (Exception e) {
                 log.warn("Cannot load model from file at: {}", stockModelFile.getAbsolutePath(), e);
@@ -43,9 +46,9 @@ public class StockModelFactory {
         return null;
     }
 
-    private static void saveStockModel(StockModel stockModel) {
+    private static void saveStockModel(StockQifGeneratorModel stockModel) {
 
-        File targetFile = StockModelFactory.resolveStockModelFile();
+        File targetFile = StockQifGeneratorModelHelper.resolveStockModelFile();
         File targetDirectory = targetFile.getParentFile();
         if (!targetDirectory.exists()) {
             log.debug("Creating storage directory at: {}", targetDirectory.getAbsolutePath());
@@ -54,7 +57,7 @@ public class StockModelFactory {
 
         log.debug("Writing model into file at: {}", targetFile.getAbsolutePath());
         try (ObjectOutputStream objectStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(targetFile)))) {
-            objectStream.writeObject(new StockModelBean(stockModel));
+            objectStream.writeObject(new StockQifGeneratorModelBean(stockModel));
             objectStream.flush();
             log.debug("Completed writing model into file at: {}", targetFile.getAbsolutePath());
         } catch (Exception e) {
@@ -66,21 +69,21 @@ public class StockModelFactory {
     private static File resolveStockModelFile() {
 
         File userHomeDirectory = new File(System.getProperty("user.home"));
-        File stockimporterDirectory = new File(userHomeDirectory, ".stockimporter/");
+        File stockimporterDirectory = new File(userHomeDirectory, ".stockqifgenerator/");
         File stockModelFile = new File(stockimporterDirectory, "model.object") ;
 
         return stockModelFile;
 
     }
 
-    static class StockModelBean implements Serializable {
+    static class StockQifGeneratorModelBean implements Serializable {
 
         static final long serialVersionUID = 1L;
 
         private List<TransactionGroupBean> transactionGroups = null;
 
-        StockModelBean(StockModel stockModel) {
-            this.setTransactionGroups(stockModel.transactionGroupsProperty().stream().map(TransactionGroupBean::new).collect(Collectors.toList()));
+        StockQifGeneratorModelBean(StockQifGeneratorModel model) {
+            this.setTransactionGroups(model.transactionGroupsProperty().stream().map(TransactionGroupBean::new).collect(Collectors.toList()));
         }
 
         List<TransactionGroupBean> getTransactionGroups() {
@@ -107,7 +110,7 @@ public class StockModelFactory {
         }
 
         TransactionGroup toTransactionGroup() {
-            TransactionGroup transactionGroup = new TransactionGroup();
+            TransactionGroup transactionGroup = new TransactionGroup(null);
             transactionGroup.accountProperty().setValue(this.getAccount());
             transactionGroup.titleProperty().setValue(this.getTitle());
             transactionGroup.transactionsProperty().addAll(this.getTransactions().stream().map(TransactionBean::toTransaction).collect(Collectors.toList()));

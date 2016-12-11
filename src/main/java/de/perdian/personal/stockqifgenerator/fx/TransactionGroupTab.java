@@ -1,7 +1,7 @@
-package de.perdian.personal.stockimporter.fx.panels;
+package de.perdian.personal.stockqifgenerator.fx;
 
-import de.perdian.personal.stockimporter.model.StockModel;
-import de.perdian.personal.stockimporter.model.TransactionGroup;
+import de.perdian.personal.stockqifgenerator.model.StockQifGeneratorModel;
+import de.perdian.personal.stockqifgenerator.model.TransactionGroup;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -9,7 +9,7 @@ import javafx.scene.control.Tab;
 
 class TransactionGroupTab extends Tab {
 
-    TransactionGroupTab(TransactionGroup transactionGroup, StockModel model) {
+    TransactionGroupTab(TransactionGroup transactionGroup, StockQifGeneratorModel model) {
         this.textProperty().bind(transactionGroup.titleProperty());
         this.setOnCloseRequest(event -> {
             Alert confirmationAlert = new Alert(AlertType.CONFIRMATION);

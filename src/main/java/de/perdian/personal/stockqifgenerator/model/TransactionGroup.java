@@ -1,4 +1,4 @@
-package de.perdian.personal.stockimporter.model;
+package de.perdian.personal.stockqifgenerator.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,8 @@ public class TransactionGroup {
     private final ObservableList<Transaction> transactions = FXCollections.observableArrayList();
     private final List<ChangeListener<TransactionGroup>> changeListeners = new ArrayList<>();
 
-    public TransactionGroup() {
+    public TransactionGroup(String title) {
+        this.titleProperty().setValue(title);
         ChangeListener<Transaction> transactionChangeListener = (x, oldValue, newValue) -> this.fireChange();
         this.transactionsProperty().addListener((ListChangeListener<Transaction>)event -> {
             while (event.next()) {

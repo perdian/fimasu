@@ -1,7 +1,8 @@
-package de.perdian.personal.stockimporter.fx.support;
+package de.perdian.personal.stockqifgenerator.fx.support;
 
 import java.util.Objects;
 
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -37,7 +38,7 @@ public class ComponentBuilder {
         TextField textField = new TextField();
         textField.setMinHeight(Node.BASELINE_OFFSET_SAME_AS_HEIGHT);
         textField.textProperty().bindBidirectional(stringProperty);
-        textField.focusedProperty().addListener((o, oldValue, newValue) -> { if (newValue.booleanValue()) { textField.selectAll(); } });
+        textField.focusedProperty().addListener((o, oldValue, newValue) -> { if (newValue.booleanValue()) { Platform.runLater(() -> textField.selectAll()); } });
         if (this.getOnKeyPressedEventHandler() != null) {
             textField.setOnKeyPressed(this.getOnKeyPressedEventHandler());
         }
