@@ -42,7 +42,7 @@ class TransactionPane extends VBox {
     private List<Region> allControls = new ArrayList<>();
     private List<Region> highPriorityControls = new ArrayList<>();
 
-    TransactionPane(Transaction transaction, EventHandler<ActionEvent> deleteHandler) {
+    TransactionPane(Transaction transaction, ObservableList<Transaction> transactions, EventHandler<ActionEvent> deleteHandler) {
 
         ComponentBuilder componentBuilder = new ComponentBuilder();
         componentBuilder.setOnKeyPressedEventHandler(this::handleOnKeyPressed);
@@ -51,16 +51,29 @@ class TransactionPane extends VBox {
         removeButton.setFocusTraversable(false);
         removeButton.setGraphic(new ImageView(new Image(TransactionPane.class.getClassLoader().getResourceAsStream("icons/16/delete.png"))));
         removeButton.setOnAction(deleteHandler);
-        HBox buttonBox = new HBox(removeButton);
+        Button upButton = new Button();
+        upButton.setFocusTraversable(false);
+        upButton.setGraphic(new ImageView(new Image(TransactionPane.class.getClassLoader().getResourceAsStream("icons/16/go-up.png"))));
+        upButton.setOnAction(event -> this.handleMoveTransaction(transaction, transactions, -1));
+        Button downButton = new Button();
+        downButton.setFocusTraversable(false);
+        downButton.setGraphic(new ImageView(new Image(TransactionPane.class.getClassLoader().getResourceAsStream("icons/16/go-down.png"))));
+        downButton.setOnAction(event -> this.handleMoveTransaction(transaction, transactions, 1));
+        HBox buttonBox = new HBox(removeButton, upButton, downButton);
+        buttonBox.setSpacing(1);
 
+        TextField wknField = componentBuilder.createTextField(transaction.wknProperty(), new DefaultStringConverter());
+        wknField.textProperty().addListener((o, oldValue, newValue) -> wknField.setText(newValue.toUpperCase()));
+        TextField isinField = componentBuilder.createTextField(transaction.isinProperty(), new DefaultStringConverter());
+        isinField.textProperty().addListener((o, oldValue, newValue) -> isinField.setText(newValue.toUpperCase()));
         GridPane topPane = new GridPane();
         topPane.setHgap(5);
         topPane.setVgap(1);
         this.append(topPane, buttonBox, 0, 1, 1, 1, null, Priority.NEVER, false);
         this.append(topPane, componentBuilder.createLabel("WKN"), 1, 0, 1, 1, null, Priority.NEVER, false);
-        this.append(topPane, componentBuilder.createTextField(transaction.wknProperty(), new DefaultStringConverter()), 1, 1, 1, 1, 80, Priority.NEVER, false);
+        this.append(topPane, wknField, 1, 1, 1, 1, 70, Priority.NEVER, false);
         this.append(topPane, componentBuilder.createLabel("ISIN"), 2, 0, 1, 1, null, Priority.NEVER, false);
-        this.append(topPane, componentBuilder.createTextField(transaction.isinProperty(), new DefaultStringConverter()), 2, 1, 1, 1, 130, Priority.NEVER, false);
+        this.append(topPane, isinField, 2, 1, 1, 1, 130, Priority.NEVER, false);
         this.append(topPane, componentBuilder.createLabel("Title"), 3, 0, 1, 1, null, Priority.ALWAYS, false);
         this.append(topPane, componentBuilder.createTextField(transaction.titleProperty(), new DefaultStringConverter()), 3, 1, 1, 1, 200, Priority.ALWAYS, false);
         this.append(topPane, componentBuilder.createLabel("Value (EUR)"), 4, 0, 1, 1, null, Priority.NEVER, false);
@@ -170,6 +183,16 @@ class TransactionPane extends VBox {
             }
         }
         return null;
+    }
+
+    private void handleMoveTransaction(Transaction transaction, ObservableList<Transaction> transactions, int direction) {
+        int currentIndex = transactions.indexOf(transaction);
+        transactions.remove(transaction);
+        if (direction < 0) {
+            transactions.add(Math.max(0, currentIndex + direction), transaction);
+        } else if (direction > 0) {
+            transactions.add(Math.min(transactions.size(), currentIndex + direction), transaction);
+        }
     }
 
     static class DoubleConverter extends StringConverter<Number> {

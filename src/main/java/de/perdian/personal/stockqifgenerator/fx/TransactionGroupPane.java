@@ -30,7 +30,7 @@ class TransactionGroupPane extends BorderPane {
         transactionsBox.setSpacing(25);
         transactionsBox.setMaxWidth(Double.MAX_VALUE);
         for (Transaction transaction : transactionGroup.transactionsProperty()) {
-            transactionsBox.getChildren().add(new TransactionPane(transaction, e -> transactionGroup.transactionsProperty().remove(transaction)));
+            transactionsBox.getChildren().add(new TransactionPane(transaction, transactionGroup.transactionsProperty(), e -> transactionGroup.transactionsProperty().remove(transaction)));
         }
         ScrollPane transactionsScrollPane = new ScrollPane(transactionsBox);
         transactionsScrollPane.setFitToWidth(true);
@@ -97,8 +97,9 @@ class TransactionGroupPane extends BorderPane {
                 if (!event.getAddedSubList().isEmpty()) {
                     for (int i=0; i < event.getAddedSubList().size(); i++) {
                         Transaction newTransaction = event.getAddedSubList().get(i);
-                        TransactionPane newTransactionEditPane = new TransactionPane(newTransaction, e -> transactionGroup.transactionsProperty().remove(newTransaction));
-                        transactionsBox.getChildren().add(transactionsBox.getChildren().size(), newTransactionEditPane);
+                        TransactionPane newTransactionEditPane = new TransactionPane(newTransaction, transactionGroup.transactionsProperty(), e -> transactionGroup.transactionsProperty().remove(newTransaction));
+                        int targetIndex = transactionGroup.transactionsProperty().indexOf(newTransaction);
+                        Platform.runLater(() -> transactionsBox.getChildren().add(targetIndex, newTransactionEditPane));
                     }
                 }
             }
