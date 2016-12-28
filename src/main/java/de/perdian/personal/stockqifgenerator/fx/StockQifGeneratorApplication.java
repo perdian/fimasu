@@ -41,7 +41,7 @@ public class StockQifGeneratorApplication extends Application {
         primaryStage.setOnCloseRequest(event -> System.exit(0));
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
-        primaryStage.setTitle("StockImporter");
+        primaryStage.setTitle("StockQifGenerator");
         primaryStage.setWidth(1200);
         primaryStage.setHeight(Math.min(Screen.getPrimary().getBounds().getHeight() - 100, 900));
         primaryStage.show();
