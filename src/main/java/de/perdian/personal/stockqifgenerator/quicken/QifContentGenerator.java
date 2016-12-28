@@ -19,12 +19,17 @@ public class QifContentGenerator {
     private static final NumberFormat LONG_NUMBER_FORMAT = new DecimalFormat("0.000000", new DecimalFormatSymbols(Locale.US));
 
     public String generate(TransactionGroup transactionGroup) {
+
         StringBuilder out = new StringBuilder();
         out.append("!Type:Invst\n");
-        for (Transaction transaction : transactionGroup.transactionsProperty()) {
-            this.appendTransaction(out, transaction, transactionGroup);
-        }
+
+        transactionGroup.transactionsProperty().stream()
+            .filter(transaction -> transaction.marketValueProperty().getValue() != null && transaction.marketValueProperty().doubleValue() > 0d)
+            .filter(transaction -> transaction.numberOfSharesProperty().getValue() != null && transaction.numberOfSharesProperty().doubleValue() > 0d)
+            .forEach(transaction -> this.appendTransaction(out, transaction, transactionGroup));
+
         return out.toString();
+
     }
 
     private void appendTransaction(StringBuilder out, Transaction transaction, TransactionGroup transactionGroup) {
