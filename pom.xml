@@ -2,11 +2,11 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.perdian.personal</groupId>
-    <artifactId>stockqifgenerator</artifactId>
+    <artifactId>qifgenerator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
-    <name>StockQifGenerator</name>
-    <description>StockQifGenerator</description>
+    <name>QifGenerator</name>
+    <description>QifGenerator</description>
 
     <properties>
         <commons-io.version>2.5</commons-io.version>

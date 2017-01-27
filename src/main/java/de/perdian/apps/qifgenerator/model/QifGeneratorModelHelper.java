@@ -20,7 +20,7 @@ public class QifGeneratorModelHelper {
 
     public static QifGeneratorModel createStockModel() {
         QifGeneratorModel generatorModel = new QifGeneratorModel();
-        StockQifGeneratorModelBean generatorModelBean = QifGeneratorModelHelper.loadStockModelBean();
+        QifGeneratorModelBean generatorModelBean = QifGeneratorModelHelper.loadModelBean();
         if (generatorModelBean != null && generatorModelBean.getTransactionGroups() != null) {
             generatorModel.transactionGroupsProperty().addAll(generatorModelBean.getTransactionGroups().stream().map(TransactionGroupBean::toTransactionGroup).collect(Collectors.toList()));
         }
@@ -31,13 +31,13 @@ public class QifGeneratorModelHelper {
         return generatorModel;
     }
 
-    private static StockQifGeneratorModelBean loadStockModelBean() {
+    private static QifGeneratorModelBean loadModelBean() {
         File stockModelFile = QifGeneratorModelHelper.resolveStockModelFile();
         if (stockModelFile.exists() && stockModelFile.length() > 0) {
             try {
                 log.debug("Loading model from file at: {}", stockModelFile.getAbsolutePath());
                 try (ObjectInputStream objectStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(stockModelFile)))) {
-                    return (StockQifGeneratorModelBean)objectStream.readObject();
+                    return (QifGeneratorModelBean)objectStream.readObject();
                 }
             } catch (Exception e) {
                 log.warn("Cannot load model from file at: {}", stockModelFile.getAbsolutePath(), e);
@@ -57,7 +57,7 @@ public class QifGeneratorModelHelper {
 
         log.debug("Writing model into file at: {}", targetFile.getAbsolutePath());
         try (ObjectOutputStream objectStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(targetFile)))) {
-            objectStream.writeObject(new StockQifGeneratorModelBean(stockModel));
+            objectStream.writeObject(new QifGeneratorModelBean(stockModel));
             objectStream.flush();
             log.debug("Completed writing model into file at: {}", targetFile.getAbsolutePath());
         } catch (Exception e) {
@@ -69,20 +69,20 @@ public class QifGeneratorModelHelper {
     private static File resolveStockModelFile() {
 
         File userHomeDirectory = new File(System.getProperty("user.home"));
-        File stockQifGeneratorDirectory = new File(userHomeDirectory, ".qifgenerator/");
-        File stockModelFile = new File(stockQifGeneratorDirectory, "model.object") ;
+        File qifGeneratorDirectory = new File(userHomeDirectory, ".qifgenerator/");
+        File modelFile = new File(qifGeneratorDirectory, "model.object") ;
 
-        return stockModelFile;
+        return modelFile;
 
     }
 
-    static class StockQifGeneratorModelBean implements Serializable {
+    static class QifGeneratorModelBean implements Serializable {
 
         static final long serialVersionUID = 1L;
 
         private List<TransactionGroupBean> transactionGroups = null;
 
-        StockQifGeneratorModelBean(QifGeneratorModel model) {
+        QifGeneratorModelBean(QifGeneratorModel model) {
             this.setTransactionGroups(model.transactionGroupsProperty().stream().map(TransactionGroupBean::new).collect(Collectors.toList()));
         }
 
