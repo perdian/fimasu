@@ -64,7 +64,7 @@ public class ExportEventHandler implements EventHandler<ActionEvent> {
                 selectedFile.getParentFile().mkdirs();
             }
             log.debug("Writing QIF output into file: {}", selectedFile.getAbsolutePath());
-            FileUtils.write(selectedFile, content);
+            FileUtils.write(selectedFile, content, "UTF-8");
             log.debug("QIF output written into: {}", selectedFile.getAbsolutePath());
 
             Platform.runLater(() -> {
