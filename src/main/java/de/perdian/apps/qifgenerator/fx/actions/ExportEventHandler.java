@@ -1,4 +1,4 @@
-package de.perdian.personal.stockqifgenerator.fx.actions;
+package de.perdian.apps.qifgenerator.fx.actions;
 
 import java.io.File;
 
@@ -7,8 +7,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.personal.stockqifgenerator.model.TransactionGroup;
-import de.perdian.personal.stockqifgenerator.quicken.QifContentGenerator;
+import de.perdian.apps.qifgenerator.model.TransactionGroup;
+import de.perdian.apps.qifgenerator.quicken.QifContentGenerator;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

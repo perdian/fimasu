@@ -1,4 +1,4 @@
-package de.perdian.personal.stockqifgenerator.model;
+package de.perdian.apps.qifgenerator.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

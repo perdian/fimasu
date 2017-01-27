@@ -1,7 +1,7 @@
-package de.perdian.personal.stockqifgenerator.fx;
+package de.perdian.apps.qifgenerator.fx;
 
-import de.perdian.personal.stockqifgenerator.model.StockQifGeneratorModel;
-import de.perdian.personal.stockqifgenerator.model.TransactionGroup;
+import de.perdian.apps.qifgenerator.model.QifGeneratorModel;
+import de.perdian.apps.qifgenerator.model.TransactionGroup;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
@@ -20,12 +20,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Window;
 
-public class StockQifGeneratorModelPane extends BorderPane {
+public class QifGeneratorModelPane extends BorderPane {
 
-    public StockQifGeneratorModelPane(StockQifGeneratorModel model) {
+    public QifGeneratorModelPane(QifGeneratorModel model) {
 
         MenuItem createTransactionGroupItem = new MenuItem("Add transaction group");
-        createTransactionGroupItem.setGraphic(new ImageView(new Image(StockQifGeneratorModelPane.class.getClassLoader().getResourceAsStream("icons/16/add.png"))));
+        createTransactionGroupItem.setGraphic(new ImageView(new Image(QifGeneratorModelPane.class.getClassLoader().getResourceAsStream("icons/16/add.png"))));
         createTransactionGroupItem.setOnAction(event -> this.handleCreateButtonClicked(model, this.getScene().getWindow()));
         ContextMenu contextMenu = new ContextMenu(createTransactionGroupItem);
 
@@ -41,7 +41,7 @@ public class StockQifGeneratorModelPane extends BorderPane {
 
     }
 
-    private void handleCreateButtonClicked(StockQifGeneratorModel model, Window parentWindow) {
+    private void handleCreateButtonClicked(QifGeneratorModel model, Window parentWindow) {
 
         TransactionGroup newTransactionGroup = new TransactionGroup(null);
         TextField titleField = new TextField();
@@ -72,7 +72,7 @@ public class StockQifGeneratorModelPane extends BorderPane {
 
     }
 
-    private void handleModelListChanged(Change<? extends TransactionGroup> event, TabPane tabPane, StockQifGeneratorModel model) {
+    private void handleModelListChanged(Change<? extends TransactionGroup> event, TabPane tabPane, QifGeneratorModel model) {
         while (event.next()) {
             for (TransactionGroup newTransactionGroup : event.getAddedSubList()) {
                 TransactionGroupTab newTransactionGroupTab = this.createTransactionGroupTab(newTransactionGroup, model);
@@ -82,7 +82,7 @@ public class StockQifGeneratorModelPane extends BorderPane {
         }
     }
 
-    private TransactionGroupTab createTransactionGroupTab(TransactionGroup transactionGroup, StockQifGeneratorModel model) {
+    private TransactionGroupTab createTransactionGroupTab(TransactionGroup transactionGroup, QifGeneratorModel model) {
         TransactionGroupTab newTransactionGroupTab = new TransactionGroupTab(transactionGroup, model);
         newTransactionGroupTab.setOnCloseRequest(event -> {
             if (model.transactionGroupsProperty().size() == 1) {

@@ -1,13 +1,13 @@
-package de.perdian.personal.stockqifgenerator.fx;
+package de.perdian.apps.qifgenerator.fx;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.perdian.personal.stockqifgenerator.fx.support.ComponentBuilder;
-import de.perdian.personal.stockqifgenerator.fx.support.converters.DoubleStringConverter;
-import de.perdian.personal.stockqifgenerator.fx.support.converters.LocalDateStringConverter;
-import de.perdian.personal.stockqifgenerator.model.Transaction;
-import de.perdian.personal.stockqifgenerator.model.TransactionType;
+import de.perdian.apps.qifgenerator.fx.support.ComponentBuilder;
+import de.perdian.apps.qifgenerator.fx.support.converters.DoubleStringConverter;
+import de.perdian.apps.qifgenerator.fx.support.converters.LocalDateStringConverter;
+import de.perdian.apps.qifgenerator.model.Transaction;
+import de.perdian.apps.qifgenerator.model.TransactionType;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

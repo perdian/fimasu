@@ -1,4 +1,4 @@
-package de.perdian.personal.stockqifgenerator.fx.support.converters;
+package de.perdian.apps.qifgenerator.fx.support.converters;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;

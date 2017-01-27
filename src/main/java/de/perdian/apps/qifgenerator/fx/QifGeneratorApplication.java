@@ -1,10 +1,10 @@
-package de.perdian.personal.stockqifgenerator.fx;
+package de.perdian.apps.qifgenerator.fx;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.personal.stockqifgenerator.model.StockQifGeneratorModel;
-import de.perdian.personal.stockqifgenerator.model.StockQifGeneratorModelHelper;
+import de.perdian.apps.qifgenerator.model.QifGeneratorModel;
+import de.perdian.apps.qifgenerator.model.QifGeneratorModelHelper;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -17,14 +17,14 @@ import javafx.stage.Stage;
  * @author Christian Robert
  */
 
-public class StockQifGeneratorApplication extends Application {
+public class QifGeneratorApplication extends Application {
 
-    private static final Logger log = LoggerFactory.getLogger(StockQifGeneratorApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(QifGeneratorApplication.class);
 
     public static void main(String[] args) {
 
         log.info("Launching application");
-        Application.launch(StockQifGeneratorApplication.class);
+        Application.launch(QifGeneratorApplication.class);
 
     }
 
@@ -32,8 +32,8 @@ public class StockQifGeneratorApplication extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         log.info("Setting up model");
-        StockQifGeneratorModel model = StockQifGeneratorModelHelper.createStockModel();
-        StockQifGeneratorModelPane mainPane = new StockQifGeneratorModelPane(model);
+        QifGeneratorModel model = QifGeneratorModelHelper.createStockModel();
+        QifGeneratorModelPane mainPane = new QifGeneratorModelPane(model);
 
         log.info("Opening JavaFX stage");
         primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));

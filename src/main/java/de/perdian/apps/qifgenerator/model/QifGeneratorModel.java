@@ -1,4 +1,4 @@
-package de.perdian.personal.stockqifgenerator.model;
+package de.perdian.apps.qifgenerator.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,14 +8,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class StockQifGeneratorModel {
+public class QifGeneratorModel {
 
     static final long serialVersionUID = 1L;
 
     private final ObservableList<TransactionGroup> transactionGroups = FXCollections.observableArrayList();
-    private final List<ChangeListener<StockQifGeneratorModel>> changeListeners = new ArrayList<>();
+    private final List<ChangeListener<QifGeneratorModel>> changeListeners = new ArrayList<>();
 
-    StockQifGeneratorModel() {
+    QifGeneratorModel() {
         ChangeListener<TransactionGroup> transactionGroupChangeListener = (x, oldValue, newValue) -> this.fireChange();
         this.transactionGroupsProperty().addListener((ListChangeListener<TransactionGroup>)event -> {
             while (event.next()) {
@@ -35,16 +35,16 @@ public class StockQifGeneratorModel {
     }
 
     void fireChange() {
-        for (ChangeListener<StockQifGeneratorModel> changeListener : this.changeListeners) {
+        for (ChangeListener<QifGeneratorModel> changeListener : this.changeListeners) {
             changeListener.changed(null, this, this);
         }
     }
-    void addChangeListener(ChangeListener<StockQifGeneratorModel> changeListener) {
+    void addChangeListener(ChangeListener<QifGeneratorModel> changeListener) {
         if (!this.changeListeners.contains(changeListener)) {
             this.changeListeners.add(changeListener);
         }
     }
-    void removeChangeListener(ChangeListener<StockQifGeneratorModel> changeListener) {
+    void removeChangeListener(ChangeListener<QifGeneratorModel> changeListener) {
         this.changeListeners.remove(changeListener);
     }
 

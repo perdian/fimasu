@@ -68,7 +68,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.perdian.personal.stockqifgenerator.fx.StockQifGeneratorApplication</mainClass>
+                            <mainClass>de.perdian.apps.qifgenerator.fx.QifGeneratorApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -94,10 +94,10 @@
                         <artifactId>appbundle-maven-plugin</artifactId>
                         <version>1.2.0</version>
                         <configuration>
-                            <mainClass>de.perdian.personal.stockqifgenerator.fx.StockQifGeneratorApplication</mainClass>
+                            <mainClass>de.perdian.apps.qifgenerator.fx.QifGeneratorApplication</mainClass>
                             <generateDiskImageFile>true</generateDiskImageFile>
                             <jvmVersion>1.8+</jvmVersion>
-                            <iconFile>stockqifgenerator.icns</iconFile>
+                            <iconFile>qifgenerator.icns</iconFile>
                             <additionalResources>
                                 <additionalResource>
                                     <directory>${project.basedir}/src/bundle/macos/distribution</directory>

@@ -1,4 +1,4 @@
-package de.perdian.personal.stockqifgenerator.quicken;
+package de.perdian.apps.qifgenerator.quicken;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -8,9 +8,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Optional;
 
-import de.perdian.personal.stockqifgenerator.model.Transaction;
-import de.perdian.personal.stockqifgenerator.model.TransactionGroup;
-import de.perdian.personal.stockqifgenerator.model.TransactionType;
+import de.perdian.apps.qifgenerator.model.Transaction;
+import de.perdian.apps.qifgenerator.model.TransactionGroup;
+import de.perdian.apps.qifgenerator.model.TransactionType;
 
 public class QifContentGenerator {
 

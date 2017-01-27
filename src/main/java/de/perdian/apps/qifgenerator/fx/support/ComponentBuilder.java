@@ -1,4 +1,4 @@
-package de.perdian.personal.stockqifgenerator.fx.support;
+package de.perdian.apps.qifgenerator.fx.support;
 
 import java.util.Objects;
 

@@ -1,11 +1,11 @@
-package de.perdian.personal.stockqifgenerator.quicken;
+package de.perdian.apps.qifgenerator.quicken;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import de.perdian.personal.stockqifgenerator.model.Transaction;
+import de.perdian.apps.qifgenerator.model.Transaction;
 
 class QifComission {
 

@@ -1,4 +1,4 @@
-package de.perdian.personal.stockqifgenerator.model;
+package de.perdian.apps.qifgenerator.model;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -14,25 +14,25 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StockQifGeneratorModelHelper {
+public class QifGeneratorModelHelper {
 
-    private static final Logger log = LoggerFactory.getLogger(StockQifGeneratorModelHelper.class);
+    private static final Logger log = LoggerFactory.getLogger(QifGeneratorModelHelper.class);
 
-    public static StockQifGeneratorModel createStockModel() {
-        StockQifGeneratorModel generatorModel = new StockQifGeneratorModel();
-        StockQifGeneratorModelBean generatorModelBean = StockQifGeneratorModelHelper.loadStockModelBean();
+    public static QifGeneratorModel createStockModel() {
+        QifGeneratorModel generatorModel = new QifGeneratorModel();
+        StockQifGeneratorModelBean generatorModelBean = QifGeneratorModelHelper.loadStockModelBean();
         if (generatorModelBean != null && generatorModelBean.getTransactionGroups() != null) {
             generatorModel.transactionGroupsProperty().addAll(generatorModelBean.getTransactionGroups().stream().map(TransactionGroupBean::toTransactionGroup).collect(Collectors.toList()));
         }
         if (generatorModel.transactionGroupsProperty().isEmpty()) {
             generatorModel.transactionGroupsProperty().add(new TransactionGroup("New transaction group"));
         }
-        generatorModel.addChangeListener((x, oldValue, newValue) -> StockQifGeneratorModelHelper.saveStockModel(generatorModel));
+        generatorModel.addChangeListener((x, oldValue, newValue) -> QifGeneratorModelHelper.saveStockModel(generatorModel));
         return generatorModel;
     }
 
     private static StockQifGeneratorModelBean loadStockModelBean() {
-        File stockModelFile = StockQifGeneratorModelHelper.resolveStockModelFile();
+        File stockModelFile = QifGeneratorModelHelper.resolveStockModelFile();
         if (stockModelFile.exists() && stockModelFile.length() > 0) {
             try {
                 log.debug("Loading model from file at: {}", stockModelFile.getAbsolutePath());
@@ -46,9 +46,9 @@ public class StockQifGeneratorModelHelper {
         return null;
     }
 
-    private static void saveStockModel(StockQifGeneratorModel stockModel) {
+    private static void saveStockModel(QifGeneratorModel stockModel) {
 
-        File targetFile = StockQifGeneratorModelHelper.resolveStockModelFile();
+        File targetFile = QifGeneratorModelHelper.resolveStockModelFile();
         File targetDirectory = targetFile.getParentFile();
         if (!targetDirectory.exists()) {
             log.debug("Creating storage directory at: {}", targetDirectory.getAbsolutePath());
@@ -82,7 +82,7 @@ public class StockQifGeneratorModelHelper {
 
         private List<TransactionGroupBean> transactionGroups = null;
 
-        StockQifGeneratorModelBean(StockQifGeneratorModel model) {
+        StockQifGeneratorModelBean(QifGeneratorModel model) {
             this.setTransactionGroups(model.transactionGroupsProperty().stream().map(TransactionGroupBean::new).collect(Collectors.toList()));
         }
 

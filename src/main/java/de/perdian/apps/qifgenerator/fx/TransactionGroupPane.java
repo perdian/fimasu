@@ -1,10 +1,10 @@
-package de.perdian.personal.stockqifgenerator.fx;
+package de.perdian.apps.qifgenerator.fx;
 
-import de.perdian.personal.stockqifgenerator.fx.actions.ExportEventHandler;
-import de.perdian.personal.stockqifgenerator.fx.support.ComponentBuilder;
-import de.perdian.personal.stockqifgenerator.fx.support.converters.FileStringConverter;
-import de.perdian.personal.stockqifgenerator.model.Transaction;
-import de.perdian.personal.stockqifgenerator.model.TransactionGroup;
+import de.perdian.apps.qifgenerator.fx.actions.ExportEventHandler;
+import de.perdian.apps.qifgenerator.fx.support.ComponentBuilder;
+import de.perdian.apps.qifgenerator.fx.support.converters.FileStringConverter;
+import de.perdian.apps.qifgenerator.model.Transaction;
+import de.perdian.apps.qifgenerator.model.TransactionGroup;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
