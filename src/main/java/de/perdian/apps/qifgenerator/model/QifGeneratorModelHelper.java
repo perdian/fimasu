@@ -69,7 +69,7 @@ public class QifGeneratorModelHelper {
     private static File resolveStockModelFile() {
 
         File userHomeDirectory = new File(System.getProperty("user.home"));
-        File stockQifGeneratorDirectory = new File(userHomeDirectory, ".stockqifgenerator/");
+        File stockQifGeneratorDirectory = new File(userHomeDirectory, ".qifgenerator/");
         File stockModelFile = new File(stockQifGeneratorDirectory, "model.object") ;
 
         return stockModelFile;
