@@ -7,6 +7,21 @@
 
     <name>QifGenerator</name>
     <description>QifGenerator</description>
+    <url>https://github.com/perdian/qifgenerator</url>
+
+    <scm>
+        <url>https://github.com/perdian/qifgenerator</url>
+        <connection>scm:git:https://github.com/perdian/qifgenerator.git</connection>
+        <developerConnection>scm:git:https://github.com/perdian/qifgenerator.git</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>perdian</id>
+            <name>Christian Robert</name>
+            <email>dev@perdian.de</email>
+        </developer>
+    </developers>
 
     <properties>
         <commons-io.version>2.5</commons-io.version>
