@@ -5,8 +5,8 @@
     <artifactId>qifgenerator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
-    <name>QifGenerator</name>
-    <description>QifGenerator</description>
+    <name>QIF Generator</name>
+    <description>QIF Generator</description>
     <url>https://github.com/perdian/qifgenerator</url>
 
     <scm>
@@ -59,6 +59,7 @@
     </dependencies>
 
     <build>
+        <finalName>QIF Generator</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -87,6 +88,22 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <finalName>qifgenerator</finalName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
