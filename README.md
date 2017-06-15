@@ -15,7 +15,7 @@ For building it simply checkout the repository from GitHub and call the Maven pa
     $ git clone https://github.com/perdian/qifgenerator.git
     $ cd qifgenerator
     $ mvn clean package
-    $ java -jar target/tagtiger.jar
+    $ java -jar target/qifgenerator.jar
 
 ### macOS build
 
