@@ -32,25 +32,25 @@ public class ExportEventHandler implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent event) {
-
-        File currentTargetFile = this.getTransactionGroup().targetFileProperty().getValue();
-        File currentDirectory = currentTargetFile == null ? null : currentTargetFile.getParentFile();
-
-        FileChooser targetFileChooser = new FileChooser();
-        if (currentDirectory != null) {
-            targetFileChooser.setInitialDirectory(currentDirectory);
-        }
-        targetFileChooser.setTitle("Select target file");
-
-        File selectedFile = targetFileChooser.showSaveDialog(((Node)event.getSource()).getScene().getWindow());
-        if (selectedFile != null) {
-            if (!selectedFile.getName().endsWith(".qif")) {
-                selectedFile = new File(selectedFile.getAbsolutePath() + ".qif");
+        File targetFile = this.resolveTargetFile((Node)event.getSource());
+        if (targetFile != null) {
+            if (!targetFile.getName().endsWith(".qif")) {
+                targetFile = new File(targetFile.getAbsolutePath() + ".qif");
             }
-            this.getTransactionGroup().targetFileProperty().setValue(selectedFile);
+            this.getTransactionGroup().targetFileProperty().setValue(targetFile);
             new Thread(() -> this.handleExport(this.getTransactionGroup().targetFileProperty().getValue())).start();
         }
+    }
 
+    private File resolveTargetFile(Node eventSource) {
+        File currentTargetFile = this.getTransactionGroup().targetFileProperty().getValue();
+        if (currentTargetFile != null) {
+            return currentTargetFile;
+        } else {
+            FileChooser targetFileChooser = new FileChooser();
+            targetFileChooser.setTitle("Select target file");
+            return targetFileChooser.showSaveDialog(eventSource.getScene().getWindow());
+        }
     }
 
     private void handleExport(File selectedFile) {
