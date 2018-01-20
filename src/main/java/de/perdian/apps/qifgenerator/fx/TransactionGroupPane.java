@@ -15,13 +15,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DefaultStringConverter;
 
-class TransactionGroupPane extends BorderPane {
+class TransactionGroupPane extends GridPane {
 
     TransactionGroupPane(TransactionGroup transactionGroup) {
 
@@ -39,6 +38,8 @@ class TransactionGroupPane extends BorderPane {
         TitledPane transactionsScrollTitledPane = new TitledPane("Transactions", transactionsScrollPane);
         transactionsScrollTitledPane.setMaxHeight(Double.MAX_VALUE);
         transactionsScrollTitledPane.setCollapsible(false);
+        GridPane.setHgrow(transactionsScrollTitledPane, Priority.ALWAYS);
+        GridPane.setVgrow(transactionsScrollTitledPane, Priority.ALWAYS);
 
         TextField titleTextField = componentBuilder.createTextField(transactionGroup.titleProperty(), new DefaultStringConverter());
         titleTextField.setPrefWidth(150);
@@ -58,10 +59,7 @@ class TransactionGroupPane extends BorderPane {
         TitledPane transactionGroupDetailsTitledPane = new TitledPane("Transaction group details", transactionGroupDetailsPane);
         transactionGroupDetailsTitledPane.setExpanded(true);
         transactionGroupDetailsTitledPane.setCollapsible(false);
-
-        BorderPane centerPane = new BorderPane();
-        centerPane.setCenter(transactionsScrollTitledPane);
-        centerPane.setBottom(transactionGroupDetailsTitledPane);
+        GridPane.setHgrow(transactionGroupDetailsTitledPane, Priority.ALWAYS);
 
         Button addButton = new Button("Add transaction");
         addButton.setGraphic(new ImageView(new Image(TransactionGroupPane.class.getClassLoader().getResourceAsStream("icons/16/add.png"))));
@@ -81,12 +79,12 @@ class TransactionGroupPane extends BorderPane {
         transactionsButtonTitledPane.setCollapsible(false);
         transactionsButtonTitledPane.setMaxHeight(Double.MAX_VALUE);
 
-        this.setCenter(centerPane);
-        this.setRight(transactionsButtonTitledPane);
-
-        BorderPane.setMargin(transactionsScrollTitledPane, new Insets(10, 5, 5, 10));
-        BorderPane.setMargin(transactionGroupDetailsTitledPane, new Insets(5, 5, 10, 10));
-        BorderPane.setMargin(transactionsButtonTitledPane, new Insets(10, 10, 10, 5));
+        this.add(transactionsScrollTitledPane, 0, 0, 2, 1);
+        this.add(transactionGroupDetailsTitledPane, 0, 1, 1, 1);
+        this.add(transactionsButtonTitledPane, 1, 1, 1, 1);
+        this.setHgap(5);
+        this.setVgap(5);
+        this.setPadding(new Insets(5, 5, 5, 5));
 
         transactionGroup.transactionsProperty().addListener((ListChangeListener<Transaction>)event -> {
             while (event.next()) {

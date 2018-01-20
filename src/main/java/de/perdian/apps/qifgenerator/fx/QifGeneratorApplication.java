@@ -39,10 +39,10 @@ public class QifGeneratorApplication extends Application {
         primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.setOnCloseRequest(event -> System.exit(0));
-        primaryStage.setMinWidth(800);
-        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(640);
+        primaryStage.setMinHeight(480);
         primaryStage.setTitle("QifGenerator");
-        primaryStage.setWidth(1200);
+        primaryStage.setWidth(900);
         primaryStage.setHeight(Math.min(Screen.getPrimary().getBounds().getHeight() - 100, 900));
         primaryStage.show();
 
