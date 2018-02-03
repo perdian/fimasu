@@ -82,7 +82,7 @@ class TransactionPane extends VBox {
         this.append(bottomPane, componentBuilder.createLabel("Valuta date"), 2, 0, 1, 1, null, Priority.NEVER, false);
         this.append(bottomPane, componentBuilder.createTextField(transaction.valutaDateProperty(), new LocalDateStringConverter()), 2, 1, 1, 1, 80, Priority.NEVER, true);
         this.append(bottomPane, componentBuilder.createLabel("# Shares"), 3, 0, 1, 1, null, Priority.NEVER, false);
-        this.append(bottomPane, componentBuilder.createTextField(transaction.numberOfSharesProperty(), new DoubleStringConverter("0.00000")), 3, 1, 1, 1, 65, Priority.NEVER, true);
+        this.append(bottomPane, componentBuilder.createTextField(transaction.numberOfSharesProperty(), new DoubleStringConverter("0.00000")), 3, 1, 1, 1, 75, Priority.NEVER, true);
         this.append(bottomPane, componentBuilder.createLabel("Market Price"), 4, 0, 1, 1, null, Priority.NEVER, false);
         this.append(bottomPane, componentBuilder.createTextField(transaction.marketPriceProperty(), new DoubleStringConverter("0.00000")), 4, 1, 1, 1, 80, Priority.NEVER, true);
         this.append(bottomPane, componentBuilder.createLabel("Market Value"), 5, 0, 1, 1, null, Priority.NEVER, false);
