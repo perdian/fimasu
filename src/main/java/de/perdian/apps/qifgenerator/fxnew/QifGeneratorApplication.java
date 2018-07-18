@@ -30,7 +30,7 @@ public class QifGeneratorApplication extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         log.info("Setting up model");
-        QifGeneratorPreferences preferences = QifGeneratorPreferences.create();
+        QifGeneratorPreferences preferences = new QifGeneratorPreferences();
         QifGeneratorPane mainPane = new QifGeneratorPane(preferences);
 
         log.info("Opening JavaFX stage");
