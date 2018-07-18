@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.model;
+package de.perdian.apps.qifgenerator.fxnew.model;
 
 public enum TransactionType {
 

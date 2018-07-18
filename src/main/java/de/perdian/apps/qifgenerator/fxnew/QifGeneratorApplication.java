@@ -3,8 +3,6 @@ package de.perdian.apps.qifgenerator.fxnew;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.qifgenerator.model.QifGeneratorModel;
-import de.perdian.apps.qifgenerator.model.QifGeneratorModelHelper;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -33,7 +31,6 @@ public class QifGeneratorApplication extends Application {
 
         log.info("Setting up model");
         QifGeneratorPreferences preferences = QifGeneratorPreferences.create();
-        QifGeneratorModel model = QifGeneratorModelHelper.createStockModel();
         QifGeneratorPane mainPane = new QifGeneratorPane(preferences);
 
         log.info("Opening JavaFX stage");
@@ -43,8 +40,8 @@ public class QifGeneratorApplication extends Application {
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.setTitle("QifGenerator");
-        primaryStage.setWidth(1400);
-        primaryStage.setHeight(Math.min(Screen.getPrimary().getBounds().getHeight() - 100, 900));
+        primaryStage.setWidth(1600);
+        primaryStage.setHeight(Math.min(Screen.getPrimary().getBounds().getHeight() - 100, 1000));
         primaryStage.show();
 
     }

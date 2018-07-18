@@ -3,6 +3,7 @@ package de.perdian.apps.qifgenerator.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.perdian.apps.qifgenerator.fxnew.model.TransactionGroup;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;

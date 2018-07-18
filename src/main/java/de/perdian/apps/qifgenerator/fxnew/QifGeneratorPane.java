@@ -10,7 +10,7 @@ class QifGeneratorPane extends BorderPane {
     QifGeneratorPane(QifGeneratorPreferences preferences) {
 
         TransactionsPane transactionsPane = new TransactionsPane(preferences);
-        transactionsPane.setPrefWidth(600);
+        transactionsPane.setPrefWidth(800);
         transactionsPane.setMaxHeight(Double.MAX_VALUE);
         transactionsPane.setPadding(new Insets(0, 2, 0, 0));
 

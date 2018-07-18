@@ -1,7 +1,7 @@
 package de.perdian.apps.qifgenerator.fx;
 
+import de.perdian.apps.qifgenerator.fxnew.model.TransactionGroup;
 import de.perdian.apps.qifgenerator.model.QifGeneratorModel;
-import de.perdian.apps.qifgenerator.model.TransactionGroup;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;

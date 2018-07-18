@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.perdian.apps.qifgenerator.fxnew.model.Transaction;
+import de.perdian.apps.qifgenerator.fxnew.model.TransactionGroup;
+
 public class QifGeneratorModelHelper {
 
     private static final Logger log = LoggerFactory.getLogger(QifGeneratorModelHelper.class);

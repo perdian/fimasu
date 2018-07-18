@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.model;
+package de.perdian.apps.qifgenerator.fxnew.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ public class Transaction {
     private final StringProperty isin = new SimpleStringProperty();
     private final StringProperty title = new SimpleStringProperty();
     private final DoubleProperty value = new SimpleDoubleProperty();
-
     private final Property<TransactionType> type = new SimpleObjectProperty<>(TransactionType.BUY);
     private final Property<LocalDate> bookingDate = new SimpleObjectProperty<>();
     private final Property<LocalDate> valutaDate = new SimpleObjectProperty<>();
@@ -131,12 +130,12 @@ public class Transaction {
             changeListener.changed(null, null, this);
         }
     }
-    void addChangeListener(ChangeListener<Transaction> changeListener) {
+    public void addChangeListener(ChangeListener<Transaction> changeListener) {
         if (!this.changeListeners.contains(changeListener)) {
             this.changeListeners.add(changeListener);
         }
     }
-    void removeChangeListener(ChangeListener<Transaction> changeListener) {
+    public void removeChangeListener(ChangeListener<Transaction> changeListener) {
         this.changeListeners.remove(changeListener);
     }
 

@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.model;
+package de.perdian.apps.qifgenerator.fxnew.model;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -63,12 +63,12 @@ public class TransactionGroup {
             changeListener.changed(null, null, this);
         }
     }
-    void addChangeListener(ChangeListener<TransactionGroup> changeListener) {
+    public void addChangeListener(ChangeListener<TransactionGroup> changeListener) {
         if (!this.changeListeners.contains(changeListener)) {
             this.changeListeners.add(changeListener);
         }
     }
-    void removeChangeListener(ChangeListener<TransactionGroup> changeListener) {
+    public void removeChangeListener(ChangeListener<TransactionGroup> changeListener) {
         this.changeListeners.remove(changeListener);
     }
 
