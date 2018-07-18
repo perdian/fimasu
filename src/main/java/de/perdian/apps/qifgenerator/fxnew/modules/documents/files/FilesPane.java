@@ -78,7 +78,7 @@ public class FilesPane extends GridPane {
         TableColumn<File, Boolean> typeColumn = new TableColumn<>("");
         typeColumn.setCellValueFactory(in -> new SimpleBooleanProperty(in.getValue().isDirectory()));
         typeColumn.setCellFactory(item -> {
-            TableCell<File, Boolean> tableCell = new TableCell<>() {
+            TableCell<File, Boolean> tableCell = new TableCell<File, Boolean>() {
                 @Override protected void updateItem(Boolean item, boolean empty) {
                     if (empty) {
                         this.setGraphic(null);
