@@ -66,13 +66,13 @@
                 <version>3.7.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>9</source>
+                    <target>9</target>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
@@ -80,7 +80,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -92,7 +92,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
                 <configuration>
                     <finalName>qifgenerator</finalName>
                 </configuration>
@@ -128,7 +128,7 @@
                         <configuration>
                             <mainClass>de.perdian.apps.qifgenerator.fx.QifGeneratorApplication</mainClass>
                             <generateDiskImageFile>true</generateDiskImageFile>
-                            <jvmVersion>1.8+</jvmVersion>
+                            <jvmVersion>9+</jvmVersion>
                             <iconFile>qifgenerator.icns</iconFile>
                             <additionalResources>
                                 <additionalResource>
