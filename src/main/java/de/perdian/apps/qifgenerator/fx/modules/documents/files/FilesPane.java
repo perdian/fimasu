@@ -145,8 +145,8 @@ public class FilesPane extends GridPane {
 
     }
 
-    public void moveSelection(int direction) {
-        int maxIndex = this.getFiles().getSelectionModel().getSelectedItems().size();
+    public void changeDocument(int direction) {
+        int maxIndex = this.getFiles().getItems().size();
         int currentIndex = this.getFiles().getSelectionModel().getSelectedIndex();
         int newIndex = currentIndex + direction;
         if (newIndex >= 0 && newIndex < maxIndex) {

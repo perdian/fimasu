@@ -10,9 +10,7 @@ import javafx.scene.layout.Priority;
 
 public class TransactionGroupPane extends GridPane {
 
-    public TransactionGroupPane(TransactionGroup transactionGroup) {
-
-        ComponentBuilder componentBuilder = new ComponentBuilder();
+    public TransactionGroupPane(TransactionGroup transactionGroup, ComponentBuilder componentBuilder) {
 
         TransactionGroupItemsPane itemsPane = new TransactionGroupItemsPane(transactionGroup.transactionsProperty(), componentBuilder);
         TitledPane itemsTitledPane = new TitledPane("Transactions", itemsPane);

@@ -2,6 +2,7 @@ package de.perdian.apps.qifgenerator.fx.modules.transactions;
 
 import de.perdian.apps.qifgenerator.fx.QifGeneratorPreferences;
 import de.perdian.apps.qifgenerator.fx.model.TransactionGroup;
+import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -22,7 +23,7 @@ import javafx.stage.Window;
 
 public class TransactionsPane extends BorderPane {
 
-    public TransactionsPane(QifGeneratorPreferences preferences) {
+    public TransactionsPane(QifGeneratorPreferences preferences, ComponentBuilder componentBuilder) {
 
         ObservableList<TransactionGroup> transactionGroups = preferences.getTransactionGroups();
         MenuItem createTransactionGroupItem = new MenuItem("Add transaction group");
@@ -35,13 +36,13 @@ public class TransactionsPane extends BorderPane {
         });
         TabPane tabPane = new TabPane();
         for (TransactionGroup transactionGroup : transactionGroups) {
-            tabPane.getTabs().add(new TransactionGroupTab(transactionGroup, transactionGroups));
+            tabPane.getTabs().add(new TransactionGroupTab(transactionGroup, transactionGroups, componentBuilder));
         }
         tabPane.setContextMenu(new ContextMenu(createTransactionGroupItem));
         transactionGroups.addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> {
             while (change.next()) {
                 for (TransactionGroup newGroup : change.getAddedSubList()) {
-                    tabPane.getTabs().add(new TransactionGroupTab(newGroup, transactionGroups));
+                    tabPane.getTabs().add(new TransactionGroupTab(newGroup, transactionGroups, componentBuilder));
                 }
             }
         });

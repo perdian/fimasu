@@ -1,6 +1,7 @@
 package de.perdian.apps.qifgenerator.fx.modules.transactions;
 
 import de.perdian.apps.qifgenerator.fx.model.TransactionGroup;
+import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -9,7 +10,7 @@ import javafx.scene.control.Tab;
 
 class TransactionGroupTab extends Tab {
 
-    TransactionGroupTab(TransactionGroup transactionGroup, ObservableList<TransactionGroup> transactionGroups) {
+    TransactionGroupTab(TransactionGroup transactionGroup, ObservableList<TransactionGroup> transactionGroups, ComponentBuilder componentBuilder) {
         this.textProperty().bind(transactionGroup.titleProperty());
         this.setOnCloseRequest(event -> {
             if (transactionGroups.size() > 1) {
@@ -26,7 +27,7 @@ class TransactionGroupTab extends Tab {
                 event.consume();
             }
         });
-        this.setContent(new TransactionGroupPane(transactionGroup));
+        this.setContent(new TransactionGroupPane(transactionGroup, componentBuilder));
     }
 
 }

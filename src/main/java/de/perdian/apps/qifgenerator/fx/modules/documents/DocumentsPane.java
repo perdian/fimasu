@@ -10,6 +10,8 @@ import javafx.scene.layout.Priority;
 
 public class DocumentsPane extends GridPane {
 
+    private DocumentsController documentsController = null;
+
     public DocumentsPane(QifGeneratorPreferences preferences) {
 
         FilesPane filesPane = new FilesPane(preferences);
@@ -26,7 +28,32 @@ public class DocumentsPane extends GridPane {
         this.add(contentPaneWrapper, 0, 1, 1, 1);
         this.setHgap(4);
         this.setVgap(4);
+        this.setDocumentsController(new DocumentsController() {
 
+            @Override
+            public void scrollCurrentDocument(int direction) {
+                contentPane.scrollDocument(direction);
+            }
+
+            @Override
+            public void changeDocument(int direction) {
+                filesPane.changeDocument(direction);
+            }
+
+            @Override
+            public void changePage(int direction) {
+                contentPane.changePage(direction);
+            }
+
+        });
+
+    }
+
+    public DocumentsController getDocumentsController() {
+        return this.documentsController;
+    }
+    private void setDocumentsController(DocumentsController documentsController) {
+        this.documentsController = documentsController;
     }
 
 }
