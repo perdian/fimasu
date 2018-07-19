@@ -103,9 +103,9 @@ class TransactionPane extends VBox {
         bottomPane.add(marketValueField, 4, 1, 1, 1);
         bottomPane.add(componentBuilder.createLabel("Charges"), 5, 0, 1, 1);
         bottomPane.add(chargesField, 5, 1, 1, 1);
-        bottomPane.add(componentBuilder.createLabel("Fin.Tax"), 6, 0, 1, 1);
+        bottomPane.add(componentBuilder.createLabel("Fin. tax"), 6, 0, 1, 1);
         bottomPane.add(financeTaxField, 6, 1, 1, 1);
-        bottomPane.add(componentBuilder.createLabel("Sol.Tax"), 7, 0, 1, 1);
+        bottomPane.add(componentBuilder.createLabel("Sol. tax"), 7, 0, 1, 1);
         bottomPane.add(solidarityTaxField, 7, 1, 1, 1);
         bottomPane.add(componentBuilder.createLabel("Total"), 8, 0, 1, 1);
         bottomPane.add(totalValueField, 8, 1, 1, 1);
