@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.fx.modules.documents.content.impl;
+package de.perdian.apps.qifgenerator.fx.modules.documents.impl;
 
 import java.io.File;
 import java.util.ResourceBundle;
@@ -9,7 +9,7 @@ import org.icepdf.ri.util.PropertiesManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.qifgenerator.fx.modules.documents.content.ContentDetailPane;
+import de.perdian.apps.qifgenerator.fx.modules.documents.DocumentContentDetailPane;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.control.Label;
@@ -17,14 +17,14 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 
-public class PdfContentPane extends BorderPane implements ContentDetailPane {
+public class PdfContentDetailPane extends BorderPane implements DocumentContentDetailPane {
 
-    private static final Logger log = LoggerFactory.getLogger(PdfContentPane.class);
+    private static final Logger log = LoggerFactory.getLogger(PdfContentDetailPane.class);
 
     private SwingController swingController = null;
     private ScrollPane scrollPane = null;
 
-    public PdfContentPane(File file) throws Exception {
+    public PdfContentDetailPane(File file) throws Exception {
 
         this.setCenter(new Label("Loading PDF document..."));
 

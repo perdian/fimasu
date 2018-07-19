@@ -2,8 +2,6 @@ package de.perdian.apps.qifgenerator.fx.modules.documents;
 
 import de.perdian.apps.qifgenerator.fx.QifGeneratorHelper;
 import de.perdian.apps.qifgenerator.fx.QifGeneratorPreferences;
-import de.perdian.apps.qifgenerator.fx.modules.documents.content.ContentPane;
-import de.perdian.apps.qifgenerator.fx.modules.documents.files.FilesPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -14,13 +12,13 @@ public class DocumentsPane extends GridPane {
 
     public DocumentsPane(QifGeneratorPreferences preferences) {
 
-        FilesPane filesPane = new FilesPane(preferences);
-        filesPane.setMinHeight(250);
-        filesPane.setMaxHeight(250);
-        TitledPane filesPaneWrapper = QifGeneratorHelper.wrapInTitledPane("Files", filesPane);
+        DocumentFilesPane documentFilesPane = new DocumentFilesPane(preferences);
+        documentFilesPane.setMinHeight(250);
+        documentFilesPane.setMaxHeight(250);
+        TitledPane filesPaneWrapper = QifGeneratorHelper.wrapInTitledPane("Files", documentFilesPane);
 
-        ContentPane contentPane = new ContentPane(filesPane.selectedFile());
-        TitledPane contentPaneWrapper = QifGeneratorHelper.wrapInTitledPane("Content", contentPane);
+        DocumentContentPane documentContentPane = new DocumentContentPane(documentFilesPane.selectedFile());
+        TitledPane contentPaneWrapper = QifGeneratorHelper.wrapInTitledPane("Content", documentContentPane);
         GridPane.setHgrow(contentPaneWrapper, Priority.ALWAYS);
         GridPane.setVgrow(contentPaneWrapper, Priority.ALWAYS);
 
@@ -32,17 +30,17 @@ public class DocumentsPane extends GridPane {
 
             @Override
             public void scrollCurrentDocument(int direction) {
-                contentPane.scrollDocument(direction);
+                documentContentPane.scrollDocument(direction);
             }
 
             @Override
             public void changeDocument(int direction) {
-                filesPane.changeDocument(direction);
+                documentFilesPane.changeDocument(direction);
             }
 
             @Override
             public void changePage(int direction) {
-                contentPane.changePage(direction);
+                documentContentPane.changePage(direction);
             }
 
         });

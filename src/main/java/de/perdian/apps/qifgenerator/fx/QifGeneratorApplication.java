@@ -3,6 +3,7 @@ package de.perdian.apps.qifgenerator.fx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.perdian.apps.qifgenerator.fx.modules.MainPane;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -31,7 +32,7 @@ public class QifGeneratorApplication extends Application {
 
         log.info("Setting up model");
         QifGeneratorPreferences preferences = new QifGeneratorPreferences();
-        QifGeneratorPane mainPane = new QifGeneratorPane(preferences);
+        MainPane mainPane = new MainPane(preferences);
 
         log.info("Opening JavaFX stage");
         primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));

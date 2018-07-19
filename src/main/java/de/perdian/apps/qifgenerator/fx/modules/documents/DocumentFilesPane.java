@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.fx.modules.documents.files;
+package de.perdian.apps.qifgenerator.fx.modules.documents;
 
 import java.io.File;
 import java.util.Arrays;
@@ -38,14 +38,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
 
-public class FilesPane extends GridPane {
+class DocumentFilesPane extends GridPane {
 
-    private static final Logger log = LoggerFactory.getLogger(FilesPane.class);
+    private static final Logger log = LoggerFactory.getLogger(DocumentFilesPane.class);
 
     private ObjectProperty<File> selectedFileProperty = null;
     private TableView<File> files = null;
 
-    public FilesPane(QifGeneratorPreferences preferences) {
+    DocumentFilesPane(QifGeneratorPreferences preferences) {
 
         ObjectProperty<File> selectedFileProperty = new SimpleObjectProperty<>();
         StringProperty directoryValueProperty = preferences.getValueProperty("files.directory");
@@ -145,7 +145,7 @@ public class FilesPane extends GridPane {
 
     }
 
-    public void changeDocument(int direction) {
+    void changeDocument(int direction) {
         int maxIndex = this.getFiles().getItems().size();
         int currentIndex = this.getFiles().getSelectionModel().getSelectedIndex();
         int newIndex = currentIndex + direction;
