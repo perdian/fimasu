@@ -161,6 +161,7 @@ class QifGeneratorPreferencesHelper {
 
         private String wkn = null;
         private String isin = null;
+        private String currency = null;
         private String title = null;
         private Double value = null;
         private TransactionType type = null;
@@ -175,6 +176,7 @@ class QifGeneratorPreferencesHelper {
         private Double totalValue = null;
 
         TransactionBean(Transaction input) {
+            this.setCurrency(input.currencyProperty().getValue());
             this.setWkn(input.wknProperty().getValue());
             this.setIsin(input.isinProperty().getValue());
             this.setTitle(input.titleProperty().getValue());
@@ -183,6 +185,7 @@ class QifGeneratorPreferencesHelper {
 
         Transaction toTransaction() {
             Transaction output = new Transaction();
+            output.currencyProperty().setValue(StringUtils.defaultIfEmpty(this.getCurrency(), "EUR"));
             output.wknProperty().setValue(this.getWkn());
             output.isinProperty().setValue(this.getIsin());
             output.titleProperty().setValue(this.getTitle());
@@ -202,6 +205,13 @@ class QifGeneratorPreferencesHelper {
         }
         void setIsin(String isin) {
             this.isin = isin;
+        }
+
+        String getCurrency() {
+            return this.currency;
+        }
+        void setCurrency(String currency) {
+            this.currency = currency;
         }
 
         String getTitle() {

@@ -43,6 +43,8 @@ class TransactionPane extends VBox {
         wknField.setPrefWidth(80);
         TextField isinField = componentBuilder.createTextField(transaction.isinProperty());
         isinField.setPrefWidth(120);
+        TextField currencyField = componentBuilder.createTextField(transaction.currencyProperty());
+        currencyField.setPrefWidth(60);
         TextField titleField = componentBuilder.createTextField(transaction.titleProperty());
         GridPane.setHgrow(titleField, Priority.ALWAYS);
 
@@ -54,8 +56,10 @@ class TransactionPane extends VBox {
         topPane.add(wknField, 2, 1, 1, 1);
         topPane.add(componentBuilder.createLabel("ISIN"), 3, 0, 1, 1);
         topPane.add(isinField, 3, 1, 1, 1);
-        topPane.add(componentBuilder.createLabel("Title"), 4, 0, 1, 1);
-        topPane.add(titleField, 4, 1, 1, 1);
+        topPane.add(componentBuilder.createLabel("Currency"), 4, 0, 1, 1);
+        topPane.add(currencyField, 4, 1, 1, 1);
+        topPane.add(componentBuilder.createLabel("Title"), 5, 0, 1, 1);
+        topPane.add(titleField, 5, 1, 1, 1);
         topPane.setHgap(4);
         topPane.setVgap(2);
 

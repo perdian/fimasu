@@ -8,6 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.perdian.apps.qifgenerator.fx.model.Transaction;
 import de.perdian.apps.qifgenerator.fx.model.TransactionGroup;
 import de.perdian.apps.qifgenerator.fx.model.TransactionType;
@@ -36,7 +38,7 @@ public class QifContentGenerator {
         out.append("D").append(DATE_FORMATTER.format(Optional.ofNullable(transaction.bookingDateProperty().getValue()).orElseGet(LocalDate::now))).append("\n");
         out.append("V").append(DATE_FORMATTER.format(Optional.ofNullable(transaction.valutaDateProperty().getValue()).orElseGet(LocalDate::now))).append("\n");
         out.append("N").append(this.resolveType(transaction.typeProperty().getValue())).append("\n");
-        out.append("F").append("EUR").append("\n");
+        out.append("F").append(StringUtils.defaultIfEmpty(transaction.currencyProperty().getValue(), "EUR")).append("\n");
         out.append("G").append("1.000000").append("\n");
         out.append("Y").append(transaction.titleProperty().getValue()).append("\n");
         out.append("~").append(transaction.wknProperty().getValue()).append("\n");
