@@ -31,7 +31,7 @@ public class TransactionGroupPane extends GridPane {
         this.add(actionsTitledPane, 1, 1, 1, 1);
         this.setHgap(4);
         this.setVgap(4);
-        this.setPadding(new Insets(8, 4, 0, 4));
+        this.setPadding(new Insets(4, 0, 0, 0));
 
     }
 
