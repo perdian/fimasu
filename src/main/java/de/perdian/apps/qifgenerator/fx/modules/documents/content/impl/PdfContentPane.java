@@ -43,7 +43,7 @@ public class PdfContentPane extends BorderPane implements ContentDetailPane {
             properties.setBoolean(PropertiesManager.PROPERTY_SHOW_TOOLBAR_ROTATE, false);
             properties.setBoolean(PropertiesManager.PROPERTY_SHOW_TOOLBAR_TOOL, false);
             properties.setBoolean(PropertiesManager.PROPERTY_SHOW_TOOLBAR_UTILITY, false);
-            properties.setFloat(PropertiesManager.PROPERTY_DEFAULT_ZOOM_LEVEL, 1.2f);
+            properties.setFloat(PropertiesManager.PROPERTY_DEFAULT_ZOOM_LEVEL, 1.15f);
 
             SwingViewBuilder swingViewBuilder = new SwingViewBuilder(swingController, properties);
             javax.swing.JComponent viewerPanel = swingViewBuilder.buildViewerPanel();
@@ -81,13 +81,21 @@ public class PdfContentPane extends BorderPane implements ContentDetailPane {
     public void scrollDocument(int direction) {
         double vValueOld = this.getScrollPane().getVvalue();
         double vValueNew = vValueOld + (Math.signum(direction) * 0.2);
-        this.getScrollPane().setVvalue(vValueNew);
+        double vMax = this.getScrollPane().getVmax();
+        if (vValueNew < 0 || vValueNew > vMax) {
+            this.changePage(direction);
+        } else {
+            this.getScrollPane().setVvalue(vValueNew);
+        }
     }
 
     @Override
     public void changePage(int direction) {
-        this.getSwingController().showPage((int)(this.getSwingController().getCurrentPageNumber() + Math.signum(direction)));
-        this.getScrollPane().setVvalue(0);
+        int newPageIndex = (int)(this.getSwingController().getCurrentPageNumber() + Math.signum(direction));
+        if (newPageIndex >= 0 && newPageIndex < this.getSwingController().getDocument().getNumberOfPages()) {
+            this.getSwingController().showPage(newPageIndex);
+            this.getScrollPane().setVvalue(0);
+        }
     }
 
     private SwingController getSwingController() {

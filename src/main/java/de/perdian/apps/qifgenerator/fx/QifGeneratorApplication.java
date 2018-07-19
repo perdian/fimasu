@@ -41,7 +41,7 @@ public class QifGeneratorApplication extends Application {
         primaryStage.setMinHeight(600);
         primaryStage.setTitle("QifGenerator");
         primaryStage.setWidth(1600);
-        primaryStage.setHeight(Math.min(Screen.getPrimary().getBounds().getHeight() - 100, 1000));
+        primaryStage.setHeight(Math.min(Screen.getPrimary().getBounds().getHeight() - 150, 1100));
         primaryStage.show();
 
     }
