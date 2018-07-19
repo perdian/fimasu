@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.util.StringConverter;
+import javafx.util.converter.DefaultStringConverter;
 
 public class ComponentBuilder {
 
@@ -23,6 +24,10 @@ public class ComponentBuilder {
         Label label = new Label(text);
         label.setStyle("-fx-font-size: 90%");
         return label;
+    }
+
+    public TextField createTextField(Property<String> stringProperty) {
+        return this.createTextField(stringProperty, new DefaultStringConverter());
     }
 
     public <T> TextField createTextField(Property<T> typedProperty, StringConverter<T> converter) {

@@ -43,9 +43,9 @@ class TransactionGroupItemsPane extends BorderPane {
                 if (!event.getAddedSubList().isEmpty()) {
                     for (int i=0; i < event.getAddedSubList().size(); i++) {
                         Transaction newTransaction = event.getAddedSubList().get(i);
-                        TransactionPane newTransactionEditPane = new TransactionPane(newTransaction, transactions, componentBuilder);
+                        TransactionPane newTransactionPane = new TransactionPane(newTransaction, transactions, componentBuilder);
                         int targetIndex = transactions.indexOf(newTransaction);
-                        Platform.runLater(() -> transactionsBox.getChildren().add(targetIndex, newTransactionEditPane));
+                        Platform.runLater(() -> transactionsBox.getChildren().add(targetIndex, newTransactionPane));
                     }
                 }
             }
