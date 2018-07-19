@@ -6,11 +6,14 @@ import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.fx.support.components.converters.DoubleStringConverter;
 import de.perdian.apps.qifgenerator.fx.support.components.converters.LocalDateStringConverter;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -23,6 +26,7 @@ class TransactionPane extends VBox {
     TransactionPane(Transaction transaction, ObservableList<Transaction> transactions, ComponentBuilder parentComponentBuilder) {
 
         ComponentBuilder componentBuilder = new ComponentBuilder(parentComponentBuilder);
+        componentBuilder.addOnKeyPressedEventHandler(this::handleKeyPressedEvent);
 
         Button removeButton = new Button();
         removeButton.setFocusTraversable(false);
@@ -111,6 +115,12 @@ class TransactionPane extends VBox {
         this.setSpacing(8);
         this.setTransaction(transaction);
 
+    }
+
+    private void handleKeyPressedEvent(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            Event.fireEvent(event.getTarget(), new KeyEvent(event.getSource(), event.getTarget(), event.getEventType(), "", "\t", KeyCode.TAB, event.isShiftDown(), event.isControlDown(), event.isAltDown(), event.isMetaDown()));
+        }
     }
 
     private void handleMoveTransaction(Transaction transaction, ObservableList<Transaction> transactions, int direction) {
