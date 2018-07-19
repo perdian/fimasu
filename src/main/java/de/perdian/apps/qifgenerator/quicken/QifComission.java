@@ -5,7 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import de.perdian.apps.qifgenerator.fxnew.model.Transaction;
+import de.perdian.apps.qifgenerator.fx.model.Transaction;
 
 class QifComission {
 

@@ -3,8 +3,6 @@ package de.perdian.apps.qifgenerator.fx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.qifgenerator.model.QifGeneratorModel;
-import de.perdian.apps.qifgenerator.model.QifGeneratorModelHelper;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -32,18 +30,18 @@ public class QifGeneratorApplication extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         log.info("Setting up model");
-        QifGeneratorModel model = QifGeneratorModelHelper.createStockModel();
-        QifGeneratorModelPane mainPane = new QifGeneratorModelPane(model);
+        QifGeneratorPreferences preferences = new QifGeneratorPreferences();
+        QifGeneratorPane mainPane = new QifGeneratorPane(preferences);
 
         log.info("Opening JavaFX stage");
         primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.setOnCloseRequest(event -> System.exit(0));
-        primaryStage.setMinWidth(640);
-        primaryStage.setMinHeight(480);
+        primaryStage.setMinWidth(800);
+        primaryStage.setMinHeight(600);
         primaryStage.setTitle("QifGenerator");
-        primaryStage.setWidth(900);
-        primaryStage.setHeight(Math.min(Screen.getPrimary().getBounds().getHeight() - 100, 900));
+        primaryStage.setWidth(1600);
+        primaryStage.setHeight(Math.min(Screen.getPrimary().getBounds().getHeight() - 100, 1000));
         primaryStage.show();
 
     }

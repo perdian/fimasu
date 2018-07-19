@@ -8,9 +8,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Optional;
 
-import de.perdian.apps.qifgenerator.fxnew.model.Transaction;
-import de.perdian.apps.qifgenerator.fxnew.model.TransactionGroup;
-import de.perdian.apps.qifgenerator.fxnew.model.TransactionType;
+import de.perdian.apps.qifgenerator.fx.model.Transaction;
+import de.perdian.apps.qifgenerator.fx.model.TransactionGroup;
+import de.perdian.apps.qifgenerator.fx.model.TransactionType;
 
 public class QifContentGenerator {
 
