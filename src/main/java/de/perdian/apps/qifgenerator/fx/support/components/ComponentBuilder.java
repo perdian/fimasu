@@ -1,5 +1,7 @@
 package de.perdian.apps.qifgenerator.fx.support.components;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import javafx.application.Platform;
@@ -18,7 +20,14 @@ import javafx.util.converter.DefaultStringConverter;
 
 public class ComponentBuilder {
 
-    private EventHandler<KeyEvent> onKeyPressedEventHandler = null;
+    private List<EventHandler<KeyEvent>> onKeyPressedEventHandlers = new ArrayList<>();
+
+    public ComponentBuilder() {
+    }
+
+    public ComponentBuilder(ComponentBuilder parent) {
+        this.getOnKeyPressedEventHandlers().addAll(parent.getOnKeyPressedEventHandlers());
+    }
 
     public Label createLabel(String text) {
         Label label = new Label(text);
@@ -44,9 +53,7 @@ public class ComponentBuilder {
         textField.setMinHeight(Node.BASELINE_OFFSET_SAME_AS_HEIGHT);
         textField.textProperty().bindBidirectional(stringProperty);
         textField.focusedProperty().addListener((o, oldValue, newValue) -> { if (newValue.booleanValue()) { Platform.runLater(() -> textField.selectAll()); } });
-        if (this.getOnKeyPressedEventHandler() != null) {
-            textField.setOnKeyPressed(this.getOnKeyPressedEventHandler());
-        }
+        this.getOnKeyPressedEventHandlers().forEach(eventHandler -> textField.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler));
         return textField;
 
     }
@@ -55,17 +62,18 @@ public class ComponentBuilder {
         ObservableList<T> valuesList = FXCollections.observableArrayList(values);
         ComboBox<T> comboBox = new ComboBox<>(valuesList);
         comboBox.valueProperty().bindBidirectional(property);
-        if (this.getOnKeyPressedEventHandler() != null) {
-            comboBox.setOnKeyPressed(this.getOnKeyPressedEventHandler());
-        }
+        this.getOnKeyPressedEventHandlers().forEach(eventHandler -> comboBox.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler));
         return comboBox;
     }
 
-    public EventHandler<KeyEvent> getOnKeyPressedEventHandler() {
-        return this.onKeyPressedEventHandler;
+    public void addOnKeyPressedEventHandler(EventHandler<KeyEvent> eventHandler) {
+        this.getOnKeyPressedEventHandlers().add(eventHandler);
     }
-    public void setOnKeyPressedEventHandler(EventHandler<KeyEvent> onKeyPressedEventHandler) {
-        this.onKeyPressedEventHandler = onKeyPressedEventHandler;
+    public List<EventHandler<KeyEvent>> getOnKeyPressedEventHandlers() {
+        return this.onKeyPressedEventHandlers;
+    }
+    public void setOnKeyPressedEventHandlers(List<EventHandler<KeyEvent>> onKeyPressedEventHandlers) {
+        this.onKeyPressedEventHandlers = onKeyPressedEventHandlers;
     }
 
 }
