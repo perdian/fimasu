@@ -60,6 +60,7 @@ public class QifGeneratorPreferences {
                 }
             }
         });
+        transactionGroups.addAll(QifGeneratorPreferencesHelper.readTransactionGroups(transactionGroupsFile));
         if (transactionGroups.isEmpty()) {
             transactionGroups.add(new TransactionGroup("Default"));
         }
