@@ -175,20 +175,10 @@ class QifGeneratorPreferencesHelper {
         private Double totalValue = null;
 
         TransactionBean(Transaction input) {
-            this.setBookingDate(input.bookingDateProperty().getValue());
-            this.setCharges(input.chargesProperty().getValue());
-            this.setFinanceTax(input.financeTaxProperty().getValue());
-            this.setIsin(input.isinProperty().getValue());
-            this.setMarketPrice(input.marketPriceProperty().getValue());
-            this.setMarketValue(input.marketValueProperty().getValue());
-            this.setNumberOfShares(input.numberOfSharesProperty().getValue());
-            this.setSolidarityTax(input.solidarityTaxProperty().getValue());
-            this.setTitle(input.titleProperty().getValue());
-            this.setTotalValue(input.totalValueProperty().getValue());
-            this.setType(input.typeProperty().getValue());
-            this.setValue(input.valueProperty().getValue());
-            this.setValutaDate(input.valutaDateProperty().getValue());
             this.setWkn(input.wknProperty().getValue());
+            this.setIsin(input.isinProperty().getValue());
+            this.setTitle(input.titleProperty().getValue());
+            this.setType(input.typeProperty().getValue());
         }
 
         Transaction toTransaction() {
@@ -196,17 +186,7 @@ class QifGeneratorPreferencesHelper {
             output.wknProperty().setValue(this.getWkn());
             output.isinProperty().setValue(this.getIsin());
             output.titleProperty().setValue(this.getTitle());
-            output.valueProperty().setValue(this.getValue());
             output.typeProperty().setValue(this.getType());
-            output.bookingDateProperty().setValue(this.getBookingDate());
-            output.valutaDateProperty().setValue(this.getValutaDate());
-            output.marketPriceProperty().setValue(this.getMarketPrice());
-            output.numberOfSharesProperty().setValue(this.getNumberOfShares());
-            output.marketValueProperty().setValue(this.getMarketValue());
-            output.chargesProperty().setValue(this.getCharges());
-            output.financeTaxProperty().setValue(this.getFinanceTax());
-            output.solidarityTaxProperty().setValue(this.getSolidarityTax());
-            output.totalValueProperty().setValue(this.getTotalValue());
             return output;
         }
 

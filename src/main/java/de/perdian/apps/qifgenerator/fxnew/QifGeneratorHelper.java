@@ -14,6 +14,7 @@ public class QifGeneratorHelper {
 
         TitledPane titledPane = new TitledPane(title, titledPaneContent);
         titledPane.setCollapsible(false);
+        titledPane.setMaxHeight(Double.MAX_VALUE);
         return titledPane;
 
     }

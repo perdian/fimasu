@@ -1,10 +1,10 @@
 package de.perdian.apps.qifgenerator.fx;
 
-import de.perdian.apps.qifgenerator.fx.actions.ExportEventHandler;
-import de.perdian.apps.qifgenerator.fx.support.ComponentBuilder;
-import de.perdian.apps.qifgenerator.fx.support.converters.FileStringConverter;
 import de.perdian.apps.qifgenerator.fxnew.model.Transaction;
 import de.perdian.apps.qifgenerator.fxnew.model.TransactionGroup;
+import de.perdian.apps.qifgenerator.fxnew.modules.transactions.TransactionGroupExportEventHandler;
+import de.perdian.apps.qifgenerator.fxnew.support.components.ComponentBuilder;
+import de.perdian.apps.qifgenerator.fxnew.support.components.converters.FileStringConverter;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
@@ -68,7 +68,7 @@ class TransactionGroupPane extends GridPane {
         addButton.setFocusTraversable(false);
         Button exportButton = new Button("Export");
         exportButton.setGraphic(new ImageView(new Image(TransactionGroupPane.class.getClassLoader().getResourceAsStream("icons/16/save.png"))));
-        exportButton.setOnAction(new ExportEventHandler(transactionGroup));
+        exportButton.setOnAction(new TransactionGroupExportEventHandler(transactionGroup));
         exportButton.setMaxWidth(Double.MAX_VALUE);
         exportButton.setFocusTraversable(false);
         VBox transactionsButtonBox = new VBox(addButton, exportButton);

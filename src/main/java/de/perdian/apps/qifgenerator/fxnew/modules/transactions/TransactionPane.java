@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.fx;
+package de.perdian.apps.qifgenerator.fxnew.modules.transactions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,6 @@ import de.perdian.apps.qifgenerator.fxnew.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.fxnew.support.components.converters.DoubleStringConverter;
 import de.perdian.apps.qifgenerator.fxnew.support.components.converters.LocalDateStringConverter;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -31,15 +29,12 @@ class TransactionPane extends VBox {
     private List<Region> allControls = new ArrayList<>();
     private List<Region> highPriorityControls = new ArrayList<>();
 
-    TransactionPane(Transaction transaction, ObservableList<Transaction> transactions, EventHandler<ActionEvent> deleteHandler) {
-
-        ComponentBuilder componentBuilder = new ComponentBuilder();
-        componentBuilder.setOnKeyPressedEventHandler(this::handleOnKeyPressed);
+    TransactionPane(Transaction transaction, ObservableList<Transaction> transactions, ComponentBuilder componentBuilder) {
 
         Button removeButton = new Button();
         removeButton.setFocusTraversable(false);
         removeButton.setGraphic(new ImageView(new Image(TransactionPane.class.getClassLoader().getResourceAsStream("icons/16/delete.png"))));
-        removeButton.setOnAction(deleteHandler);
+        removeButton.setOnAction(event -> transactions.remove(transaction));
         Button upButton = new Button();
         upButton.setFocusTraversable(false);
         upButton.setGraphic(new ImageView(new Image(TransactionPane.class.getClassLoader().getResourceAsStream("icons/16/go-up.png"))));

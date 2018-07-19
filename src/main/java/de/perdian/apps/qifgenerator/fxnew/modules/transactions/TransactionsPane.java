@@ -14,7 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -48,11 +47,7 @@ public class TransactionsPane extends BorderPane {
             }
         });
 
-        TitledPane titledPane = new TitledPane("Transactions", tabPane);
-        titledPane.setCollapsible(false);
-        titledPane.setMaxWidth(Double.MAX_VALUE);
-        titledPane.setMaxHeight(Double.MAX_VALUE);
-        this.setCenter(titledPane);
+        this.setCenter(tabPane);
 
     }
 

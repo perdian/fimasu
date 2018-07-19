@@ -19,7 +19,6 @@ public class DocumentsPane extends GridPane {
 
         ContentPane contentPane = new ContentPane(filesPane.selectedFile());
         TitledPane contentPaneWrapper = QifGeneratorHelper.wrapInTitledPane("Content", contentPane);
-        contentPaneWrapper.setMaxHeight(Double.MAX_VALUE);
         GridPane.setHgrow(contentPaneWrapper, Priority.ALWAYS);
         GridPane.setVgrow(contentPaneWrapper, Priority.ALWAYS);
 

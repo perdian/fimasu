@@ -19,7 +19,6 @@ public class Transaction {
     private final StringProperty wkn = new SimpleStringProperty();
     private final StringProperty isin = new SimpleStringProperty();
     private final StringProperty title = new SimpleStringProperty();
-    private final DoubleProperty value = new SimpleDoubleProperty();
     private final Property<TransactionType> type = new SimpleObjectProperty<>(TransactionType.BUY);
     private final Property<LocalDate> bookingDate = new SimpleObjectProperty<>();
     private final Property<LocalDate> valutaDate = new SimpleObjectProperty<>();
@@ -37,7 +36,6 @@ public class Transaction {
         this.chargesProperty().addListener(shareChangeListener);
         this.isinProperty().addListener(shareChangeListener);
         this.titleProperty().addListener(shareChangeListener);
-        this.valueProperty().addListener(shareChangeListener);
         this.wknProperty().addListener(shareChangeListener);
         this.numberOfSharesProperty().addListener((o, oldValue, newValue) -> this.recomputeMarketValue(newValue, this.marketPriceProperty().getValue()));
         this.marketPriceProperty().addListener((o, oldValue, newValue) -> this.recomputeMarketValue(this.numberOfSharesProperty().getValue(), newValue));
@@ -79,10 +77,6 @@ public class Transaction {
 
     public StringProperty titleProperty() {
         return this.title;
-    }
-
-    public DoubleProperty valueProperty() {
-        return this.value;
     }
 
     public Property<TransactionType> typeProperty() {

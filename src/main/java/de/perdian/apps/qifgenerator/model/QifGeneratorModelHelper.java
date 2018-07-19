@@ -160,13 +160,11 @@ public class QifGeneratorModelHelper {
         private String wkn = null;
         private String isin = null;
         private String title = null;
-        private Double value = null;
         private Double charges = null;
 
         TransactionBean(Transaction transaction) {
             this.setIsin(transaction.isinProperty().getValue());
             this.setTitle(transaction.titleProperty().getValue());
-            this.setValue(transaction.valueProperty().getValue());
             this.setWkn(transaction.wknProperty().getValue());
             this.setCharges(transaction.chargesProperty().getValue());
         }
@@ -175,7 +173,6 @@ public class QifGeneratorModelHelper {
             Transaction transaction = new Transaction();
             transaction.isinProperty().setValue(this.getIsin());
             transaction.titleProperty().setValue(this.getTitle());
-            transaction.valueProperty().setValue(this.getValue());
             transaction.wknProperty().setValue(this.getWkn());
             transaction.chargesProperty().setValue(this.getCharges());
             return transaction;
@@ -200,13 +197,6 @@ public class QifGeneratorModelHelper {
         }
         void setTitle(String title) {
             this.title = title;
-        }
-
-        Double getValue() {
-            return this.value;
-        }
-        void setValue(Double value) {
-            this.value = value;
         }
 
         Double getCharges() {

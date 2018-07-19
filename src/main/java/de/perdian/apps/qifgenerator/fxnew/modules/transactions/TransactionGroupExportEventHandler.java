@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.fx.actions;
+package de.perdian.apps.qifgenerator.fxnew.modules.transactions;
 
 import java.io.File;
 
@@ -21,12 +21,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 
-public class ExportEventHandler implements EventHandler<ActionEvent> {
+public class TransactionGroupExportEventHandler implements EventHandler<ActionEvent> {
 
-    private static final Logger log = LoggerFactory.getLogger(ExportEventHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(TransactionGroupExportEventHandler.class);
     private TransactionGroup transactionGroup = null;
 
-    public ExportEventHandler(TransactionGroup transactionGroup) {
+    public TransactionGroupExportEventHandler(TransactionGroup transactionGroup) {
         this.setTransactionGroup(transactionGroup);
     }
 
