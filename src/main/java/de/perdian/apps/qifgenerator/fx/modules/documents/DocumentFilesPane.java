@@ -43,7 +43,7 @@ class DocumentFilesPane extends GridPane {
     private static final Logger log = LoggerFactory.getLogger(DocumentFilesPane.class);
 
     private ObjectProperty<File> selectedFileProperty = null;
-    private TableView<File> files = null;
+    private ObservableList<File> files = null;
 
     DocumentFilesPane(QifGeneratorPreferences preferences) {
 
@@ -74,11 +74,12 @@ class DocumentFilesPane extends GridPane {
         ObservableList<File> files = FXCollections.observableArrayList();
         this.loadFiles(directoryProperty.getValue(), files);
         directoryProperty.addListener((o, oldValue, newValue) -> this.loadFiles(newValue, files));
+        this.setFiles(files);
 
         TableColumn<File, Boolean> typeColumn = new TableColumn<>("");
         typeColumn.setCellValueFactory(in -> new SimpleBooleanProperty(in.getValue().isDirectory()));
         typeColumn.setCellFactory(item -> {
-            TableCell<File, Boolean> tableCell = new TableCell<File, Boolean>() {
+            TableCell<File, Boolean> tableCell = new TableCell<>() {
                 @Override protected void updateItem(Boolean item, boolean empty) {
                     if (empty) {
                         this.setGraphic(null);
@@ -121,7 +122,12 @@ class DocumentFilesPane extends GridPane {
                 }
             }
         });
-        this.setFiles(filesTableView);
+        selectedFileProperty.addListener((o, oldValue, newValue) -> {
+            File selectedFile = filesTableView.getSelectionModel().getSelectedItem();
+            if (!Objects.equals(oldValue, newValue) && !Objects.equals(newValue, selectedFile)) {
+                filesTableView.getSelectionModel().select(newValue);
+            }
+        });
 
         Button selectDirectoryButton = new Button(null, new ImageView(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/folder-open.png"))));
         selectDirectoryButton.setTooltip(new Tooltip("Select directory"));
@@ -143,15 +149,6 @@ class DocumentFilesPane extends GridPane {
         this.add(filesLabel, 0, 2, 4, 1);
         this.add(filesTableView, 0, 3, 4, 1);
 
-    }
-
-    void changeDocument(int direction) {
-        int maxIndex = this.getFiles().getItems().size();
-        int currentIndex = this.getFiles().getSelectionModel().getSelectedIndex();
-        int newIndex = currentIndex + direction;
-        if (newIndex >= 0 && newIndex < maxIndex) {
-            this.getFiles().getSelectionModel().select(newIndex);
-        }
     }
 
     private void loadFiles(File directory, ObservableList<File> targetList) {
@@ -209,20 +206,17 @@ class DocumentFilesPane extends GridPane {
         }
     }
 
-    public ObjectProperty<File> selectedFile() {
-        return this.getSelectedFileProperty();
-    }
-    private ObjectProperty<File> getSelectedFileProperty() {
+    ObjectProperty<File> getSelectedFileProperty() {
         return this.selectedFileProperty;
     }
-    private void setSelectedFileProperty(ObjectProperty<File> selectedFileProperty) {
+    void setSelectedFileProperty(ObjectProperty<File> selectedFileProperty) {
         this.selectedFileProperty = selectedFileProperty;
     }
 
-    private TableView<File> getFiles() {
+    ObservableList<File> getFiles() {
         return this.files;
     }
-    private void setFiles(TableView<File> files) {
+    void setFiles(ObservableList<File> files) {
         this.files = files;
     }
 

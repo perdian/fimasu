@@ -15,18 +15,20 @@ class MainPaneKeyPressedEventHandler implements EventHandler<KeyEvent> {
 
     @Override
     public void handle(KeyEvent event) {
-        if (event.getCode() == KeyCode.PAGE_UP && event.isShiftDown()) {
-            this.getDocumentsController().changePage(-1);
-        } else if (event.getCode() == KeyCode.PAGE_UP && event.isMetaDown()) {
-            this.getDocumentsController().changeDocument(-1);
-        } else if (event.getCode() == KeyCode.PAGE_UP) {
-            this.getDocumentsController().scrollCurrentDocument(-1);
-        } else if (event.getCode() == KeyCode.PAGE_DOWN && event.isShiftDown()) {
-            this.getDocumentsController().changePage(1);
-        } else if (event.getCode() == KeyCode.PAGE_DOWN && event.isMetaDown()) {
-            this.getDocumentsController().changeDocument(1);
+        if (event.getCode() == KeyCode.PAGE_UP) {
+            this.handleKeyEventPage(event, -1);
         } else if (event.getCode() == KeyCode.PAGE_DOWN) {
-            this.getDocumentsController().scrollCurrentDocument(1);
+            this.handleKeyEventPage(event, 1);
+        }
+    }
+
+    private void handleKeyEventPage(KeyEvent event, int direction) {
+        if (event.isMetaDown()) {
+            this.getDocumentsController().changeDocument(direction);
+        } else if (event.isShiftDown()) {
+            this.getDocumentsController().changePage(direction);
+        } else {
+            this.getDocumentsController().scrollDocument(direction);
         }
     }
 

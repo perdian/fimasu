@@ -17,8 +17,8 @@ public class DocumentsPane extends GridPane {
         documentFilesPane.setMaxHeight(250);
         TitledPane filesPaneWrapper = QifGeneratorHelper.wrapInTitledPane("Files", documentFilesPane);
 
-        DocumentContentPane documentContentPane = new DocumentContentPane(documentFilesPane.selectedFile());
-        TitledPane contentPaneWrapper = QifGeneratorHelper.wrapInTitledPane("Content", documentContentPane);
+        DocumentContentPaneWrapper documentContentPaneWrapper = new DocumentContentPaneWrapper(documentFilesPane.getSelectedFileProperty());
+        TitledPane contentPaneWrapper = QifGeneratorHelper.wrapInTitledPane("Content", documentContentPaneWrapper);
         GridPane.setHgrow(contentPaneWrapper, Priority.ALWAYS);
         GridPane.setVgrow(contentPaneWrapper, Priority.ALWAYS);
 
@@ -26,24 +26,12 @@ public class DocumentsPane extends GridPane {
         this.add(contentPaneWrapper, 0, 1, 1, 1);
         this.setHgap(4);
         this.setVgap(4);
-        this.setDocumentsController(new DocumentsController() {
 
-            @Override
-            public void scrollCurrentDocument(int direction) {
-                documentContentPane.scrollDocument(direction);
-            }
-
-            @Override
-            public void changeDocument(int direction) {
-                documentFilesPane.changeDocument(direction);
-            }
-
-            @Override
-            public void changePage(int direction) {
-                documentContentPane.changePage(direction);
-            }
-
-        });
+        DocumentsController documentsController = new DocumentsController();
+        documentsController.setAvailableFiles(documentFilesPane.getFiles());
+        documentsController.setSelectedFile(documentFilesPane.getSelectedFileProperty());
+        documentsController.setDocumentContentPane(documentContentPaneWrapper.getDocumentContentPaneProperty());
+        this.setDocumentsController(documentsController);
 
     }
 

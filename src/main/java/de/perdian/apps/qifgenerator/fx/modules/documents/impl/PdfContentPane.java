@@ -9,7 +9,7 @@ import org.icepdf.ri.util.PropertiesManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.qifgenerator.fx.modules.documents.DocumentContentDetailPane;
+import de.perdian.apps.qifgenerator.fx.modules.documents.DocumentContentPane;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.control.Label;
@@ -17,14 +17,14 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 
-public class PdfContentDetailPane extends BorderPane implements DocumentContentDetailPane {
+public class PdfContentPane extends BorderPane implements DocumentContentPane {
 
-    private static final Logger log = LoggerFactory.getLogger(PdfContentDetailPane.class);
+    private static final Logger log = LoggerFactory.getLogger(PdfContentPane.class);
 
     private SwingController swingController = null;
     private ScrollPane scrollPane = null;
 
-    public PdfContentDetailPane(File file) throws Exception {
+    public PdfContentPane(File file) throws Exception {
 
         this.setCenter(new Label("Loading PDF document..."));
 
@@ -78,23 +78,31 @@ public class PdfContentDetailPane extends BorderPane implements DocumentContentD
     }
 
     @Override
-    public void scrollDocument(int direction) {
+    public boolean scrollDocument(int direction) {
         double vValueOld = this.getScrollPane().getVvalue();
-        double vValueNew = vValueOld + (Math.signum(direction) * 0.2);
-        double vMax = this.getScrollPane().getVmax();
-        if (vValueNew < 0 || vValueNew > vMax) {
-            this.changePage(direction);
+        if (vValueOld == 0 && direction < 0) {
+            return false;
         } else {
-            this.getScrollPane().setVvalue(vValueNew);
+            double vValueNew = vValueOld + (Math.signum(direction) * 0.2);
+            double vMax = this.getScrollPane().getVmax();
+            if (vValueNew < 0 || vValueNew > vMax) {
+                return false;
+            } else {
+                this.getScrollPane().setVvalue(vValueNew);
+                return true;
+            }
         }
     }
 
     @Override
-    public void changePage(int direction) {
+    public boolean changePage(int direction) {
         int newPageIndex = (int)(this.getSwingController().getCurrentPageNumber() + Math.signum(direction));
         if (newPageIndex >= 0 && newPageIndex < this.getSwingController().getDocument().getNumberOfPages()) {
             this.getSwingController().showPage(newPageIndex);
             this.getScrollPane().setVvalue(0);
+            return true;
+        } else {
+            return false;
         }
     }
 
