@@ -2,7 +2,7 @@
 
 Quick solution to allow the generation of a QIF file ([Quicken Interchange Format](https://de.wikipedia.org/wiki/Quicken_Interchange_Format)).
 
-![Main Window](docs/screenshots/main-window.png)
+![Main Window](docs/screenshots/main-window-20180720.png)
 
 ## Building the application
 
