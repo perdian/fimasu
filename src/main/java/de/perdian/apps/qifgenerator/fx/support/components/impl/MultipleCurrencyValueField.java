@@ -95,23 +95,11 @@ public class MultipleCurrencyValueField extends GridPane {
     }
 
     private void recomputeValue(DoubleProperty targetProperty, Double newValue, String selectedCurrency, String sourceCurrency, Double conversionRate) {
-
         double useConversionRate = 1;
         if (Objects.equals(selectedCurrency, sourceCurrency)) {
             useConversionRate = conversionRate.doubleValue();
         }
         targetProperty.setValue(newValue.doubleValue() / useConversionRate);
-
-        System.err.println(""
-            + " NEW:        " + newValue + "\n"
-            + " SEL_CUR:    " + selectedCurrency + "\n"
-            + " SOURCE_CUR: " + sourceCurrency + "\n"
-            + " CONV_IN:    " + conversionRate + "\n"
-            + " CONV_USE:   " + useConversionRate + "\n"
-            + " VALUE:      " + (newValue.doubleValue() / useConversionRate) + "\n"
-        );
-
-
     }
 
 }
