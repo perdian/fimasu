@@ -48,6 +48,7 @@ public class MultipleCurrencyValueField extends GridPane {
 
         ComboBox<String> availableCurrenciesBox = new ComboBox<>(availableCurrencies);
         availableCurrenciesBox.setPrefWidth(80);
+        availableCurrenciesBox.setDisable(availableCurrencies.size() <= 1);
         availableCurrenciesBox.setValue(selectedCurrencyProperty.getValue());
         availableCurrenciesBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ENTER) {
