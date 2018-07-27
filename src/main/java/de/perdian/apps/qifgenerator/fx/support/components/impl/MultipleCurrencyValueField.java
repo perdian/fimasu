@@ -12,8 +12,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 
 public class MultipleCurrencyValueField extends GridPane {
@@ -46,6 +49,11 @@ public class MultipleCurrencyValueField extends GridPane {
         ComboBox<String> availableCurrenciesBox = new ComboBox<>(availableCurrencies);
         availableCurrenciesBox.setPrefWidth(80);
         availableCurrenciesBox.setValue(selectedCurrencyProperty.getValue());
+        availableCurrenciesBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                Event.fireEvent(event.getTarget(), new KeyEvent(event.getSource(), event.getTarget(), event.getEventType(), "", "\t", KeyCode.TAB, event.isShiftDown(), event.isControlDown(), event.isAltDown(), event.isMetaDown()));
+            }
+        });
         selectedCurrencyProperty.bind(availableCurrenciesBox.valueProperty());
 
         targetCurrencyProperty.addListener((o, oldValue, newValue) -> {

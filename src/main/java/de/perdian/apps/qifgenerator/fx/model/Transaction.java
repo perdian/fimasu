@@ -1,5 +1,6 @@
 package de.perdian.apps.qifgenerator.fx.model;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,8 @@ public class Transaction {
         this.financeTaxProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.bookingValueProperty().getValue(), this.chargesProperty().getValue(), newValue, this.solidarityTaxProperty().getValue()));
         this.solidarityTaxProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.bookingValueProperty().getValue(), this.chargesProperty().getValue(), this.financeTaxProperty().getValue(), newValue));
         this.typeProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.bookingValueProperty().getValue(), this.chargesProperty().getValue(), this.financeTaxProperty().getValue(), this.solidarityTaxProperty().getValue()));
+        this.bookingDateProperty().addListener((o, oldValue, newValue) -> this.recomputeValutaDate(newValue));
+
     }
 
     private void recomputeMarketValue(Number numberOfShares, Number marketPrice) {
@@ -104,6 +107,18 @@ public class Transaction {
 
     private void recomputeCurrency(String currencyValue, String bookingCurrencyValue) {
         this.bookingCurrencyDifferentProperty().setValue(!Objects.equals(currencyValue, bookingCurrencyValue));
+    }
+
+    private void recomputeValutaDate(LocalDate bookingDate) {
+        if (bookingDate == null) {
+            this.valutaDateProperty().setValue(null);
+        } else if (this.valutaDateProperty().getValue() == null) {
+            LocalDate nextValutaDate = bookingDate.plusDays(2);
+            while (nextValutaDate.getDayOfWeek() == DayOfWeek.SATURDAY || nextValutaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                nextValutaDate = nextValutaDate.plusDays(1);
+            }
+            this.valutaDateProperty().setValue(nextValutaDate);
+        }
     }
 
     public StringProperty wknProperty() {

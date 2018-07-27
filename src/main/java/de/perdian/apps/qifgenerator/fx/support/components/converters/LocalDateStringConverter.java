@@ -14,10 +14,10 @@ public class LocalDateStringConverter extends StringConverter<LocalDate> {
 
     private static final Logger log = LoggerFactory.getLogger(LocalDateStringConverter.class);
 
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     private final List<DateTimeFormatter> dateTimeParsers = Arrays.asList(
-        DateTimeFormatter.ofPattern("yyyy-MM-dd"),
         DateTimeFormatter.ofPattern("yyyyMMdd"),
+        DateTimeFormatter.ofPattern("yyyy-MM-dd"),
         DateTimeFormatter.ofPattern("dd.MM.yyyy"),
         DateTimeFormatter.ofPattern("dd-MM-yyyy")
     );
