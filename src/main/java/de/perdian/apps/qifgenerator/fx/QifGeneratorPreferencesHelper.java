@@ -10,7 +10,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -159,38 +158,38 @@ class QifGeneratorPreferencesHelper {
 
         static final long serialVersionUID = 1L;
 
+        private TransactionType type = null;
         private String wkn = null;
         private String isin = null;
-        private String currency = null;
         private String title = null;
-        private Double value = null;
-        private TransactionType type = null;
-        private LocalDate bookingDate = null;
-        private LocalDate valutaDate = null;
-        private Double marketPrice = null;
-        private Double numberOfShares = null;
-        private Double marketValue = null;
-        private Double charges = null;
-        private Double financeTax = null;
-        private Double solidarityTax = null;
-        private Double totalValue = null;
+        private String marketCurrency = null;
+        private String bookingCurrency = null;
 
         TransactionBean(Transaction input) {
-            this.setCurrency(input.currencyProperty().getValue());
+            this.setType(input.typeProperty().getValue());
             this.setWkn(input.wknProperty().getValue());
             this.setIsin(input.isinProperty().getValue());
             this.setTitle(input.titleProperty().getValue());
-            this.setType(input.typeProperty().getValue());
+            this.setMarketCurrency(input.marketCurrencyProperty().getValue());
+            this.setBookingCurrency(input.bookingCurrencyProperty().getValue());
         }
 
         Transaction toTransaction() {
             Transaction output = new Transaction();
-            output.currencyProperty().setValue(StringUtils.defaultIfEmpty(this.getCurrency(), "EUR"));
+            output.typeProperty().setValue(this.getType());
+            output.marketCurrencyProperty().setValue(StringUtils.defaultIfEmpty(this.getMarketCurrency(), "EUR"));
+            output.bookingCurrencyProperty().setValue(StringUtils.defaultIfEmpty(this.getBookingCurrency(), "EUR"));
             output.wknProperty().setValue(this.getWkn());
             output.isinProperty().setValue(this.getIsin());
             output.titleProperty().setValue(this.getTitle());
-            output.typeProperty().setValue(this.getType());
             return output;
+        }
+
+        TransactionType getType() {
+            return this.type;
+        }
+        void setType(TransactionType type) {
+            this.type = type;
         }
 
         String getWkn() {
@@ -207,13 +206,6 @@ class QifGeneratorPreferencesHelper {
             this.isin = isin;
         }
 
-        String getCurrency() {
-            return this.currency;
-        }
-        void setCurrency(String currency) {
-            this.currency = currency;
-        }
-
         String getTitle() {
             return this.title;
         }
@@ -221,81 +213,18 @@ class QifGeneratorPreferencesHelper {
             this.title = title;
         }
 
-        Double getValue() {
-            return this.value;
+        String getMarketCurrency() {
+            return this.marketCurrency;
         }
-        void setValue(Double value) {
-            this.value = value;
-        }
-
-        TransactionType getType() {
-            return this.type;
-        }
-        void setType(TransactionType type) {
-            this.type = type;
+        void setMarketCurrency(String marketCurrency) {
+            this.marketCurrency = marketCurrency;
         }
 
-        LocalDate getBookingDate() {
-            return this.bookingDate;
+        String getBookingCurrency() {
+            return this.bookingCurrency;
         }
-        void setBookingDate(LocalDate bookingDate) {
-            this.bookingDate = bookingDate;
-        }
-
-        LocalDate getValutaDate() {
-            return this.valutaDate;
-        }
-        void setValutaDate(LocalDate valutaDate) {
-            this.valutaDate = valutaDate;
-        }
-
-        Double getMarketPrice() {
-            return this.marketPrice;
-        }
-        void setMarketPrice(Double marketPrice) {
-            this.marketPrice = marketPrice;
-        }
-
-        Double getNumberOfShares() {
-            return this.numberOfShares;
-        }
-        void setNumberOfShares(Double numberOfShares) {
-            this.numberOfShares = numberOfShares;
-        }
-
-        Double getMarketValue() {
-            return this.marketValue;
-        }
-        void setMarketValue(Double marketValue) {
-            this.marketValue = marketValue;
-        }
-
-        Double getCharges() {
-            return this.charges;
-        }
-        void setCharges(Double charges) {
-            this.charges = charges;
-        }
-
-        Double getFinanceTax() {
-            return this.financeTax;
-        }
-        void setFinanceTax(Double financeTax) {
-            this.financeTax = financeTax;
-        }
-
-        Double getSolidarityTax() {
-            return this.solidarityTax;
-        }
-        void setSolidarityTax(Double solidarityTax) {
-            this.solidarityTax = solidarityTax;
-        }
-
-        Double getTotalValue() {
-            return this.totalValue;
-        }
-        void setTotalValue(Double totalValue) {
-            this.totalValue = totalValue;
+        void setBookingCurrency(String bookingCurrency) {
+            this.bookingCurrency = bookingCurrency;
         }
 
     }
