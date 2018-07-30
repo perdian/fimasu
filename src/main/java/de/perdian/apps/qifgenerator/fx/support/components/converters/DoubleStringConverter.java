@@ -32,7 +32,7 @@ public class DoubleStringConverter extends StringConverter<Number> {
             try {
                 return this.getNumberFormat().parse(string).doubleValue();
             } catch (ParseException e) {
-                log.debug("Invalid string value to convert into Double: {}", string, e);
+                log.trace("Invalid string value to convert into Double: {}", string, e);
             }
         }
         return null;
