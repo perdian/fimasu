@@ -6,6 +6,7 @@ import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +27,7 @@ public class QifContentGenerator {
         out.append("!Type:Invst\n");
 
         transactionGroup.transactionsProperty().stream()
-            .filter(transaction -> transaction.marketValueProperty().getValue() != null && transaction.marketValueProperty().doubleValue() > 0d)
+            .filter(transaction -> transaction.bookingValueProperty().getValue() != null && transaction.bookingValueProperty().doubleValue() > 0d)
             .filter(transaction -> transaction.numberOfSharesProperty().getValue() != null && transaction.numberOfSharesProperty().doubleValue() > 0d)
             .forEach(transaction -> this.appendTransaction(out, transaction, transactionGroup));
 
@@ -35,11 +36,15 @@ public class QifContentGenerator {
     }
 
     private void appendTransaction(StringBuilder out, Transaction transaction, TransactionGroup transactionGroup) {
+
+        Number conversionFactorInput = transaction.bookingCurrencyRateProperty().getValue();
+        double conversionFactor = conversionFactorInput == null || conversionFactorInput.doubleValue() == 0d ? 1d : conversionFactorInput.doubleValue();
+
         out.append("D").append(DATE_FORMATTER.format(Optional.ofNullable(transaction.bookingDateProperty().getValue()).orElseGet(LocalDate::now))).append("\n");
         out.append("V").append(DATE_FORMATTER.format(Optional.ofNullable(transaction.valutaDateProperty().getValue()).orElseGet(LocalDate::now))).append("\n");
         out.append("N").append(this.resolveType(transaction.typeProperty().getValue())).append("\n");
-        out.append("F").append(StringUtils.defaultIfEmpty(transaction.bookingCurrencyProperty().getValue(), "EUR")).append("\n");
-        out.append("G").append("1.000000").append("\n");
+        out.append("F").append(StringUtils.defaultIfEmpty(transaction.marketCurrencyProperty().getValue(), "EUR")).append("\n");
+        out.append("G").append(LONG_NUMBER_FORMAT.format(conversionFactor)).append("\n");
         out.append("Y").append(transaction.titleProperty().getValue()).append("\n");
         out.append("~").append(transaction.wknProperty().getValue()).append("\n");
         out.append("@").append(transaction.isinProperty().getValue()).append("\n");
@@ -53,6 +58,7 @@ public class QifContentGenerator {
         out.append("B").append("0.00|0.00|0.00").append("\n");
         out.append("M").append(this.resolveMemo(transaction)).append("\n");
         out.append("^\n");
+
     }
 
     private String resolveType(TransactionType type) {
@@ -68,10 +74,15 @@ public class QifContentGenerator {
 
     private String resolveMemo(Transaction transaction) {
         StringBuilder result = new StringBuilder();
-        result.append(transaction.titleProperty().getValue()).append(" ");
-        result.append(LONG_NUMBER_FORMAT.format(transaction.numberOfSharesProperty().getValue())).append(" a ");
-        result.append(LONG_NUMBER_FORMAT.format(transaction.marketPriceProperty().getValue())).append(" = ");
-        result.append(SHORT_NUMBER_FORMAT.format(transaction.marketValueProperty().getValue()));
+        result.append(SHORT_NUMBER_FORMAT.format(transaction.numberOfSharesProperty().getValue())).append(" a ");
+        result.append(LONG_NUMBER_FORMAT.format(transaction.marketPriceProperty().getValue())).append(" ").append(transaction.marketCurrencyProperty().getValue()).append(" = ");
+        result.append(SHORT_NUMBER_FORMAT.format(transaction.marketValueProperty().getValue())).append(" ").append(transaction.marketCurrencyProperty().getValue());
+        if (!Objects.equals(transaction.marketCurrencyProperty().getValue(), transaction.bookingCurrencyProperty().getValue())) {
+            result.append(" (= ");
+            result.append(SHORT_NUMBER_FORMAT.format(transaction.bookingValueProperty().getValue())).append(" ").append(transaction.bookingCurrencyProperty().getValue());
+            result.append(")");
+
+        }
         return result.toString();
     }
 

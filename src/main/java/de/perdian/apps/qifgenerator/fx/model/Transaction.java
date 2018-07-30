@@ -115,11 +115,9 @@ public class Transaction {
         } else if (this.valutaDateProperty().getValue() == null) {
             LocalDate nextValutaDate = bookingDate.plusDays(2);
             if (bookingDate.getDayOfWeek() == DayOfWeek.FRIDAY) {
-                nextValutaDate = nextValutaDate.plusDays(4);
-            } else if (bookingDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
-                nextValutaDate = nextValutaDate.plusDays(3);
-            } else if (bookingDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
                 nextValutaDate = nextValutaDate.plusDays(2);
+            } else if (bookingDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
+                nextValutaDate = nextValutaDate.plusDays(1);
             }
             this.valutaDateProperty().setValue(nextValutaDate);
         }
