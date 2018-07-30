@@ -114,8 +114,12 @@ public class Transaction {
             this.valutaDateProperty().setValue(null);
         } else if (this.valutaDateProperty().getValue() == null) {
             LocalDate nextValutaDate = bookingDate.plusDays(2);
-            while (nextValutaDate.getDayOfWeek() == DayOfWeek.SATURDAY || nextValutaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                nextValutaDate = nextValutaDate.plusDays(1);
+            if (bookingDate.getDayOfWeek() == DayOfWeek.FRIDAY) {
+                nextValutaDate = nextValutaDate.plusDays(4);
+            } else if (bookingDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
+                nextValutaDate = nextValutaDate.plusDays(3);
+            } else if (bookingDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                nextValutaDate = nextValutaDate.plusDays(2);
             }
             this.valutaDateProperty().setValue(nextValutaDate);
         }
