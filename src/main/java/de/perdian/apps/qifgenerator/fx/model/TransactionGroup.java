@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +33,11 @@ public class TransactionGroup implements Externalizable {
     }
 
     private void initListeners() {
-        ChangeListener<Transaction> transactionChangeListener = (x, oldValue, newValue) -> this.fireChange();
         this.transactionsProperty().addListener((ListChangeListener<Transaction>)event -> {
             while (event.next()) {
-                for (Transaction removedTransaction : event.getRemoved()) {
-                    removedTransaction.removeChangeListener(transactionChangeListener);
-                }
                 for (Transaction addedTransaction : event.getAddedSubList()) {
-                    addedTransaction.addChangeListener(transactionChangeListener);
+                    addedTransaction.addChangeListener((o, oldValue, newValue) -> this.fireChange());
+                    addedTransaction.bookingDateProperty().addListener((o, oldValue, newValue) -> this.onChangeTransactionDate(addedTransaction, newValue));
                 }
             }
             this.fireChange();
@@ -47,6 +45,21 @@ public class TransactionGroup implements Externalizable {
         this.titleProperty().addListener((x, oldValue, newValue) -> this.fireChange());
         this.accountProperty().addListener((x, oldValue, newValue) -> this.fireChange());
         this.targetFileProperty().addListener((x, oldValue, newValue) -> this.fireChange());
+    }
+
+    private void onChangeTransactionDate(Transaction transaction, LocalDate newValue) {
+        int indexOfTransaction = this.transactionsProperty().indexOf(transaction);
+        if (indexOfTransaction == 0) {
+            for (int i=1; i < this.transactionsProperty().size(); i++) {
+                Transaction needleTransaction = this.transactionsProperty().get(i);
+                if (needleTransaction.bookingDateProperty().getValue() == null && needleTransaction.valutaDateProperty().getValue() == null) {
+                    needleTransaction.bookingDateProperty().setValue(transaction.bookingDateProperty().getValue());
+                    needleTransaction.valutaDateProperty().setValue(transaction.valutaDateProperty().getValue());
+                } else {
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -78,7 +91,7 @@ public class TransactionGroup implements Externalizable {
         return this.transactions;
     }
 
-    void fireChange() {
+    private void fireChange() {
         for (ChangeListener<TransactionGroup> changeListener : this.changeListeners) {
             changeListener.changed(null, null, this);
         }

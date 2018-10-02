@@ -45,10 +45,6 @@ public class Transaction implements Externalizable {
     private final List<ChangeListener<Transaction>> changeListeners = new ArrayList<>();
 
     public Transaction() {
-        this.initListeners();
-    }
-
-    private void initListeners() {
         ChangeListener<Object> shareChangeListener = (x, oldValue, newValue) -> this.fireChange();
         this.chargesProperty().addListener(shareChangeListener);
         this.marketCurrencyProperty().addListener(shareChangeListener);
