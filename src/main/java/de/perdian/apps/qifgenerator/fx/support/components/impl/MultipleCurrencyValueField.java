@@ -24,7 +24,7 @@ public class MultipleCurrencyValueField extends GridPane {
     public MultipleCurrencyValueField(DoubleProperty targetProperty, StringProperty targetCurrencyProperty, StringProperty sourceCurrencyProperty, DoubleProperty conversionRateProperty, ComponentBuilder componentBuilder) {
 
         StringProperty selectedCurrencyProperty = new SimpleStringProperty(targetCurrencyProperty.getValue());
-        DoubleProperty selectedValueProperty = new SimpleDoubleProperty();
+        DoubleProperty selectedValueProperty = new SimpleDoubleProperty(targetProperty.getValue());
         selectedValueProperty.addListener((o, oldValue, newValue) -> {
             if (!Objects.equals(oldValue, newValue)) {
                 this.recomputeValue(targetProperty, newValue == null ? 0 : newValue.doubleValue(), selectedCurrencyProperty.getValue(), sourceCurrencyProperty.getValue(), conversionRateProperty.getValue());

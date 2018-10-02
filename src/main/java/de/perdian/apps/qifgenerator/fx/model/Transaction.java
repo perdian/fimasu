@@ -1,5 +1,9 @@
 package de.perdian.apps.qifgenerator.fx.model;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,7 +20,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 
-public class Transaction {
+public class Transaction implements Externalizable {
 
     static final long serialVersionUID = 1L;
 
@@ -41,6 +45,10 @@ public class Transaction {
     private final List<ChangeListener<Transaction>> changeListeners = new ArrayList<>();
 
     public Transaction() {
+        this.initListeners();
+    }
+
+    private void initListeners() {
         ChangeListener<Object> shareChangeListener = (x, oldValue, newValue) -> this.fireChange();
         this.chargesProperty().addListener(shareChangeListener);
         this.marketCurrencyProperty().addListener(shareChangeListener);
@@ -63,7 +71,30 @@ public class Transaction {
         this.solidarityTaxProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.bookingValueProperty().getValue(), this.chargesProperty().getValue(), this.financeTaxProperty().getValue(), newValue));
         this.typeProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.bookingValueProperty().getValue(), this.chargesProperty().getValue(), this.financeTaxProperty().getValue(), this.solidarityTaxProperty().getValue()));
         this.bookingDateProperty().addListener((o, oldValue, newValue) -> this.recomputeValutaDate(newValue));
+    }
 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(this.wknProperty().getValue());
+        out.writeObject(this.isinProperty().getValue());
+        out.writeObject(this.titleProperty().getValue());
+        out.writeObject(this.typeProperty().getValue());
+        out.writeObject(this.marketCurrencyProperty().getValue());
+        out.writeObject(this.bookingCurrencyProperty().getValue());
+        out.writeObject(this.bookingCurrencyDifferentProperty().getValue());
+        out.writeObject(this.chargesProperty().getValue());
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        this.wknProperty().setValue((String)in.readObject());
+        this.isinProperty().setValue((String)in.readObject());
+        this.titleProperty().setValue((String)in.readObject());
+        this.typeProperty().setValue((TransactionType)in.readObject());
+        this.marketCurrencyProperty().setValue((String)in.readObject());
+        this.bookingCurrencyProperty().setValue((String)in.readObject());
+        this.bookingCurrencyDifferentProperty().setValue((Boolean)in.readObject());
+        this.chargesProperty().setValue((Double)in.readObject());
     }
 
     private void recomputeMarketValue(Number numberOfShares, Number marketPrice) {

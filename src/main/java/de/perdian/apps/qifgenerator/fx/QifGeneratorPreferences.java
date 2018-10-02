@@ -62,7 +62,9 @@ public class QifGeneratorPreferences {
         });
         transactionGroups.addAll(QifGeneratorPreferencesHelper.readTransactionGroups(transactionGroupsFile));
         if (transactionGroups.isEmpty()) {
-            transactionGroups.add(new TransactionGroup("Default"));
+            TransactionGroup defaultTransactionGroup = new TransactionGroup();
+            defaultTransactionGroup.titleProperty().setValue("Default");
+            transactionGroups.add(defaultTransactionGroup);
         }
         transactionGroups.addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> QifGeneratorPreferencesHelper.storeTransactionGroups(transactionGroups, transactionGroupsFile));
         this.setTransactionGroups(transactionGroups);

@@ -1,6 +1,10 @@
 package de.perdian.apps.qifgenerator.fx.model;
 
+import java.io.Externalizable;
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +17,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class TransactionGroup {
+public class TransactionGroup implements Externalizable {
 
     static final long serialVersionUID = 1L;
 
@@ -23,8 +27,11 @@ public class TransactionGroup {
     private final ObservableList<Transaction> transactions = FXCollections.observableArrayList();
     private final List<ChangeListener<TransactionGroup>> changeListeners = new ArrayList<>();
 
-    public TransactionGroup(String title) {
-        this.titleProperty().setValue(title);
+    public TransactionGroup() {
+        this.initListeners();
+    }
+
+    private void initListeners() {
         ChangeListener<Transaction> transactionChangeListener = (x, oldValue, newValue) -> this.fireChange();
         this.transactionsProperty().addListener((ListChangeListener<Transaction>)event -> {
             while (event.next()) {
@@ -40,6 +47,19 @@ public class TransactionGroup {
         this.titleProperty().addListener((x, oldValue, newValue) -> this.fireChange());
         this.accountProperty().addListener((x, oldValue, newValue) -> this.fireChange());
         this.targetFileProperty().addListener((x, oldValue, newValue) -> this.fireChange());
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeUTF(this.titleProperty().getValue());
+        out.writeObject(new ArrayList<>(this.transactionsProperty()));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        this.titleProperty().setValue(in.readUTF());
+        this.transactionsProperty().setAll((List<Transaction>)in.readObject());
     }
 
     public StringProperty titleProperty() {

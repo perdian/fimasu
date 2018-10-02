@@ -28,7 +28,9 @@ public class DoubleStringConverter extends StringConverter<Number> {
 
     @Override
     public Double fromString(String string) {
-        if (!StringUtils.isEmpty(string)) {
+        if ("-".equalsIgnoreCase(string) || "+".equalsIgnoreCase(string)) {
+            return Double.valueOf(0);
+        } else if (!StringUtils.isEmpty(string)) {
             try {
                 return this.getNumberFormat().parse(string).doubleValue();
             } catch (ParseException e) {

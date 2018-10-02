@@ -53,7 +53,7 @@ public class TransactionsPane extends BorderPane {
 
     private TransactionGroup handleCreateButtonClicked(Window parentWindow) {
 
-        TransactionGroup newTransactionGroup = new TransactionGroup(null);
+        TransactionGroup newTransactionGroup = new TransactionGroup();
         TextField titleField = new TextField();
         titleField.textProperty().bindBidirectional(newTransactionGroup.titleProperty());
         titleField.setMaxWidth(Double.MAX_VALUE);
