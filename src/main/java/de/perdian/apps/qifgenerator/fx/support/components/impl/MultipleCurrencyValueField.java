@@ -21,9 +21,9 @@ import javafx.scene.layout.GridPane;
 
 public class MultipleCurrencyValueField extends GridPane {
 
-    public MultipleCurrencyValueField(DoubleProperty targetProperty, StringProperty targetCurrencyProperty, StringProperty sourceCurrencyProperty, DoubleProperty conversionRateProperty, ComponentBuilder componentBuilder) {
+    public MultipleCurrencyValueField(DoubleProperty targetProperty, StringProperty targetCurrencyProperty, StringProperty sourceCurrencyProperty, StringProperty inputCurrencyProperty, DoubleProperty conversionRateProperty, ComponentBuilder componentBuilder) {
 
-        StringProperty selectedCurrencyProperty = new SimpleStringProperty(targetCurrencyProperty.getValue());
+        StringProperty selectedCurrencyProperty = new SimpleStringProperty(StringUtils.defaultIfEmpty(inputCurrencyProperty.getValue(), targetCurrencyProperty.getValue()));
         DoubleProperty selectedValueProperty = new SimpleDoubleProperty(targetProperty.getValue());
         selectedValueProperty.addListener((o, oldValue, newValue) -> {
             if (!Objects.equals(oldValue, newValue)) {

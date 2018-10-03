@@ -91,8 +91,8 @@ public class ComponentBuilder {
         return comboBox;
     }
 
-    public MultipleCurrencyValueField createMultiCurrencyInputField(DoubleProperty targetProperty, StringProperty targetCurrencyProperty, StringProperty sourceCurrencyProperty, DoubleProperty conversionRateProperty) {
-        return new MultipleCurrencyValueField(targetProperty, targetCurrencyProperty, sourceCurrencyProperty, conversionRateProperty, this);
+    public MultipleCurrencyValueField createMultiCurrencyInputField(DoubleProperty targetProperty, StringProperty targetCurrencyProperty, StringProperty sourceCurrencyProperty, StringProperty inputCurrencyProperty, DoubleProperty conversionRateProperty) {
+        return new MultipleCurrencyValueField(targetProperty, targetCurrencyProperty, sourceCurrencyProperty, inputCurrencyProperty, conversionRateProperty, this);
     }
 
     public void addOnKeyPressedEventHandler(EventHandler<KeyEvent> eventHandler) {

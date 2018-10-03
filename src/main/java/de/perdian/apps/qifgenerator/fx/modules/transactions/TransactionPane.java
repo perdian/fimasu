@@ -107,9 +107,9 @@ class TransactionPane extends VBox {
         middlePane.add(componentBuilder.createLabel("Booking value"), 8, 0, 1, 1);
         middlePane.add(bookingValueField, 8, 1, 1, 1);
 
-        MultipleCurrencyValueField chargesField = componentBuilder.createMultiCurrencyInputField(transaction.chargesProperty(), transaction.bookingCurrencyProperty(), transaction.marketCurrencyProperty(), transaction.bookingCurrencyRateProperty());
-        MultipleCurrencyValueField financeTaxField = componentBuilder.createMultiCurrencyInputField(transaction.financeTaxProperty(), transaction.bookingCurrencyProperty(), transaction.marketCurrencyProperty(), transaction.bookingCurrencyRateProperty());
-        MultipleCurrencyValueField solidarityTaxField = componentBuilder.createMultiCurrencyInputField(transaction.solidarityTaxProperty(), transaction.bookingCurrencyProperty(), transaction.marketCurrencyProperty(), transaction.bookingCurrencyRateProperty());
+        MultipleCurrencyValueField chargesField = componentBuilder.createMultiCurrencyInputField(transaction.chargesProperty(), transaction.bookingCurrencyProperty(), transaction.marketCurrencyProperty(), transaction.marketCurrencyProperty(), transaction.bookingCurrencyRateProperty());
+        MultipleCurrencyValueField financeTaxField = componentBuilder.createMultiCurrencyInputField(transaction.financeTaxProperty(), transaction.bookingCurrencyProperty(), transaction.marketCurrencyProperty(), transaction.bookingCurrencyProperty(), transaction.bookingCurrencyRateProperty());
+        MultipleCurrencyValueField solidarityTaxField = componentBuilder.createMultiCurrencyInputField(transaction.solidarityTaxProperty(), transaction.bookingCurrencyProperty(), transaction.marketCurrencyProperty(), transaction.bookingCurrencyProperty(), transaction.bookingCurrencyRateProperty());
         TextField totalValueField = componentBuilder.createTextField(transaction.totalValueProperty(), new DoubleStringConverter("0.00"));
         totalValueField.setPrefWidth(85);
         totalValueField.setDisable(true);
