@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -66,6 +68,8 @@ public class TransactionGroup implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeUTF(this.titleProperty().getValue());
         out.writeObject(new ArrayList<>(this.transactionsProperty()));
+        out.writeObject(this.accountProperty().getValue());
+        out.writeObject(this.targetFileProperty().getValue() == null ? null : this.targetFileProperty().getValue().getAbsolutePath());
     }
 
     @Override
@@ -73,6 +77,9 @@ public class TransactionGroup implements Externalizable {
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         this.titleProperty().setValue(in.readUTF());
         this.transactionsProperty().setAll((List<Transaction>)in.readObject());
+        this.accountProperty().setValue((String)in.readObject());
+        String targetFilePath = (String)in.readObject();
+        this.targetFileProperty().setValue(StringUtils.isEmpty(targetFilePath) ? null : new File(targetFilePath));
     }
 
     public StringProperty titleProperty() {
