@@ -88,8 +88,8 @@
                 <version>3.8.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    <source>9</source>
-                    <target>9</target>
+                    <source>10</source>
+                    <target>10</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -146,11 +146,11 @@
                     <plugin>
                         <groupId>sh.tak.appbundler</groupId>
                         <artifactId>appbundle-maven-plugin</artifactId>
-                        <version>1.2.0</version>
+                        <version>1.2.1-SNAPSHOT</version>
                         <configuration>
                             <mainClass>de.perdian.apps.qifgenerator.fx.QifGeneratorApplication</mainClass>
                             <generateDiskImageFile>true</generateDiskImageFile>
-                            <jvmVersion>9+</jvmVersion>
+                            <jvmVersion>10+</jvmVersion>
                             <iconFile>qifgenerator.icns</iconFile>
                             <additionalResources>
                                 <additionalResource>

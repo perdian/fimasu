@@ -30,7 +30,15 @@ For building it simply checkout the repository from GitHub and call the Maven pa
 
 ### macOS build
 
-On macOS a simplified build that directly generated a DMG archive from which the application can be installed or distributed can be built using the following commands:
+On macOS a simplified build that directly generated a DMG archive from which the application can be installed or distributed.
+
+Note that the current version of the `appbundle-maven-plugin` plugin doesn't support Java 10 yet, so I'm using my own patched version available at https://github.com/perdian/appbundle-maven-plugin for this.
+
+    $ git clone https://github.com/perdian/appbundle-maven-plugin.git
+    $ cd appbundle-maven-plugin
+    $ mvn clean install
+
+Then build the application by calling the following commands:
 
     $ git clone https://github.com/perdian/qifgenerator.git
     $ cd qifgenerator
