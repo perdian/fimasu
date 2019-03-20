@@ -20,13 +20,6 @@ public class QifGeneratorApplication extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(QifGeneratorApplication.class);
 
-    public static void main(String[] args) {
-
-        log.info("Launching application");
-        Application.launch(QifGeneratorApplication.class);
-
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
 

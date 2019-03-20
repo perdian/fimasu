@@ -28,11 +28,22 @@
         <commons-lang3.version>3.8.1</commons-lang3.version>
         <icepdf.version>6.2.2</icepdf.version>
         <jai.version>1.1.3</jai.version>
+        <javafx.version>11.0.2</javafx.version>
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.26</slf4j.version>
     </properties>
 
     <dependencies>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-controls</artifactId>
+          <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-swing</artifactId>
+          <version>${javafx.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -88,8 +99,8 @@
                 <version>3.8.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    <source>10</source>
-                    <target>10</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -106,7 +117,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.perdian.apps.qifgenerator.fx.QifGeneratorApplication</mainClass>
+                            <mainClass>de.perdian.apps.qifgenerator.QifGeneratorLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -117,6 +128,16 @@
                 <version>3.2.1</version>
                 <configuration>
                     <finalName>qifgenerator</finalName>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
                 <executions>
                     <execution>
@@ -148,15 +169,16 @@
                         <artifactId>appbundle-maven-plugin</artifactId>
                         <version>1.2.1-SNAPSHOT</version>
                         <configuration>
-                            <mainClass>de.perdian.apps.qifgenerator.fx.QifGeneratorApplication</mainClass>
+                            <mainClass>de.perdian.apps.qifgenerator.QifGeneratorLauncher</mainClass>
                             <generateDiskImageFile>true</generateDiskImageFile>
-                            <jvmVersion>10+</jvmVersion>
+                            <jvmVersion>11+</jvmVersion>
                             <iconFile>qifgenerator.icns</iconFile>
                             <additionalResources>
                                 <additionalResource>
                                     <directory>${project.basedir}/src/bundle/macos/distribution</directory>
                                 </additionalResource>
                             </additionalResources>
+                            <jvmDebug>true</jvmDebug>
                         </configuration>
                         <executions>
                             <execution>
