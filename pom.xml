@@ -173,7 +173,7 @@
                                 <JVMVersion>11+</JVMVersion>
                                 <JVMOptions>
                                     <string>-Dapple.laf.useScreenMenuBar=true</string>
-                                    <string>-Xdock:name=${project.build.finalName}</string>
+                                    <string>-Xdock:name=${project.name}</string>
                                 </JVMOptions>
                             </plist>
                         </configuration>
