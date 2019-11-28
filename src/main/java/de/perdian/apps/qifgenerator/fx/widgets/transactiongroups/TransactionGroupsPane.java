@@ -35,14 +35,14 @@ public class TransactionGroupsPane extends BorderPane {
         IntegerProperty selectedTabIndexProperty = preferences.getIntegerProperty("transactions.selectedTabIndex", 0);
         TabPane tabPane = new TabPane();
         for (TransactionGroup transactionGroup : transactionGroups) {
-            tabPane.getTabs().add(new TransactionGroupTab(transactionGroup, transactionGroups));
+            tabPane.getTabs().add(new TransactionGroupTab(transactionGroups, transactionGroup, preferences));
         }
         tabPane.setContextMenu(new ContextMenu(createTransactionGroupItem));
         tabPane.getSelectionModel().select(selectedTabIndexProperty.getValue());
         transactionGroups.addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> {
             while (change.next()) {
                 for (TransactionGroup newGroup : change.getAddedSubList()) {
-                    Tab newTab = new TransactionGroupTab(newGroup, transactionGroups);
+                    Tab newTab = new TransactionGroupTab(transactionGroups, newGroup, preferences);
                     tabPane.getTabs().add(newTab);
                     tabPane.getSelectionModel().select(newTab);
                 }
@@ -84,7 +84,7 @@ public class TransactionGroupsPane extends BorderPane {
 
     static class TransactionGroupTab extends Tab {
 
-        TransactionGroupTab(TransactionGroup transactionGroup, ObservableList<TransactionGroup> transactionGroups) {
+        TransactionGroupTab(ObservableList<TransactionGroup> transactionGroups, TransactionGroup transactionGroup, Preferences preferences) {
             this.textProperty().bind(transactionGroup.getTitle());
             this.setOnCloseRequest(event -> {
                 if (transactionGroups.size() > 1) {
@@ -101,7 +101,7 @@ public class TransactionGroupsPane extends BorderPane {
                     event.consume();
                 }
             });
-            this.setContent(new TransactionGroupPane(transactionGroup));
+            this.setContent(new TransactionGroupPane(transactionGroup, preferences));
         }
 
     }
