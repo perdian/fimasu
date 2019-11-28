@@ -62,7 +62,7 @@ class TransactionComponentBuilder {
         return new TransactionComponentBuilderItem<>(this, comboBox);
     }
 
-    private class DefaultKeyPressEventHandler implements EventHandler<KeyEvent> {
+    private static class DefaultKeyPressEventHandler implements EventHandler<KeyEvent> {
 
         @Override
         public void handle(KeyEvent event) {
