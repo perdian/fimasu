@@ -1,10 +1,10 @@
 package de.perdian.apps.qifgenerator_OLD.fx.modules.transactions;
 
+import de.perdian.apps.qifgenerator.fx.support.converters.DoubleStringConverter;
 import de.perdian.apps.qifgenerator.fx.support.converters.LocalDateStringConverter;
 import de.perdian.apps.qifgenerator_OLD.fx.model.Transaction;
 import de.perdian.apps.qifgenerator_OLD.fx.model.TransactionType;
 import de.perdian.apps.qifgenerator_OLD.fx.support.components.ComponentBuilder;
-import de.perdian.apps.qifgenerator_OLD.fx.support.components.converters.DoubleStringConverter;
 import de.perdian.apps.qifgenerator_OLD.fx.support.components.impl.MultipleCurrencyValueField;
 import javafx.collections.ObservableList;
 import javafx.event.Event;

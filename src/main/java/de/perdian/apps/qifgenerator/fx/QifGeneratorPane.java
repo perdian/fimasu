@@ -15,6 +15,7 @@ class QifGeneratorPane extends GridPane {
     QifGeneratorPane(ObservableList<TransactionGroup> transactionGroups, Preferences preferences) {
 
         TransactionGroupsPane transactionGroupsPane = new TransactionGroupsPane(transactionGroups, preferences);
+        transactionGroupsPane.setMinWidth(775);
         transactionGroupsPane.setMaxWidth(775);
         GridPane.setVgrow(transactionGroupsPane, Priority.ALWAYS);
 

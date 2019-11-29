@@ -73,7 +73,7 @@ class TransactionPane extends VBox {
     private Pane createSecondLinePane(TransactionComponentBuilder componentBuilder, Transaction transaction, ObservableList<Transaction> transactions) {
         GridPane secondLinePane = new GridPane();
         TextField bookingCurrencyRateField = componentBuilder.createTextField(transaction.getBookingCurrencyRate(), new DoubleStringConverter("0.00000")).width(80d).get();
-        bookingCurrencyRateField.disableProperty().bind(transaction.getBookingCurrencyDifferent().not());
+        bookingCurrencyRateField.disableProperty().bind(Bindings.equal(transaction.getBookingCurrency(), transaction.getMarketCurrency()));
         secondLinePane.add(componentBuilder.createLabel("Booking date"), 0, 0, 1, 1);
         secondLinePane.add(componentBuilder.createTextField(transaction.getBookingDate(), new LocalDateStringConverter()).width(80d).get(), 0, 1, 1, 1);
         secondLinePane.add(componentBuilder.createLabel("Valuta date"), 1, 0, 1, 1);
