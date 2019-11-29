@@ -33,7 +33,7 @@ public class TransactionGroup implements Externalizable {
             while (event.next()) {
                 for (Transaction addedTransaction : event.getAddedSubList()) {
                     addedTransaction.addChangeListener((o, oldValue, newValue) -> this.fireChange());
-                    addedTransaction.bookingDateProperty().addListener((o, oldValue, newValue) -> this.onChangeTransactionDate(addedTransaction, newValue));
+                    addedTransaction.getBookingDate().addListener((o, oldValue, newValue) -> this.onChangeTransactionDate(addedTransaction, newValue));
                 }
             }
             this.fireChange();
@@ -54,9 +54,9 @@ public class TransactionGroup implements Externalizable {
         if (indexOfTransaction == 0) {
             for (int i=1; i < this.getTransactions().size(); i++) {
                 Transaction needleTransaction = this.getTransactions().get(i);
-                if (needleTransaction.bookingDateProperty().getValue() == null && needleTransaction.valutaDateProperty().getValue() == null) {
-                    needleTransaction.bookingDateProperty().setValue(transaction.bookingDateProperty().getValue());
-                    needleTransaction.valutaDateProperty().setValue(transaction.valutaDateProperty().getValue());
+                if (needleTransaction.getBookingDate().getValue() == null && needleTransaction.getValutaDate().getValue() == null) {
+                    needleTransaction.getBookingDate().setValue(transaction.getBookingDate().getValue());
+                    needleTransaction.getValutaDate().setValue(transaction.getValutaDate().getValue());
                 } else {
                     break;
                 }

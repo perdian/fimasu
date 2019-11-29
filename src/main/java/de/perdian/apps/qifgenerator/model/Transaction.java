@@ -24,73 +24,75 @@ public class Transaction implements Externalizable {
 
     static final long serialVersionUID = 1L;
 
-    private final StringProperty wkn = new SimpleStringProperty();
-    private final StringProperty isin = new SimpleStringProperty();
-    private final StringProperty title = new SimpleStringProperty();
-    private final ObjectProperty<TransactionType> type = new SimpleObjectProperty<>(TransactionType.BUY);
-    private final ObjectProperty<LocalDate> bookingDate = new SimpleObjectProperty<>();
-    private final ObjectProperty<LocalDate> valutaDate = new SimpleObjectProperty<>();
-    private final DoubleProperty marketPrice = new SimpleDoubleProperty();
-    private final StringProperty marketCurrency = new SimpleStringProperty("EUR");
-    private final DoubleProperty numberOfShares = new SimpleDoubleProperty();
-    private final DoubleProperty marketValue = new SimpleDoubleProperty();
-    private final StringProperty bookingCurrency = new SimpleStringProperty("EUR");
-    private final DoubleProperty bookingCurrencyRate = new SimpleDoubleProperty();
-    private final DoubleProperty bookingValue = new SimpleDoubleProperty();
-    private final BooleanProperty bookingCurrencyDifferent = new SimpleBooleanProperty(false);
-    private final DoubleProperty charges = new SimpleDoubleProperty();
-    private final DoubleProperty financeTax = new SimpleDoubleProperty();
-    private final DoubleProperty solidarityTax = new SimpleDoubleProperty();
-    private final DoubleProperty totalValue = new SimpleDoubleProperty();
-    private final List<ChangeListener<Transaction>> changeListeners = new ArrayList<>();
+    private StringProperty wkn = new SimpleStringProperty();
+    private StringProperty isin = new SimpleStringProperty();
+    private StringProperty title = new SimpleStringProperty();
+    private ObjectProperty<TransactionType> type = new SimpleObjectProperty<>(TransactionType.BUY);
+    private ObjectProperty<LocalDate> bookingDate = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalDate> valutaDate = new SimpleObjectProperty<>();
+    private DoubleProperty marketPrice = new SimpleDoubleProperty();
+    private StringProperty marketCurrency = new SimpleStringProperty("EUR");
+    private DoubleProperty numberOfShares = new SimpleDoubleProperty();
+    private DoubleProperty marketValue = new SimpleDoubleProperty();
+    private StringProperty bookingCurrency = new SimpleStringProperty("EUR");
+    private DoubleProperty bookingCurrencyRate = new SimpleDoubleProperty();
+    private DoubleProperty bookingValue = new SimpleDoubleProperty();
+    private BooleanProperty bookingCurrencyDifferent = new SimpleBooleanProperty(false);
+    private DoubleProperty charges = new SimpleDoubleProperty();
+    private DoubleProperty financeTax = new SimpleDoubleProperty();
+    private DoubleProperty solidarityTax = new SimpleDoubleProperty();
+    private DoubleProperty totalValue = new SimpleDoubleProperty();
+    private List<ChangeListener<Transaction>> changeListeners = new ArrayList<>();
 
     public Transaction() {
-        ChangeListener<Object> shareChangeListener = (x, oldValue, newValue) -> this.fireChange();
-        this.chargesProperty().addListener(shareChangeListener);
-        this.marketCurrencyProperty().addListener(shareChangeListener);
-        this.isinProperty().addListener(shareChangeListener);
-        this.titleProperty().addListener(shareChangeListener);
-        this.wknProperty().addListener(shareChangeListener);
-        this.bookingCurrencyProperty().addListener(shareChangeListener);
-        this.bookingCurrencyRateProperty().addListener(shareChangeListener);
-        this.marketCurrencyProperty().addListener((o, oldValue, newValue) -> this.recomputeCurrency(newValue, this.bookingCurrencyProperty().getValue()));
-        this.bookingCurrencyProperty().addListener((o, oldValue, newValue) -> this.recomputeCurrency(this.marketCurrencyProperty().getValue(), newValue));
-        this.numberOfSharesProperty().addListener((o, oldValue, newValue) -> this.recomputeMarketValue(newValue, this.marketPriceProperty().getValue()));
-        this.marketPriceProperty().addListener((o, oldValue, newValue) -> this.recomputeMarketValue(this.numberOfSharesProperty().getValue(), newValue));
-        this.marketValueProperty().addListener((o, oldValue, newValue) -> this.recomputeBookingValue(newValue, this.bookingCurrencyRateProperty().getValue(), this.marketCurrencyProperty().getValue(), this.bookingCurrencyProperty().getValue()));
-        this.bookingCurrencyRateProperty().addListener((o, oldValue, newValue) -> this.recomputeBookingValue(this.marketValueProperty().getValue(), newValue, this.marketCurrencyProperty().getValue(), this.bookingCurrencyProperty().getValue()));
-        this.marketCurrencyProperty().addListener((o, oldValue, newValue) -> this.recomputeBookingValue(this.marketValueProperty().getValue(), this.bookingCurrencyRateProperty().getValue(), newValue, this.bookingCurrencyProperty().getValue()));
-        this.bookingCurrencyProperty().addListener((o, oldValue, newValue) -> this.recomputeBookingValue(this.marketValueProperty().getValue(), this.bookingCurrencyRateProperty().getValue(), this.marketCurrencyProperty().getValue(), newValue));
-        this.bookingValueProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(newValue, this.chargesProperty().getValue(), this.financeTaxProperty().getValue(), this.solidarityTaxProperty().getValue()));
-        this.chargesProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.bookingValueProperty().getValue(), newValue, this.financeTaxProperty().getValue(), this.solidarityTaxProperty().getValue()));
-        this.financeTaxProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.bookingValueProperty().getValue(), this.chargesProperty().getValue(), newValue, this.solidarityTaxProperty().getValue()));
-        this.solidarityTaxProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.bookingValueProperty().getValue(), this.chargesProperty().getValue(), this.financeTaxProperty().getValue(), newValue));
-        this.typeProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.bookingValueProperty().getValue(), this.chargesProperty().getValue(), this.financeTaxProperty().getValue(), this.solidarityTaxProperty().getValue()));
-        this.bookingDateProperty().addListener((o, oldValue, newValue) -> this.recomputeValutaDate(newValue));
+
+        TransactionPropertyBuilder propertyBuilder = new TransactionPropertyBuilder(this);
+
+        this.setCharges(propertyBuilder.createDoubleProperty().changeListener((oldValue, newValue) -> this.recomputeTotalValue(this.getBookingValue().getValue(), newValue, this.getFinanceTax().getValue(), this.getSolidarityTax().getValue())).get());
+        this.setIsin(propertyBuilder.createStringProperty().get());
+        this.setMarketCurrency(propertyBuilder.createStringProperty().changeListener((oldValue, newValue) -> this.recomputeBookingValue(this.getMarketValue().getValue(), this.getBookingCurrencyRate().getValue(), newValue, this.getBookingCurrency().getValue())).get());
+
+//        this.titleProperty().addListener(shareChangeListener);
+//        this.wknProperty().addListener(shareChangeListener);
+//        this.bookingCurrencyProperty().addListener(shareChangeListener);
+//        this.bookingCurrencyRateProperty().addListener(shareChangeListener);
+//        this.marketCurrencyProperty().addListener((o, oldValue, newValue) -> this.recomputeCurrency(newValue, this.bookingCurrencyProperty().getValue()));
+//        this.bookingCurrencyProperty().addListener((o, oldValue, newValue) -> this.recomputeCurrency(this.marketCurrencyProperty().getValue(), newValue));
+//        this.numberOfSharesProperty().addListener((o, oldValue, newValue) -> this.recomputeMarketValue(newValue, this.marketPriceProperty().getValue()));
+//        this.marketPriceProperty().addListener((o, oldValue, newValue) -> this.recomputeMarketValue(this.numberOfSharesProperty().getValue(), newValue));
+//        this.marketValueProperty().addListener((o, oldValue, newValue) -> this.recomputeBookingValue(newValue, this.bookingCurrencyRateProperty().getValue(), this.marketCurrencyProperty().getValue(), this.bookingCurrencyProperty().getValue()));
+//        this.bookingCurrencyRateProperty().addListener((o, oldValue, newValue) -> this.recomputeBookingValue(this.marketValueProperty().getValue(), newValue, this.marketCurrencyProperty().getValue(), this.bookingCurrencyProperty().getValue()));
+//        this.bookingCurrencyProperty().addListener((o, oldValue, newValue) -> this.recomputeBookingValue(this.marketValueProperty().getValue(), this.bookingCurrencyRateProperty().getValue(), this.marketCurrencyProperty().getValue(), newValue));
+//        this.bookingValueProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(newValue, this.chargesProperty().getValue(), this.financeTaxProperty().getValue(), this.solidarityTaxProperty().getValue()));
+//        this.chargesProperty().addListener((o, oldValue, newValue) -> );
+//        this.financeTaxProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.bookingValueProperty().getValue(), this.chargesProperty().getValue(), newValue, this.solidarityTaxProperty().getValue()));
+//        this.solidarityTaxProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.bookingValueProperty().getValue(), this.chargesProperty().getValue(), this.financeTaxProperty().getValue(), newValue));
+//        this.typeProperty().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.bookingValueProperty().getValue(), this.chargesProperty().getValue(), this.financeTaxProperty().getValue(), this.solidarityTaxProperty().getValue()));
+//        this.bookingDateProperty().addListener((o, oldValue, newValue) -> this.recomputeValutaDate(newValue));
     }
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(this.wknProperty().getValue());
-        out.writeObject(this.isinProperty().getValue());
-        out.writeObject(this.titleProperty().getValue());
-        out.writeObject(this.typeProperty().getValue());
-        out.writeObject(this.marketCurrencyProperty().getValue());
-        out.writeObject(this.bookingCurrencyProperty().getValue());
-        out.writeObject(this.bookingCurrencyDifferentProperty().getValue());
-        out.writeObject(this.chargesProperty().getValue());
+        out.writeObject(this.getWkn().getValue());
+        out.writeObject(this.getIsin().getValue());
+        out.writeObject(this.getTitle().getValue());
+        out.writeObject(this.getType().getValue());
+        out.writeObject(this.getMarketCurrency().getValue());
+        out.writeObject(this.getBookingCurrency().getValue());
+        out.writeObject(this.getBookingCurrencyDifferent().getValue());
+        out.writeObject(this.getCharges().getValue());
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        this.wknProperty().setValue((String)in.readObject());
-        this.isinProperty().setValue((String)in.readObject());
-        this.titleProperty().setValue((String)in.readObject());
-        this.typeProperty().setValue((TransactionType)in.readObject());
-        this.marketCurrencyProperty().setValue((String)in.readObject());
-        this.bookingCurrencyProperty().setValue((String)in.readObject());
-        this.bookingCurrencyDifferentProperty().setValue((Boolean)in.readObject());
-        this.chargesProperty().setValue((Double)in.readObject());
+        this.getWkn().setValue((String)in.readObject());
+        this.getIsin().setValue((String)in.readObject());
+        this.getTitle().setValue((String)in.readObject());
+        this.getType().setValue((TransactionType)in.readObject());
+        this.getMarketCurrency().setValue((String)in.readObject());
+        this.getBookingCurrency().setValue((String)in.readObject());
+        this.getBookingCurrencyDifferent().setValue((Boolean)in.readObject());
+        this.getCharges().setValue((Double)in.readObject());
     }
 
     private void recomputeMarketValue(Number numberOfShares, Number marketPrice) {
@@ -150,76 +152,137 @@ public class Transaction implements Externalizable {
         }
     }
 
-    public StringProperty wknProperty() {
+    public StringProperty getWkn() {
         return this.wkn;
     }
+    private void setWkn(StringProperty wkn) {
+        this.wkn = wkn;
+    }
 
-    public StringProperty isinProperty() {
+    public StringProperty getIsin() {
         return this.isin;
     }
+    private void setIsin(StringProperty isin) {
+        this.isin = isin;
+    }
 
-    public StringProperty titleProperty() {
+    public StringProperty getTitle() {
         return this.title;
     }
+    private void setTitle(StringProperty title) {
+        this.title = title;
+    }
 
-    public ObjectProperty<TransactionType> typeProperty() {
+    public ObjectProperty<TransactionType> getType() {
         return this.type;
     }
+    private void setType(ObjectProperty<TransactionType> type) {
+        this.type = type;
+    }
 
-    public ObjectProperty<LocalDate> bookingDateProperty() {
+    public ObjectProperty<LocalDate> getBookingDate() {
         return this.bookingDate;
     }
+    private void setBookingDate(ObjectProperty<LocalDate> bookingDate) {
+        this.bookingDate = bookingDate;
+    }
 
-    public ObjectProperty<LocalDate> valutaDateProperty() {
+    public ObjectProperty<LocalDate> getValutaDate() {
         return this.valutaDate;
     }
+    private void setValutaDate(ObjectProperty<LocalDate> valutaDate) {
+        this.valutaDate = valutaDate;
+    }
 
-    public DoubleProperty marketPriceProperty() {
+    public DoubleProperty getMarketPrice() {
         return this.marketPrice;
     }
+    private void setMarketPrice(DoubleProperty marketPrice) {
+        this.marketPrice = marketPrice;
+    }
 
-    public StringProperty marketCurrencyProperty() {
+    public StringProperty getMarketCurrency() {
         return this.marketCurrency;
     }
-
-    public DoubleProperty marketValueProperty() {
-        return this.marketValue;
+    private void setMarketCurrency(StringProperty marketCurrency) {
+        this.marketCurrency = marketCurrency;
     }
 
-    public StringProperty bookingCurrencyProperty() {
-        return this.bookingCurrency;
-    }
-
-    public DoubleProperty bookingCurrencyRateProperty() {
-        return this.bookingCurrencyRate;
-    }
-
-    public BooleanProperty bookingCurrencyDifferentProperty() {
-        return this.bookingCurrencyDifferent;
-    }
-
-    public DoubleProperty bookingValueProperty() {
-        return this.bookingValue;
-    }
-
-    public DoubleProperty numberOfSharesProperty() {
+    public DoubleProperty getNumberOfShares() {
         return this.numberOfShares;
     }
-
-    public DoubleProperty totalValueProperty() {
-        return this.totalValue;
+    private void setNumberOfShares(DoubleProperty numberOfShares) {
+        this.numberOfShares = numberOfShares;
     }
 
-    public DoubleProperty chargesProperty() {
+    public DoubleProperty getMarketValue() {
+        return this.marketValue;
+    }
+    private void setMarketValue(DoubleProperty marketValue) {
+        this.marketValue = marketValue;
+    }
+
+    public StringProperty getBookingCurrency() {
+        return this.bookingCurrency;
+    }
+    private void setBookingCurrency(StringProperty bookingCurrency) {
+        this.bookingCurrency = bookingCurrency;
+    }
+
+    public DoubleProperty getBookingCurrencyRate() {
+        return this.bookingCurrencyRate;
+    }
+    private void setBookingCurrencyRate(DoubleProperty bookingCurrencyRate) {
+        this.bookingCurrencyRate = bookingCurrencyRate;
+    }
+
+    public DoubleProperty getBookingValue() {
+        return this.bookingValue;
+    }
+    private void setBookingValue(DoubleProperty bookingValue) {
+        this.bookingValue = bookingValue;
+    }
+
+    public BooleanProperty getBookingCurrencyDifferent() {
+        return this.bookingCurrencyDifferent;
+    }
+    private void setBookingCurrencyDifferent(BooleanProperty bookingCurrencyDifferent) {
+        this.bookingCurrencyDifferent = bookingCurrencyDifferent;
+    }
+
+    public DoubleProperty getCharges() {
         return this.charges;
     }
-
-    public DoubleProperty financeTaxProperty() {
-        return this.financeTax;
+    private void setCharges(DoubleProperty charges) {
+        this.charges = charges;
     }
 
-    public DoubleProperty solidarityTaxProperty() {
+    public DoubleProperty getFinanceTax() {
+        return this.financeTax;
+    }
+    private void setFinanceTax(DoubleProperty financeTax) {
+        this.financeTax = financeTax;
+    }
+
+    public DoubleProperty getSolidarityTax() {
         return this.solidarityTax;
+    }
+    private void setSolidarityTax(DoubleProperty solidarityTax) {
+        this.solidarityTax = solidarityTax;
+    }
+
+    public DoubleProperty getTotalValue() {
+        return this.totalValue;
+    }
+    private void setTotalValue(DoubleProperty totalValue) {
+        this.totalValue = totalValue;
+    }
+
+    public List<ChangeListener<Transaction>> getChangeListeners() {
+        return this.changeListeners;
+    }
+    private void setChangeListeners(List<ChangeListener<Transaction>> changeListeners) {
+        this.changeListeners = changeListeners;
     }
 
     void fireChange() {

@@ -4,8 +4,8 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.perdian.apps.qifgenerator.fx.support.converters.DoubleStringConverter;
 import de.perdian.apps.qifgenerator_OLD.fx.support.components.ComponentBuilder;
-import de.perdian.apps.qifgenerator_OLD.fx.support.components.converters.DoubleStringConverter;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
