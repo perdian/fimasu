@@ -1,11 +1,15 @@
 package de.perdian.apps.qifgenerator.preferences;
 
 import java.io.File;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 
 public class Preferences {
@@ -19,11 +23,52 @@ public class Preferences {
     }
 
     public StringProperty getStringProperty(String propertyName, String defaultValue) {
-        return new SimpleStringProperty(defaultValue);
+        StringProperty stringProperty = new SimpleStringProperty();
+        stringProperty.addListener((o, oldValue, newValue) -> {
+            if (!Objects.equals(newValue, this.getValues().get(propertyName))) {
+                if (StringUtils.isEmpty(newValue)) {
+                    this.getValues().remove(propertyName);
+                } else {
+                    this.getValues().put(propertyName, newValue);
+                }
+            }
+        });
+        this.getValues().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
+            if (change.wasRemoved()) {
+                stringProperty.setValue(null);
+            } else {
+                if (!Objects.equals(change.getValueAdded(), stringProperty.getValue())) {
+                    stringProperty.setValue(change.getValueAdded());
+                }
+            }
+        });
+        return stringProperty;
     }
 
     public IntegerProperty getIntegerProperty(String propertyName, int defaultValue) {
-        return new SimpleIntegerProperty(defaultValue);
+        StringProperty stringProperty = this.getStringProperty(propertyName, String.valueOf(defaultValue));
+        IntegerProperty integerProperty = new SimpleIntegerProperty();
+        stringProperty.addListener((o, oldValue, newValue) -> {
+            if (StringUtils.isEmpty(newValue)) {
+                integerProperty.setValue(null);
+            } else {
+                try {
+                    Integer integerValue = Integer.valueOf(newValue);
+                    if (!Objects.equals(integerValue, integerProperty.getValue())) {
+                        integerProperty.setValue(integerValue);
+                    }
+                } catch (Exception e) {
+                    // Ignore any error here
+                }
+            }
+        });
+        integerProperty.addListener((o, oldValue, newValue) -> {
+            String newStringValue = newValue == null ? null : String.valueOf(newValue);
+            if (!Objects.equals(newStringValue, stringProperty.getValue())) {
+                stringProperty.setValue(newStringValue);
+            }
+        });
+        return integerProperty;
     }
 
     public File getStorageDirectory() {

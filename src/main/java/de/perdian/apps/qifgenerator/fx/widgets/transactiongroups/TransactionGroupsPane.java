@@ -49,7 +49,7 @@ public class TransactionGroupsPane extends BorderPane {
                 }
             }
         });
-        selectedTabIndexProperty.bind(tabPane.getSelectionModel().selectedIndexProperty());
+        tabPane.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue) -> selectedTabIndexProperty.setValue(newValue));
 
         this.setCenter(tabPane);
 

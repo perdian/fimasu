@@ -2,6 +2,8 @@ package de.perdian.apps.qifgenerator.fx.widgets.transactiongroups;
 
 import java.io.File;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
@@ -40,8 +42,11 @@ class TransactionGroupExportPane extends VBox {
         GridPane.setHgrow(fileField, Priority.ALWAYS);
         Button fileSelectButton = new Button("Select", new FontAwesomeIconView(FontAwesomeIcon.HAND_POINTER_ALT));
         fileSelectButton.setOnAction(event -> {
+            File currentlySelectedFile = StringUtils.isEmpty(transactionGroup.getTargetFilePath().getValue()) ? null : new File(transactionGroup.getTargetFilePath().getValue());
+            String currentlySelectedDirectoryPath = currentlySelectedFile == null ? initialDirectory.getValue() : currentlySelectedFile.getParentFile().getAbsolutePath();
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialDirectory(new File(initialDirectory.getValue()));
+            fileChooser.setInitialFileName(currentlySelectedFile == null ? "transactions.qif" : currentlySelectedFile.getName());
+            fileChooser.setInitialDirectory(StringUtils.isEmpty(currentlySelectedDirectoryPath) ? null : new File(currentlySelectedDirectoryPath));
             fileChooser.setTitle("Select target file");
             File selectedFile = fileChooser.showSaveDialog(this.getScene().getWindow());
             if (selectedFile != null) {
@@ -57,7 +62,6 @@ class TransactionGroupExportPane extends VBox {
         secondRowPane.setHgap(2);
         secondRowPane.setPadding(new Insets(4, 8, 8, 8));
         this.getChildren().add(secondRowPane);
-
 
     }
 
