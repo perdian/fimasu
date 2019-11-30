@@ -8,6 +8,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -98,6 +99,23 @@ public class Transaction implements Externalizable {
         this.getBookingCurrency().addListener((o, oldValue, newValue) -> this.recomputeCurrencies(List.of(newValue, this.getMarketCurrency().getValue())));
         this.getMarketCurrency().addListener((o, oldValue, newValue) -> this.recomputeCurrencies(List.of(this.getBookingCurrency().getValue(), newValue)));
 
+    }
+
+    public void copyValuesInto(Transaction targetTransaction) {
+        Optional.ofNullable(targetTransaction.getBookingCurrency().getValue()).ifPresent(this.getBookingCurrency()::setValue);
+        Optional.ofNullable(targetTransaction.getBookingCurrencyExchangeRate().getValue()).ifPresent(this.getBookingCurrencyExchangeRate()::setValue);
+        Optional.ofNullable(targetTransaction.getBookingDate().getValue()).ifPresent(this.getBookingDate()::setValue);
+        Optional.ofNullable(targetTransaction.getCharges().getValue()).ifPresent(this.getCharges()::setValue);
+        Optional.ofNullable(targetTransaction.getChargesCurrency().getValue()).ifPresent(this.getChargesCurrency()::setValue);
+        Optional.ofNullable(targetTransaction.getFinanceTax().getValue()).ifPresent(this.getFinanceTax()::setValue);
+        Optional.ofNullable(targetTransaction.getFinanceTaxCurrency().getValue()).ifPresent(this.getFinanceTaxCurrency()::setValue);
+        Optional.ofNullable(targetTransaction.getMarketCurrency().getValue()).ifPresent(this.getMarketCurrency()::setValue);
+        Optional.ofNullable(targetTransaction.getMarketPrice().getValue()).ifPresent(this.getMarketPrice()::setValue);
+        Optional.ofNullable(targetTransaction.getNumberOfShares().getValue()).ifPresent(this.getNumberOfShares()::setValue);
+        Optional.ofNullable(targetTransaction.getSolidarityTax().getValue()).ifPresent(this.getSolidarityTax()::setValue);
+        Optional.ofNullable(targetTransaction.getSolidarityTaxCurrency().getValue()).ifPresent(this.getSolidarityTaxCurrency()::setValue);
+        Optional.ofNullable(targetTransaction.getType().getValue()).ifPresent(this.getType()::setValue);
+        Optional.ofNullable(targetTransaction.getValutaDate().getValue()).ifPresent(this.getValutaDate()::setValue);
     }
 
     @Override
