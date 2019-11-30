@@ -177,10 +177,7 @@
                             <plist>
                                 <CFBundleIconFile>src/bundle/macos/resources/qifgenerator.icns</CFBundleIconFile>
                                 <JVMMainClassName>de.perdian.apps.qifgenerator.fx.QifGeneratorLauncher</JVMMainClassName>
-<!--
-                                <JVMMainClassName>de.perdian.apps.qifgenerator_OLD.QifGeneratorLauncher</JVMMainClassName>
- -->
-                                <JVMVersion>${java.version}+</JVMVersion>
+                                <JVMVersion>${java.version}</JVMVersion>
                                 <JVMOptions>
                                     <string>-Dapple.laf.useScreenMenuBar=true</string>
                                     <string>-Xdock:name=${project.name}</string>
