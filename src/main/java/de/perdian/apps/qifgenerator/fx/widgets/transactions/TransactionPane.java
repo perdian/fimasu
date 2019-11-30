@@ -5,6 +5,7 @@ import java.util.Map;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.fx.support.converters.DoubleStringConverter;
 import de.perdian.apps.qifgenerator.fx.support.converters.LocalDateStringConverter;
 import de.perdian.apps.qifgenerator.model.Transaction;
@@ -23,7 +24,7 @@ class TransactionPane extends VBox {
 
     TransactionPane(Transaction transaction, ObservableList<Transaction> transactions, Preferences preferences) {
 
-        TransactionComponentBuilder componentBuilder = new TransactionComponentBuilder();
+        ComponentBuilder componentBuilder = new ComponentBuilder();
         this.getChildren().add(this.createFirstLinePane(componentBuilder, transaction, transactions));
         this.getChildren().add(this.createSecondLinePane(componentBuilder, transaction, transactions));
         this.getChildren().add(this.createThirdLinePane(componentBuilder, transaction, transactions));
@@ -32,7 +33,7 @@ class TransactionPane extends VBox {
 
     }
 
-    private Pane createFirstLinePane(TransactionComponentBuilder componentBuilder, Transaction transaction, ObservableList<Transaction> transactions) {
+    private Pane createFirstLinePane(ComponentBuilder componentBuilder, Transaction transaction, ObservableList<Transaction> transactions) {
 
         Button deleteButton = new Button(null, new FontAwesomeIconView(FontAwesomeIcon.TRASH));
         deleteButton.setMaxHeight(Double.MAX_VALUE);
@@ -68,7 +69,7 @@ class TransactionPane extends VBox {
 
     }
 
-    private Pane createSecondLinePane(TransactionComponentBuilder componentBuilder, Transaction transaction, ObservableList<Transaction> transactions) {
+    private Pane createSecondLinePane(ComponentBuilder componentBuilder, Transaction transaction, ObservableList<Transaction> transactions) {
         GridPane secondLinePane = new GridPane();
         TextField bookingCurrencyExchangeRateField = componentBuilder.createTextField(transaction.getBookingCurrencyExchangeRate(), new DoubleStringConverter("0.00000")).width(80d).get();
         bookingCurrencyExchangeRateField.disableProperty().bind(Bindings.equal(transaction.getMarketCurrency(), transaction.getBookingCurrency()));
@@ -93,7 +94,7 @@ class TransactionPane extends VBox {
         return secondLinePane;
     }
 
-    private Pane createThirdLinePane(TransactionComponentBuilder componentBuilder, Transaction transaction, ObservableList<Transaction> transactions) {
+    private Pane createThirdLinePane(ComponentBuilder componentBuilder, Transaction transaction, ObservableList<Transaction> transactions) {
         GridPane thirdLinePane = new GridPane();
         thirdLinePane.add(componentBuilder.createLabel("Charges"), 0, 0, 2, 1);
         thirdLinePane.add(componentBuilder.createTextField(transaction.getCharges(), new DoubleStringConverter("0.00")).width(80d).get(), 0, 1, 1, 1);

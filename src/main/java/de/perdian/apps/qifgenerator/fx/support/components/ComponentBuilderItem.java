@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.fx.widgets.transactions;
+package de.perdian.apps.qifgenerator.fx.support.components;
 
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.value.ObservableBooleanValue;
@@ -7,46 +7,46 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
-class TransactionComponentBuilderItem<T extends Region> {
+public class ComponentBuilderItem<T extends Region> {
 
-    private TransactionComponentBuilder owner = null;
+    private ComponentBuilder owner = null;
     private T component = null;
     private Double width = null;
     private ObservableBooleanValue disabled = null;
     private ObservableBooleanValue focusTraversable = null;
 
-    TransactionComponentBuilderItem(TransactionComponentBuilder owner, T component) {
+    ComponentBuilderItem(ComponentBuilder owner, T component) {
         this.setOwner(owner);
         this.setComponent(component);
     }
 
-    TransactionComponentBuilderItem<T> width(Double width) {
+    public ComponentBuilderItem<T> width(Double width) {
         this.setWidth(width);
         return this;
     }
 
-    TransactionComponentBuilderItem<T> disabled() {
+    public ComponentBuilderItem<T> disabled() {
         return this.disabled(new ReadOnlyBooleanWrapper(true));
     }
 
-    TransactionComponentBuilderItem<T> disabled(ObservableBooleanValue booleanValue) {
+    public ComponentBuilderItem<T> disabled(ObservableBooleanValue booleanValue) {
         this.setDisabled(booleanValue);
         return this;
     }
 
-    TransactionComponentBuilderItem<T> focusTraversable(boolean booleanValue) {
+    public ComponentBuilderItem<T> focusTraversable(boolean booleanValue) {
         return this.focusTraversable(new ReadOnlyBooleanWrapper(booleanValue));
     }
 
-    TransactionComponentBuilderItem<T> focusTraversable(ObservableBooleanValue booleanValue) {
+    public ComponentBuilderItem<T> focusTraversable(ObservableBooleanValue booleanValue) {
         this.setFocusTraversable(booleanValue);
         return this;
     }
 
-    private TransactionComponentBuilder getOwner() {
+    private ComponentBuilder getOwner() {
         return this.owner;
     }
-    private void setOwner(TransactionComponentBuilder owner) {
+    private void setOwner(ComponentBuilder owner) {
         this.owner = owner;
     }
 

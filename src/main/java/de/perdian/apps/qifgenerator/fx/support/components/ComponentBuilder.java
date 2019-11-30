@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.fx.widgets.transactions;
+package de.perdian.apps.qifgenerator.fx.support.components;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -32,43 +32,43 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.util.StringConverter;
 
-class TransactionComponentBuilder {
+public class ComponentBuilder {
 
     private List<EventHandler<KeyEvent>> onKeyPressedEventHandlers = null;
 
-    TransactionComponentBuilder() {
+    public ComponentBuilder() {
         this.setOnKeyPressedEventHandlers(new CopyOnWriteArrayList<>(List.of(new DefaultKeyPressEventHandler())));
     }
 
-    Label createLabel(String text) {
+    public Label createLabel(String text) {
         Label label = new Label(text);
         label.setStyle("-fx-font-size: 80%");
         return label;
     }
 
-    TransactionComponentBuilderItem<TextField> createTextField(StringProperty property) {
+    public ComponentBuilderItem<TextField> createTextField(StringProperty property) {
         return this.createTextField(property, new IdentityStringConverter());
     }
 
-    <T> TransactionComponentBuilderItem<TextField> createTextField(Property<T> property, StringConverter<T> stringConverter) {
+    public <T> ComponentBuilderItem<TextField> createTextField(Property<T> property, StringConverter<T> stringConverter) {
         TextField textField = new TextField();
         Bindings.bindBidirectional(textField.textProperty(), property, stringConverter);
         textField.setMinHeight(Node.BASELINE_OFFSET_SAME_AS_HEIGHT);
         textField.focusedProperty().addListener((o, oldValue, newValue) -> { if (newValue.booleanValue()) { Platform.runLater(() -> textField.selectAll()); } });
         GridPane.setVgrow(textField, Priority.ALWAYS);
-        return new TransactionComponentBuilderItem<>(this, textField);
+        return new ComponentBuilderItem<>(this, textField);
     }
 
-    <T> TransactionComponentBuilderItem<ComboBox<T>> createComboBox(Property<T> property, Function<T, String> valueToStringFunction, List<Map.Entry<String, T>> availableValues) {
+    public <T> ComponentBuilderItem<ComboBox<T>> createComboBox(Property<T> property, Function<T, String> valueToStringFunction, List<Map.Entry<String, T>> availableValues) {
         List<T> comboBoxValues = availableValues.stream().map(Map.Entry::getValue).collect(Collectors.toList());
         ComboBox<T> comboBox = new ComboBox<>(FXCollections.observableArrayList(comboBoxValues));
         comboBox.setConverter(new MapEntryStringConverter<>(valueToStringFunction));
         Bindings.bindBidirectional(comboBox.valueProperty(), property);
         GridPane.setVgrow(comboBox, Priority.ALWAYS);
-        return new TransactionComponentBuilderItem<>(this, comboBox);
+        return new ComponentBuilderItem<>(this, comboBox);
     }
 
-    TransactionComponentBuilderItem<ComboBox<String>> createCurrencySelectionComboBox(Property<String> currencyProperty, List<Property<String>> allCurrencyProperties) {
+    public ComponentBuilderItem<ComboBox<String>> createCurrencySelectionComboBox(Property<String> currencyProperty, List<Property<String>> allCurrencyProperties) {
         List<String> comboBoxInitialValues = allCurrencyProperties.stream().map(Property::getValue).filter(StringUtils::isNotEmpty).distinct().collect(Collectors.toList());
         ObservableList<String> comboBoxValues = FXCollections.observableArrayList(comboBoxInitialValues);
         allCurrencyProperties.forEach(changedProperty -> changedProperty.addListener((o, oldValue, newValue) -> {
@@ -108,7 +108,7 @@ class TransactionComponentBuilder {
         comboBox.disableProperty().bind(Bindings.size(comboBoxValues).lessThanOrEqualTo(1));
         Bindings.bindBidirectional(comboBox.valueProperty(), currencyProperty);
         GridPane.setVgrow(comboBox, Priority.ALWAYS);
-        return new TransactionComponentBuilderItem<>(this, comboBox);
+        return new ComponentBuilderItem<>(this, comboBox);
     }
 
     private static class DefaultKeyPressEventHandler implements EventHandler<KeyEvent> {

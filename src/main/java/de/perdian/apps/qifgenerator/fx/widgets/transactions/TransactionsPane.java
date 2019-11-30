@@ -28,9 +28,9 @@ public class TransactionsPane extends BorderPane {
 
         Button addTransactionButton = new Button("Add transaction", new FontAwesomeIconView(FontAwesomeIcon.PLUS));
         addTransactionButton.setOnAction(event -> transactions.add(new Transaction()));
-        ToolBar toolBar = new ToolBar();
-        toolBar.getItems().add(addTransactionButton);
-        this.setTop(toolBar);
+        ToolBar buttonsToolBar = new ToolBar();
+        buttonsToolBar.getItems().add(addTransactionButton);
+        this.setTop(buttonsToolBar);
 
         log.debug("Initializing {} transactions", transactions.size());
         Map<Transaction, TransactionPane> transactionPanesByTransaction = new HashMap<>();
@@ -38,7 +38,7 @@ public class TransactionsPane extends BorderPane {
         transactionsWrapper.setPadding(new Insets(8, 8, 8, 8));
         for (Transaction transaction : transactions) {
             TransactionPane transactionPane = new TransactionPane(transaction, transactions, preferences);
-            transactionPane.setPadding(new Insets(0, 0, 8, 0));
+            transactionPane.setPadding(new Insets(0, 0, 12, 0));
             transactionPanesByTransaction.put(transaction, transactionPane);
             transactionsWrapper.getChildren().add(transactionPane);
         }
@@ -54,7 +54,7 @@ public class TransactionsPane extends BorderPane {
                     change.getAddedSubList().forEach(addedTransaction -> {
                         int transactionIndex = transactions.indexOf(addedTransaction);
                         TransactionPane transactionPane = new TransactionPane(addedTransaction, transactions, preferences);
-                        transactionPane.setPadding(new Insets(0, 0, 8, 0));
+                        transactionPane.setPadding(new Insets(0, 0, 12, 0));
                         transactionPanesByTransaction.put(addedTransaction, transactionPane);
                         transactionsWrapper.getChildren().add(transactionIndex, transactionPane);
                         transactionPane.requestFocus();

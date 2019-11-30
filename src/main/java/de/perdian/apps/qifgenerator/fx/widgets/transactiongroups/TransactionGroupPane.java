@@ -5,9 +5,10 @@ import de.perdian.apps.qifgenerator.model.TransactionGroup;
 import de.perdian.apps.qifgenerator.preferences.Preferences;
 import javafx.geometry.Insets;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
-class TransactionGroupPane extends BorderPane {
+class TransactionGroupPane extends VBox {
 
     TransactionGroupPane(TransactionGroup transactionGroup, Preferences preferences) {
 
@@ -15,9 +16,15 @@ class TransactionGroupPane extends BorderPane {
         TitledPane transactionsTitledPane = new TitledPane("Transactions", transactionsPane);
         transactionsTitledPane.setCollapsible(false);
         transactionsTitledPane.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(transactionsTitledPane, Priority.ALWAYS);
 
+        TransactionGroupActionsPane actionsPane = new TransactionGroupActionsPane(transactionGroup, preferences);
+        TitledPane actionsTitledPane = new TitledPane("Actions", actionsPane);
+        actionsTitledPane.setCollapsible(false);
+
+        this.setSpacing(8);
         this.setPadding(new Insets(8, 8, 8, 8));
-        this.setCenter(transactionsTitledPane);
+        this.getChildren().addAll(transactionsTitledPane, actionsTitledPane);
 
     }
 

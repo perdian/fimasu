@@ -29,6 +29,9 @@ public class TransactionGroup implements Externalizable {
     private final List<ChangeListener<TransactionGroup>> changeListeners = new CopyOnWriteArrayList<>();
 
     public TransactionGroup() {
+        this.getTitle().addListener((x, oldValue, newValue) -> this.fireChange());
+        this.getAccount().addListener((x, oldValue, newValue) -> this.fireChange());
+        this.getTargetFilePath().addListener((x, oldValue, newValue) -> this.fireChange());
         this.getTransactions().addListener((ListChangeListener<Transaction>)event -> {
             while (event.next()) {
                 for (Transaction addedTransaction : event.getAddedSubList()) {
@@ -38,9 +41,6 @@ public class TransactionGroup implements Externalizable {
             }
             this.fireChange();
         });
-        this.getTitle().addListener((x, oldValue, newValue) -> this.fireChange());
-        this.getTitle().addListener((x, oldValue, newValue) -> this.fireChange());
-        this.getTitle().addListener((x, oldValue, newValue) -> this.fireChange());
     }
 
     private void fireChange() {

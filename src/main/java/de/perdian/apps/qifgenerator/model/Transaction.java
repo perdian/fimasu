@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,8 +23,6 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 
 public class Transaction implements Externalizable {
-
-    private Stream<String> myStream;
 
     static final long serialVersionUID = 1L;
 
