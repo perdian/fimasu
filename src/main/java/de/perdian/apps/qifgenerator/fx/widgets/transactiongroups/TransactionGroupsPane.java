@@ -36,14 +36,14 @@ public class TransactionGroupsPane extends BorderPane {
         IntegerProperty selectedTabIndexProperty = preferences.getIntegerProperty("transactions.selectedTabIndex", 0);
         TabPane tabPane = new TabPane();
         for (TransactionGroup transactionGroup : transactionGroups) {
-            tabPane.getTabs().add(new TransactionGroupTab(transactionGroups, transactionGroup, componentBuilder, preferences));
+            tabPane.getTabs().add(new TransactionGroupTab(transactionGroups, transactionGroup, componentBuilder.createChild(), preferences));
         }
         tabPane.setContextMenu(new ContextMenu(createTransactionGroupItem));
         tabPane.getSelectionModel().select(selectedTabIndexProperty.getValue());
         transactionGroups.addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> {
             while (change.next()) {
                 for (TransactionGroup newGroup : change.getAddedSubList()) {
-                    Tab newTab = new TransactionGroupTab(transactionGroups, newGroup, componentBuilder, preferences);
+                    Tab newTab = new TransactionGroupTab(transactionGroups, newGroup, componentBuilder.createChild(), preferences);
                     tabPane.getTabs().add(newTab);
                     tabPane.getSelectionModel().select(newTab);
                 }
@@ -86,6 +86,7 @@ public class TransactionGroupsPane extends BorderPane {
     static class TransactionGroupTab extends Tab {
 
         TransactionGroupTab(ObservableList<TransactionGroup> transactionGroups, TransactionGroup transactionGroup, ComponentBuilder componentBuilder, Preferences preferences) {
+            componentBuilder.addOnKeyPressedEventHandler(new TransactionGroupKeyPressedEventHandler(transactionGroup));
             this.textProperty().bind(transactionGroup.getTitle());
             this.setOnCloseRequest(event -> {
                 if (transactionGroups.size() > 1) {

@@ -40,6 +40,12 @@ public class ComponentBuilder {
         this.setOnKeyPressedEventHandlers(new CopyOnWriteArrayList<>(List.of(new DefaultKeyPressEventHandler())));
     }
 
+    public ComponentBuilder createChild() {
+        ComponentBuilder childBuilder = new ComponentBuilder();
+        childBuilder.getOnKeyPressedEventHandlers().addAll(this.getOnKeyPressedEventHandlers());
+        return childBuilder;
+    }
+
     public Label createLabel(String text) {
         Label label = new Label(text);
         label.setStyle("-fx-font-size: 80%");

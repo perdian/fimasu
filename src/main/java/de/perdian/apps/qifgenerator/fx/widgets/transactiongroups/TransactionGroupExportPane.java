@@ -24,6 +24,7 @@ class TransactionGroupExportPane extends VBox {
     TransactionGroupExportPane(TransactionGroup transactionGroup, ComponentBuilder componentBuilder, Preferences preferences) {
 
         Button exportButton = new Button("Export", new FontAwesomeIconView(FontAwesomeIcon.FILE));
+        exportButton.setOnAction(new TransactionGroupExportActionEventHandler(transactionGroup));
         ToolBar buttonToolbar = new ToolBar(exportButton);
         this.getChildren().add(buttonToolbar);
 
