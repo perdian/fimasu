@@ -2,16 +2,18 @@ package de.perdian.apps.qifgenerator.fx.widgets.transactions;
 
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.value.ObservableBooleanValue;
-import javafx.scene.control.Control;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 
-class TransactionComponentBuilderItem<T extends Control> {
+class TransactionComponentBuilderItem<T extends Region> {
 
     private TransactionComponentBuilder owner = null;
     private T component = null;
     private Double width = null;
+    private ObservableBooleanValue disabled = null;
+    private ObservableBooleanValue focusTraversable = null;
 
     TransactionComponentBuilderItem(TransactionComponentBuilder owner, T component) {
         this.setOwner(owner);
@@ -28,7 +30,16 @@ class TransactionComponentBuilderItem<T extends Control> {
     }
 
     TransactionComponentBuilderItem<T> disabled(ObservableBooleanValue booleanValue) {
-        this.getComponent().disableProperty().bind(booleanValue);
+        this.setDisabled(booleanValue);
+        return this;
+    }
+
+    TransactionComponentBuilderItem<T> focusTraversable(boolean booleanValue) {
+        return this.focusTraversable(new ReadOnlyBooleanWrapper(booleanValue));
+    }
+
+    TransactionComponentBuilderItem<T> focusTraversable(ObservableBooleanValue booleanValue) {
+        this.setFocusTraversable(booleanValue);
         return this;
     }
 
@@ -48,6 +59,12 @@ class TransactionComponentBuilderItem<T extends Control> {
             this.getComponent().setMaxWidth(Double.MAX_VALUE);
             GridPane.setHgrow(this.getComponent(), Priority.ALWAYS);
         }
+        if (this.getDisabled() != null) {
+            this.getComponent().disableProperty().bind(this.getDisabled());
+        }
+        if (this.getFocusTraversable() != null) {
+            this.getComponent().focusTraversableProperty().bind(this.getFocusTraversable());
+        }
         this.getOwner().getOnKeyPressedEventHandlers().forEach(eventHandler -> this.getComponent().addEventHandler(KeyEvent.KEY_PRESSED, eventHandler));
         return this.getComponent();
     }
@@ -64,6 +81,20 @@ class TransactionComponentBuilderItem<T extends Control> {
     }
     private void setWidth(Double width) {
         this.width = width;
+    }
+
+    private ObservableBooleanValue getDisabled() {
+        return this.disabled;
+    }
+    private void setDisabled(ObservableBooleanValue disabled) {
+        this.disabled = disabled;
+    }
+
+    private ObservableBooleanValue getFocusTraversable() {
+        return this.focusTraversable;
+    }
+    private void setFocusTraversable(ObservableBooleanValue focusTraversable) {
+        this.focusTraversable = focusTraversable;
     }
 
 }

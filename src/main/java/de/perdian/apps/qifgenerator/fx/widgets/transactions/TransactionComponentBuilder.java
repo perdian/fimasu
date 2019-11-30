@@ -6,10 +6,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import de.perdian.apps.qifgenerator.fx.support.converters.DoubleStringConverter;
 import de.perdian.apps.qifgenerator.fx.support.converters.IdentityStringConverter;
 import de.perdian.apps.qifgenerator.fx.support.converters.MapEntryStringConverter;
+import de.perdian.apps.qifgenerator.fx.support.widgets.MonetaryValueBox;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -57,9 +60,14 @@ class TransactionComponentBuilder {
         ComboBox<T> comboBox = new ComboBox<>(FXCollections.observableArrayList(comboBoxValues));
         comboBox.setConverter(new MapEntryStringConverter<>(valueToStringFunction));
         Bindings.bindBidirectional(comboBox.valueProperty(), property);
-        comboBox.setFocusTraversable(false);
         GridPane.setVgrow(comboBox, Priority.ALWAYS);
         return new TransactionComponentBuilderItem<>(this, comboBox);
+    }
+
+    TransactionComponentBuilderItem<MonetaryValueBox> createMonetaryValueBox(Property<Double> valueProperty, StringProperty currencyProperty, DoubleStringConverter valueStringConverter, StringProperty bookingCurrencyProperty, DoubleProperty bookingCurrencyConversionRateProperty) {
+        MonetaryValueBox valueBox = new MonetaryValueBox(valueProperty, currencyProperty, valueStringConverter, bookingCurrencyProperty, bookingCurrencyConversionRateProperty);
+        GridPane.setVgrow(valueBox, Priority.ALWAYS);
+        return new TransactionComponentBuilderItem<>(this, valueBox);
     }
 
     private static class DefaultKeyPressEventHandler implements EventHandler<KeyEvent> {
