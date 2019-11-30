@@ -9,9 +9,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,6 +24,8 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 
 public class Transaction implements Externalizable {
+
+    private Stream<String> myStream;
 
     static final long serialVersionUID = 1L;
 
@@ -91,6 +98,9 @@ public class Transaction implements Externalizable {
         this.getSolidarityTax().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.getType().getValue(), this.getBookingValue().getValue(), this.getBookingCurrency().getValue(), this.getBookingCurrencyExchangeRate().getValue(), this.getCharges().getValue(), this.getChargesCurrency().getValue(), this.getFinanceTax().getValue(), this.getFinanceTaxCurrency().getValue(), newValue, this.getSolidarityTaxCurrency().getValue()));
         this.getSolidarityTaxCurrency().addListener((o, oldValue, newValue) -> this.recomputeTotalValue(this.getType().getValue(), this.getBookingValue().getValue(), this.getBookingCurrency().getValue(), this.getBookingCurrencyExchangeRate().getValue(), this.getCharges().getValue(), this.getChargesCurrency().getValue(), this.getFinanceTax().getValue(), this.getFinanceTaxCurrency().getValue(), this.getSolidarityTax().getValue(), newValue));
 
+        this.getBookingCurrency().addListener((o, oldValue, newValue) -> this.recomputeCurrencies(List.of(newValue, this.getMarketCurrency().getValue())));
+        this.getMarketCurrency().addListener((o, oldValue, newValue) -> this.recomputeCurrencies(List.of(this.getBookingCurrency().getValue(), newValue)));
+
     }
 
     @Override
@@ -114,7 +124,7 @@ public class Transaction implements Externalizable {
         this.getMarketCurrency().setValue((String)in.readObject());
         this.getBookingCurrency().setValue((String)in.readObject());
         this.getCharges().setValue((Double)in.readObject());
-        this.getChargesCurrency().setValue((String)in.readObject());
+        this.getChargesCurrency().setValue(StringUtils.defaultIfEmpty((String)in.readObject(), this.getBookingCurrency().getValue()));
         this.getFinanceTaxCurrency().setValue(this.getBookingCurrency().getValue());
         this.getSolidarityTaxCurrency().setValue(this.getBookingCurrency().getValue());
     }
@@ -139,15 +149,12 @@ public class Transaction implements Externalizable {
         if (bookingValue == null || bookingValue.doubleValue() == 0d) {
             this.getTotalValue().setValue(null);
         } else {
-
             double factor = TransactionType.BUY.equals(transactionType) ? 1d : -1d;
-
             double totalValue = bookingValue.doubleValue();
             totalValue += factor * (charges == null ? 0d : this.computeAmountInBookingCurrency(charges, chargesCurrency, bookingCurrency, bookingCurrencyExchangeRate));
             totalValue += factor * (financeTax == null ? 0d : this.computeAmountInBookingCurrency(financeTax, financeTaxCurrency, bookingCurrency, bookingCurrencyExchangeRate));
             totalValue += factor * (solidarityTax == null ? 0d : this.computeAmountInBookingCurrency(solidarityTax, solidarityTaxCurrency, bookingCurrency, bookingCurrencyExchangeRate));
             this.getTotalValue().setValue(totalValue);
-
         }
     }
 
@@ -163,6 +170,16 @@ public class Transaction implements Externalizable {
             }
             this.getValutaDate().setValue(nextValutaDate);
         }
+    }
+
+    private void recomputeCurrencies(List<String> availableCurrencies) {
+        List<String> consolidatedCurrencies = availableCurrencies.stream().filter(StringUtils::isNotEmpty).distinct().collect(Collectors.toList());
+        List<Property<String>> currencyProperties = List.of(this.getChargesCurrency(), this.getFinanceTaxCurrency(), this.getSolidarityTaxCurrency());
+        currencyProperties.stream().forEach(property -> {
+            if (StringUtils.isEmpty(property.getValue()) || !consolidatedCurrencies.contains(property.getValue())) {
+                property.setValue(consolidatedCurrencies.isEmpty() ? null : consolidatedCurrencies.get(0));
+            }
+        });
     }
 
     private double computeAmountInBookingCurrency(Number inputValue, String inputCurrency, String bookingCurrency, Number bookingCurrencyExchangeRate) {
