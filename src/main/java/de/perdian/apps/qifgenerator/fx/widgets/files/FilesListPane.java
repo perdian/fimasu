@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.fx.widgets.previews;
+package de.perdian.apps.qifgenerator.fx.widgets.files;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -22,7 +22,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -40,22 +39,17 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
 
-class PreviewFilesPane extends GridPane {
+class FilesListPane extends GridPane {
 
-    private static final Logger log = LoggerFactory.getLogger(PreviewFilesPane.class);
+    private static final Logger log = LoggerFactory.getLogger(FilesListPane.class);
 
-    private ObjectProperty<File> selectedFileProperty = null;
-    private ObservableList<File> files = null;
-
-    PreviewFilesPane(Preferences preferences) {
+    FilesListPane(ObservableList<File> files, ObjectProperty<File> selectedFile, Preferences preferences) {
 
         ComponentBuilder componentBuilder = new ComponentBuilder();
 
-        ObjectProperty<File> selectedFileProperty = new SimpleObjectProperty<>();
         StringProperty directoryValueProperty = preferences.getStringProperty("previews.directory", System.getProperty("user.home"));
         String directoryValue = directoryValueProperty.getValue();
         ObjectProperty<File> directoryProperty = new SimpleObjectProperty<>(StringUtils.isEmpty(directoryValue) ? null : new File(directoryValue));
-        this.setSelectedFileProperty(selectedFileProperty);
 
         directoryValueProperty.addListener((o, oldValue, newValue) -> {
             if (!Objects.equals(oldValue, newValue)) {
@@ -77,10 +71,8 @@ class PreviewFilesPane extends GridPane {
         Label filesLabel = componentBuilder.createLabel("Files");
         GridPane.setMargin(filesLabel, new Insets(8, 0, 0, 0));
 
-        ObservableList<File> files = FXCollections.observableArrayList();
         this.loadFiles(directoryProperty.getValue(), files);
         directoryProperty.addListener((o, oldValue, newValue) -> this.loadFiles(newValue, files));
-        this.setFiles(files);
 
         TableColumn<File, Boolean> typeColumn = new TableColumn<>("");
         typeColumn.setCellValueFactory(in -> new SimpleBooleanProperty(in.getValue().isDirectory()));
@@ -109,26 +101,25 @@ class PreviewFilesPane extends GridPane {
         filesTableView.getColumns().addAll(List.of(typeColumn, fileTitleColumn));
         GridPane.setHgrow(filesTableView, Priority.ALWAYS);
         GridPane.setVgrow(filesTableView, Priority.ALWAYS);
-        selectedFileProperty.addListener((o, oldValue, newValue) -> this.scrollToFile(filesTableView, newValue));
+        selectedFile.addListener((o, oldValue, newValue) -> this.scrollToFile(filesTableView, newValue));
         filesTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         filesTableView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> {
             if (newValue == null) {
-                selectedFileProperty.setValue(null);
+                selectedFile.setValue(null);
             } else if (newValue.isFile()) {
-                selectedFileProperty.setValue(newValue);
+                selectedFile.setValue(newValue);
             }
         });
         filesTableView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getClickCount() > 1) {
-                File selectedFile = filesTableView.getSelectionModel().getSelectedItem();
-                if (selectedFile.isDirectory()) {
-                    directoryProperty.setValue(selectedFile);
+                File selectedDirectory = filesTableView.getSelectionModel().getSelectedItem();
+                if (selectedDirectory.isDirectory()) {
+                    directoryProperty.setValue(selectedDirectory);
                 }
             }
         });
-        selectedFileProperty.addListener((o, oldValue, newValue) -> {
-            File selectedFile = filesTableView.getSelectionModel().getSelectedItem();
-            if (!Objects.equals(oldValue, newValue) && !Objects.equals(newValue, selectedFile)) {
+        selectedFile.addListener((o, oldValue, newValue) -> {
+            if (!Objects.equals(oldValue, newValue) && !Objects.equals(newValue, filesTableView.getSelectionModel().getSelectedItem())) {
                 filesTableView.getSelectionModel().select(newValue);
             }
         });
@@ -229,20 +220,6 @@ class PreviewFilesPane extends GridPane {
             return !file.isHidden() && !file.getName().startsWith(".") && !file.getName().startsWith("$");
         }
 
-    }
-
-    ObjectProperty<File> getSelectedFileProperty() {
-        return this.selectedFileProperty;
-    }
-    void setSelectedFileProperty(ObjectProperty<File> selectedFileProperty) {
-        this.selectedFileProperty = selectedFileProperty;
-    }
-
-    ObservableList<File> getFiles() {
-        return this.files;
-    }
-    void setFiles(ObservableList<File> files) {
-        this.files = files;
     }
 
 }

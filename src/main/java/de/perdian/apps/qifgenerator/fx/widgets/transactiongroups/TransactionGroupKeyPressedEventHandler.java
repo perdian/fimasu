@@ -1,5 +1,6 @@
 package de.perdian.apps.qifgenerator.fx.widgets.transactiongroups;
 
+import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ExportActionEventHandler;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -17,7 +18,7 @@ class TransactionGroupKeyPressedEventHandler implements EventHandler<KeyEvent> {
     @Override
     public void handle(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER && event.isMetaDown()) {
-            new TransactionGroupExportActionEventHandler(this.getTransactionGroup()).handle(new ActionEvent(event.getSource(), event.getTarget()));
+            new ExportActionEventHandler(this.getTransactionGroup()).handle(new ActionEvent(event.getSource(), event.getTarget()));
             event.consume();
         }
     }

@@ -1,28 +1,28 @@
-package de.perdian.apps.qifgenerator.fx.widgets.previews;
+package de.perdian.apps.qifgenerator.fx.widgets.files;
 
 import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.qifgenerator.fx.widgets.previews.impl.PdfContentPane;
+import de.perdian.apps.qifgenerator.fx.widgets.files.impl.PdfContentPane;
 import de.perdian.apps.qifgenerator.preferences.Preferences;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
-class PreviewContentPane extends BorderPane {
+class FileContentWrapperPane extends BorderPane {
 
-    private static final Logger log = LoggerFactory.getLogger(PreviewContentPane.class);
+    private static final Logger log = LoggerFactory.getLogger(FileContentWrapperPane.class);
 
-    private final ObjectProperty<PreviewDocumentPane> previewDocumentPaneProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<FileContentPane> fileContentPane = null;
 
-    PreviewContentPane(ObjectProperty<File> selectedFileProperty, Preferences preferences) {
-        selectedFileProperty.addListener((o, oldValue, newValue) -> {
+    FileContentWrapperPane(ObjectProperty<File> selectedFile, ObjectProperty<FileContentPane> fileContentPane, Preferences preferences) {
+        this.setFileContentPane(fileContentPane);
+        selectedFile.addListener((o, oldValue, newValue) -> {
             if (newValue == null) {
                 this.setCenter(new Label("No content loaded"));
-                this.getPreviewDocumentPaneProperty().setValue(null);
+                this.getFileContentPane().setValue(null);
             } else {
                 log.info("Loading content for file: {}", newValue.getAbsolutePath());
                 this.setCenter(new Label("Loading content for file:\n" + newValue.getName()));
@@ -31,7 +31,7 @@ class PreviewContentPane extends BorderPane {
                 } catch (Exception e) {
                     log.warn("Cannot load content for file: {}", newValue, e);
                     this.setCenter(new Label("Cannot load content for file:\n" + newValue.getName()));
-                    this.getPreviewDocumentPaneProperty().setValue(null);
+                    this.getFileContentPane().setValue(null);
                 }
             }
         });
@@ -41,14 +41,18 @@ class PreviewContentPane extends BorderPane {
         if (file.getName().toLowerCase().endsWith(".pdf")) {
             PdfContentPane pdfContentDetailPane = new PdfContentPane(file);
             this.setCenter(pdfContentDetailPane);
-            this.getPreviewDocumentPaneProperty().setValue(pdfContentDetailPane);
+            this.getFileContentPane().setValue(pdfContentDetailPane);
         } else {
             throw new UnsupportedOperationException("Unsupported file: " + file.getName());
         }
     }
 
-    ObjectProperty<PreviewDocumentPane> getPreviewDocumentPaneProperty() {
-        return this.previewDocumentPaneProperty;
+    private ObjectProperty<FileContentPane> getFileContentPane() {
+        return this.fileContentPane;
     }
+    private void setFileContentPane(ObjectProperty<FileContentPane> fileContentPane) {
+        this.fileContentPane = fileContentPane;
+    }
+
 
 }

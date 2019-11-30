@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.fx.widgets.previews.impl;
+package de.perdian.apps.qifgenerator.fx.widgets.files.impl;
 
 import java.io.File;
 import java.util.ResourceBundle;
@@ -9,7 +9,7 @@ import org.icepdf.ri.util.PropertiesManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.qifgenerator.fx.widgets.previews.PreviewDocumentPane;
+import de.perdian.apps.qifgenerator.fx.widgets.files.FileContentPane;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.control.Label;
@@ -17,7 +17,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 
-public class PdfContentPane extends BorderPane implements PreviewDocumentPane {
+public class PdfContentPane extends BorderPane implements FileContentPane {
 
     private static final Logger log = LoggerFactory.getLogger(PdfContentPane.class);
 

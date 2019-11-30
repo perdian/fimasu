@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.fx.widgets.transactiongroups;
+package de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions;
 
 import java.io.File;
 
@@ -14,13 +14,13 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
-class TransactionGroupExportActionEventHandler implements EventHandler<ActionEvent> {
+public class ExportActionEventHandler implements EventHandler<ActionEvent> {
 
-    private static final Logger log = LoggerFactory.getLogger(TransactionGroupExportActionEventHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ExportActionEventHandler.class);
 
     private TransactionGroup transactionGroup = null;
 
-    TransactionGroupExportActionEventHandler(TransactionGroup transactionGroup) {
+    public ExportActionEventHandler(TransactionGroup transactionGroup) {
         this.setTransactionGroup(transactionGroup);
     }
 

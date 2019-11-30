@@ -20,9 +20,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
-class TransactionPane extends VBox {
+public class TransactionPane extends VBox {
 
-    TransactionPane(Transaction transaction, ObservableList<Transaction> transactions, ComponentBuilder componentBuilder, Preferences preferences) {
+    public TransactionPane(Transaction transaction, ObservableList<Transaction> transactions, ComponentBuilder componentBuilder, Preferences preferences) {
 
         this.getChildren().add(this.createFirstLinePane(componentBuilder, transaction, transactions));
         this.getChildren().add(this.createSecondLinePane(componentBuilder, transaction, transactions));
