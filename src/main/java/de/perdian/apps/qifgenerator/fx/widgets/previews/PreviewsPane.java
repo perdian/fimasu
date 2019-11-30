@@ -1,6 +1,7 @@
 package de.perdian.apps.qifgenerator.fx.widgets.previews;
 
 import java.io.File;
+import java.util.Optional;
 
 import de.perdian.apps.qifgenerator.preferences.Preferences;
 import javafx.beans.property.ObjectProperty;
@@ -17,17 +18,21 @@ public class PreviewsPane extends VBox {
 
     private ObservableList<File> previewFiles = null;
     private ObjectProperty<File> selectedPreviewFile = null;
+    private ObjectProperty<PreviewDocumentPane> previewDocumentPane = null;
 
     public PreviewsPane(Preferences preferences) {
 
         PreviewFilesPane filesPane = new PreviewFilesPane(preferences);
+        filesPane.setMinHeight(250);
+        filesPane.setMaxHeight(250);
         filesPane.setPadding(new Insets(8, 8, 8, 8));
         this.setPreviewFiles(filesPane.getFiles());
         this.setSelectedPreviewFile(filesPane.getSelectedFileProperty());
         TitledPane filesTitledPane = new TitledPane("Files", filesPane);
         filesTitledPane.setCollapsible(false);
 
-        PreviewContentPane contentPane = new PreviewContentPane();
+        PreviewContentPane contentPane = new PreviewContentPane(filesPane.getSelectedFileProperty(), preferences);
+        this.setPreviewDocumentPane(contentPane.getPreviewDocumentPaneProperty());
         TitledPane contentTitledPane = new TitledPane("Content", contentPane);
         contentTitledPane.setCollapsible(false);
         contentTitledPane.setMaxHeight(Double.MAX_VALUE);
@@ -41,20 +46,34 @@ public class PreviewsPane extends VBox {
 
     public EventHandler<KeyEvent> createNavigationKeyPressedEventHandler() {
         return event -> {
-            if (event.getCode() == KeyCode.PAGE_DOWN && !event.isMetaDown() && !event.isShiftDown()) {
-                int indexOfPreviewFile = this.getSelectedPreviewFile().getValue() == null ? -1 : this.getPreviewFiles().indexOf(this.getSelectedPreviewFile().getValue());
-                if (indexOfPreviewFile < 0 && !this.getPreviewFiles().isEmpty()) {
-                    this.getSelectedPreviewFile().setValue(this.getPreviewFiles().get(0));
-                } else if ((indexOfPreviewFile + 1) < this.getPreviewFiles().size()) {
-                    this.getSelectedPreviewFile().setValue(this.getPreviewFiles().get(indexOfPreviewFile + 1));
+            if (event.getCode() == KeyCode.PAGE_DOWN) {
+                if (event.isShiftDown()) {
+                    Optional.ofNullable(this.getPreviewDocumentPane().getValue()).ifPresent(pane -> pane.changePage(1));
+                } else if (event.isControlDown()) {
+                    Optional.ofNullable(this.getPreviewDocumentPane().getValue()).ifPresent(pane -> pane.scrollDocument(1));
+                } else {
+                    int indexOfPreviewFile = this.getSelectedPreviewFile().getValue() == null ? -1 : this.getPreviewFiles().indexOf(this.getSelectedPreviewFile().getValue());
+                    if (indexOfPreviewFile < 0 && !this.getPreviewFiles().isEmpty()) {
+                        this.getSelectedPreviewFile().setValue(this.getPreviewFiles().get(0));
+                    } else if ((indexOfPreviewFile + 1) < this.getPreviewFiles().size()) {
+                        this.getSelectedPreviewFile().setValue(this.getPreviewFiles().get(indexOfPreviewFile + 1));
+                    }
                 }
-            } else if (event.getCode() == KeyCode.PAGE_UP && !event.isMetaDown() && !event.isShiftDown()) {
-                int indexOfPreviewFile = this.getSelectedPreviewFile().getValue() == null ? -1 : this.getPreviewFiles().indexOf(this.getSelectedPreviewFile().getValue());
-                if (indexOfPreviewFile < 0 && !this.getPreviewFiles().isEmpty()) {
-                    this.getSelectedPreviewFile().setValue(this.getPreviewFiles().get(this.getPreviewFiles().size() - 1));
-                } else if ((indexOfPreviewFile - 1) >= 0 && !this.getPreviewFiles().isEmpty()) {
-                    this.getSelectedPreviewFile().setValue(this.getPreviewFiles().get(indexOfPreviewFile - 1));
+                event.consume();
+            } else if (event.getCode() == KeyCode.PAGE_UP) {
+                if (event.isShiftDown()) {
+                    Optional.ofNullable(this.getPreviewDocumentPane().getValue()).ifPresent(pane -> pane.changePage(-1));
+                } else if (event.isControlDown()) {
+                    Optional.ofNullable(this.getPreviewDocumentPane().getValue()).ifPresent(pane -> pane.scrollDocument(-1));
+                } else {
+                    int indexOfPreviewFile = this.getSelectedPreviewFile().getValue() == null ? -1 : this.getPreviewFiles().indexOf(this.getSelectedPreviewFile().getValue());
+                    if (indexOfPreviewFile < 0 && !this.getPreviewFiles().isEmpty()) {
+                        this.getSelectedPreviewFile().setValue(this.getPreviewFiles().get(this.getPreviewFiles().size() - 1));
+                    } else if ((indexOfPreviewFile - 1) >= 0 && !this.getPreviewFiles().isEmpty()) {
+                        this.getSelectedPreviewFile().setValue(this.getPreviewFiles().get(indexOfPreviewFile - 1));
+                    }
                 }
+                event.consume();
             }
         };
     }
@@ -71,6 +90,13 @@ public class PreviewsPane extends VBox {
     }
     private void setSelectedPreviewFile(ObjectProperty<File> selectedPreviewFile) {
         this.selectedPreviewFile = selectedPreviewFile;
+    }
+
+    private ObjectProperty<PreviewDocumentPane> getPreviewDocumentPane() {
+        return this.previewDocumentPane;
+    }
+    private void setPreviewDocumentPane(ObjectProperty<PreviewDocumentPane> previewDocumentPane) {
+        this.previewDocumentPane = previewDocumentPane;
     }
 
 }

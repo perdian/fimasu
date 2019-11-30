@@ -108,7 +108,7 @@ class PreviewFilesPane extends GridPane {
         filesTableView.setPrefHeight(150);
         filesTableView.getColumns().addAll(List.of(typeColumn, fileTitleColumn));
         GridPane.setHgrow(filesTableView, Priority.ALWAYS);
-        GridPane.setVgrow(filesTableView, Priority.SOMETIMES);
+        GridPane.setVgrow(filesTableView, Priority.ALWAYS);
         selectedFileProperty.addListener((o, oldValue, newValue) -> this.scrollToFile(filesTableView, newValue));
         filesTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         filesTableView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> {
@@ -136,7 +136,7 @@ class PreviewFilesPane extends GridPane {
         Button selectDirectoryButton = new Button("Select", new FontAwesomeIconView(FontAwesomeIcon.HAND_POINTER_ALT));
         selectDirectoryButton.setTooltip(new Tooltip("Select directory"));
         selectDirectoryButton.setOnAction(event -> this.selectDirectory(directoryProperty));
-        GridPane.setVgrow(selectDirectoryButton, Priority.ALWAYS);
+        GridPane.setVgrow(selectDirectoryButton, Priority.SOMETIMES);
         Button goUpButton = new Button(null, new FontAwesomeIconView(FontAwesomeIcon.ARROW_UP));
         goUpButton.setTooltip(new Tooltip("Go up"));
         goUpButton.setOnAction(event -> {
@@ -148,12 +148,12 @@ class PreviewFilesPane extends GridPane {
             }
         });
         goUpButton.setMaxHeight(Double.MAX_VALUE);
-        GridPane.setVgrow(goUpButton, Priority.ALWAYS);
+        GridPane.setVgrow(goUpButton, Priority.SOMETIMES);
         Button reloadButton = new Button(null, new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
         reloadButton.setTooltip(new Tooltip("Reload"));
         reloadButton.setOnAction(event -> this.loadFiles(directoryProperty.getValue(), files));
         reloadButton.setMaxHeight(Double.MAX_VALUE);
-        GridPane.setVgrow(reloadButton, Priority.ALWAYS);
+        GridPane.setVgrow(reloadButton, Priority.SOMETIMES);
 
         this.setVgap(2);
         this.setHgap(2);
