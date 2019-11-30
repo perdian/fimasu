@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.model.Transaction;
 import de.perdian.apps.qifgenerator.preferences.Preferences;
 import javafx.collections.ListChangeListener;
@@ -24,7 +25,7 @@ public class TransactionsPane extends BorderPane {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionsPane.class);
 
-    public TransactionsPane(ObservableList<Transaction> transactions, Preferences preferences) {
+    public TransactionsPane(ObservableList<Transaction> transactions, ComponentBuilder componentBuilder, Preferences preferences) {
 
         Button addTransactionButton = new Button("Add transaction", new FontAwesomeIconView(FontAwesomeIcon.PLUS));
         addTransactionButton.setOnAction(event -> transactions.add(new Transaction()));
@@ -37,7 +38,7 @@ public class TransactionsPane extends BorderPane {
         VBox transactionsWrapper = new VBox(8);
         transactionsWrapper.setPadding(new Insets(8, 8, 8, 8));
         for (Transaction transaction : transactions) {
-            TransactionPane transactionPane = new TransactionPane(transaction, transactions, preferences);
+            TransactionPane transactionPane = new TransactionPane(transaction, transactions, componentBuilder, preferences);
             transactionPane.setPadding(new Insets(0, 0, 12, 0));
             transactionPanesByTransaction.put(transaction, transactionPane);
             transactionsWrapper.getChildren().add(transactionPane);
@@ -53,7 +54,7 @@ public class TransactionsPane extends BorderPane {
                     });
                     change.getAddedSubList().forEach(addedTransaction -> {
                         int transactionIndex = transactions.indexOf(addedTransaction);
-                        TransactionPane transactionPane = new TransactionPane(addedTransaction, transactions, preferences);
+                        TransactionPane transactionPane = new TransactionPane(addedTransaction, transactions, componentBuilder, preferences);
                         transactionPane.setPadding(new Insets(0, 0, 12, 0));
                         transactionPanesByTransaction.put(addedTransaction, transactionPane);
                         transactionsWrapper.getChildren().add(transactionIndex, transactionPane);

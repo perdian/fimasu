@@ -2,6 +2,7 @@ package de.perdian.apps.qifgenerator.fx.widgets.transactiongroups;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
 import de.perdian.apps.qifgenerator.preferences.Preferences;
 import javafx.application.Platform;
@@ -26,7 +27,7 @@ import javafx.stage.Window;
 
 public class TransactionGroupsPane extends BorderPane {
 
-    public TransactionGroupsPane(ObservableList<TransactionGroup> transactionGroups, Preferences preferences) {
+    public TransactionGroupsPane(ObservableList<TransactionGroup> transactionGroups, ComponentBuilder componentBuilder, Preferences preferences) {
 
         MenuItem createTransactionGroupItem = new MenuItem("Add transaction group");
         createTransactionGroupItem.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PLUS));
@@ -35,14 +36,14 @@ public class TransactionGroupsPane extends BorderPane {
         IntegerProperty selectedTabIndexProperty = preferences.getIntegerProperty("transactions.selectedTabIndex", 0);
         TabPane tabPane = new TabPane();
         for (TransactionGroup transactionGroup : transactionGroups) {
-            tabPane.getTabs().add(new TransactionGroupTab(transactionGroups, transactionGroup, preferences));
+            tabPane.getTabs().add(new TransactionGroupTab(transactionGroups, transactionGroup, componentBuilder, preferences));
         }
         tabPane.setContextMenu(new ContextMenu(createTransactionGroupItem));
         tabPane.getSelectionModel().select(selectedTabIndexProperty.getValue());
         transactionGroups.addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> {
             while (change.next()) {
                 for (TransactionGroup newGroup : change.getAddedSubList()) {
-                    Tab newTab = new TransactionGroupTab(transactionGroups, newGroup, preferences);
+                    Tab newTab = new TransactionGroupTab(transactionGroups, newGroup, componentBuilder, preferences);
                     tabPane.getTabs().add(newTab);
                     tabPane.getSelectionModel().select(newTab);
                 }
@@ -84,7 +85,7 @@ public class TransactionGroupsPane extends BorderPane {
 
     static class TransactionGroupTab extends Tab {
 
-        TransactionGroupTab(ObservableList<TransactionGroup> transactionGroups, TransactionGroup transactionGroup, Preferences preferences) {
+        TransactionGroupTab(ObservableList<TransactionGroup> transactionGroups, TransactionGroup transactionGroup, ComponentBuilder componentBuilder, Preferences preferences) {
             this.textProperty().bind(transactionGroup.getTitle());
             this.setOnCloseRequest(event -> {
                 if (transactionGroups.size() > 1) {
@@ -101,7 +102,7 @@ public class TransactionGroupsPane extends BorderPane {
                     event.consume();
                 }
             });
-            this.setContent(new TransactionGroupPane(transactionGroup, preferences));
+            this.setContent(new TransactionGroupPane(transactionGroup, componentBuilder, preferences));
         }
 
     }

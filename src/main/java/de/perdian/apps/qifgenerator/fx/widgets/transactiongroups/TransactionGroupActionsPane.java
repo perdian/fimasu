@@ -8,9 +8,8 @@ import javafx.scene.layout.GridPane;
 
 class TransactionGroupActionsPane extends GridPane {
 
-    TransactionGroupActionsPane(TransactionGroup transactionGroup, Preferences preferences) {
+    TransactionGroupActionsPane(TransactionGroup transactionGroup, ComponentBuilder componentBuilder, Preferences preferences) {
 
-        ComponentBuilder componentBuilder = new ComponentBuilder();
         this.add(componentBuilder.createLabel("Transaction group title"), 0, 0, 1, 1);
         this.add(componentBuilder.createTextField(transactionGroup.getTitle()).width(200d).focusTraversable(false).get(), 0, 1, 1, 1);
         this.add(componentBuilder.createLabel("Account name"), 1, 0, 1, 1);

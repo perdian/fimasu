@@ -1,5 +1,6 @@
 package de.perdian.apps.qifgenerator.fx.widgets.transactiongroups;
 
+import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.fx.widgets.transactions.TransactionsPane;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
 import de.perdian.apps.qifgenerator.preferences.Preferences;
@@ -10,15 +11,15 @@ import javafx.scene.layout.VBox;
 
 class TransactionGroupPane extends VBox {
 
-    TransactionGroupPane(TransactionGroup transactionGroup, Preferences preferences) {
+    TransactionGroupPane(TransactionGroup transactionGroup, ComponentBuilder componentBuilder, Preferences preferences) {
 
-        TransactionsPane transactionsPane = new TransactionsPane(transactionGroup.getTransactions(), preferences);
+        TransactionsPane transactionsPane = new TransactionsPane(transactionGroup.getTransactions(), componentBuilder, preferences);
         TitledPane transactionsTitledPane = new TitledPane("Transactions", transactionsPane);
         transactionsTitledPane.setCollapsible(false);
         transactionsTitledPane.setMaxHeight(Double.MAX_VALUE);
         VBox.setVgrow(transactionsTitledPane, Priority.ALWAYS);
 
-        TransactionGroupActionsPane actionsPane = new TransactionGroupActionsPane(transactionGroup, preferences);
+        TransactionGroupActionsPane actionsPane = new TransactionGroupActionsPane(transactionGroup, componentBuilder, preferences);
         TitledPane actionsTitledPane = new TitledPane("Actions", actionsPane);
         actionsTitledPane.setCollapsible(false);
 
