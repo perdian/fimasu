@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator_OLD.fx.support.properties;
+package de.perdian.apps.qifgenerator.fx.support.converters;
 
 import java.io.File;
 
@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javafx.util.StringConverter;
 
-public class FileToStringConverter extends StringConverter<File> {
+public class FileStringConverter extends StringConverter<File> {
 
     @Override
     public String toString(File object) {

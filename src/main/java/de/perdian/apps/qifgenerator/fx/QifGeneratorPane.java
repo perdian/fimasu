@@ -15,7 +15,7 @@ class QifGeneratorPane extends GridPane {
 
     QifGeneratorPane(ObservableList<TransactionGroup> transactionGroups, Preferences preferences) {
 
-        PreviewsPane previewsPane = new PreviewsPane();
+        PreviewsPane previewsPane = new PreviewsPane(preferences);
         GridPane.setHgrow(previewsPane, Priority.ALWAYS);
         GridPane.setVgrow(previewsPane, Priority.ALWAYS);
 

@@ -1,6 +1,7 @@
-package de.perdian.apps.qifgenerator_OLD.fx.modules.documents;
+package de.perdian.apps.qifgenerator.fx.widgets.previews;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -11,8 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.fx.support.converters.FileStringConverter;
-import de.perdian.apps.qifgenerator_OLD.fx.QifGeneratorPreferences;
+import de.perdian.apps.qifgenerator.preferences.Preferences;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -31,24 +35,24 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
 
-class DocumentFilesPane extends GridPane {
+class PreviewFilesPane extends GridPane {
 
-    private static final Logger log = LoggerFactory.getLogger(DocumentFilesPane.class);
+    private static final Logger log = LoggerFactory.getLogger(PreviewFilesPane.class);
 
     private ObjectProperty<File> selectedFileProperty = null;
     private ObservableList<File> files = null;
 
-    DocumentFilesPane(QifGeneratorPreferences preferences) {
+    PreviewFilesPane(Preferences preferences) {
+
+        ComponentBuilder componentBuilder = new ComponentBuilder();
 
         ObjectProperty<File> selectedFileProperty = new SimpleObjectProperty<>();
-        StringProperty directoryValueProperty = preferences.getValueProperty("files.directory");
+        StringProperty directoryValueProperty = preferences.getStringProperty("previews.directory", System.getProperty("user.home"));
         String directoryValue = directoryValueProperty.getValue();
         ObjectProperty<File> directoryProperty = new SimpleObjectProperty<>(StringUtils.isEmpty(directoryValue) ? null : new File(directoryValue));
         this.setSelectedFileProperty(selectedFileProperty);
@@ -64,12 +68,14 @@ class DocumentFilesPane extends GridPane {
             }
         });
 
-        Label directoryLabel = new Label("Directory");
         TextField directoryField = new TextField();
         directoryField.setPrefWidth(400);
         directoryField.setText(directoryProperty.getValue() == null ? "" : directoryProperty.getValue().getAbsolutePath());
         directoryField.textProperty().bindBidirectional(directoryProperty, new FileStringConverter());
         GridPane.setHgrow(directoryField, Priority.ALWAYS);
+
+        Label filesLabel = componentBuilder.createLabel("Files");
+        GridPane.setMargin(filesLabel, new Insets(8, 0, 0, 0));
 
         ObservableList<File> files = FXCollections.observableArrayList();
         this.loadFiles(directoryProperty.getValue(), files);
@@ -84,9 +90,9 @@ class DocumentFilesPane extends GridPane {
                     if (empty) {
                         this.setGraphic(null);
                     } else if (Boolean.TRUE.equals(item)) {
-                        this.setGraphic(new Label("", new ImageView(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/folder-open.png")))));
+                        this.setGraphic(new Label("", new FontAwesomeIconView(FontAwesomeIcon.FOLDER)));
                     } else {
-                        this.setGraphic(new Label("", new ImageView(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/document.png")))));
+                        this.setGraphic(new Label("", new FontAwesomeIconView(FontAwesomeIcon.FILE)));
                     }
                 }
             };
@@ -97,8 +103,6 @@ class DocumentFilesPane extends GridPane {
         TableColumn<File, String> fileTitleColumn = new TableColumn<>("Name");
         fileTitleColumn.setMaxWidth(Double.MAX_VALUE);
         fileTitleColumn.setCellValueFactory(in -> new SimpleStringProperty(in.getValue().getName()));
-        Label filesLabel = new Label("Files");
-        filesLabel.setPadding(new Insets(8, 0, 0, 0));
         TableView<File> filesTableView = new TableView<>(files);
         filesTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         filesTableView.setPrefHeight(150);
@@ -129,22 +133,34 @@ class DocumentFilesPane extends GridPane {
             }
         });
 
-        Button selectDirectoryButton = new Button(null, new ImageView(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/folder-open.png"))));
+        Button selectDirectoryButton = new Button("Select", new FontAwesomeIconView(FontAwesomeIcon.HAND_POINTER_ALT));
         selectDirectoryButton.setTooltip(new Tooltip("Select directory"));
         selectDirectoryButton.setOnAction(event -> this.selectDirectory(directoryProperty));
-        Button goUpButton = new Button(null, new ImageView(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/go-up.png"))));
+        GridPane.setVgrow(selectDirectoryButton, Priority.ALWAYS);
+        Button goUpButton = new Button(null, new FontAwesomeIconView(FontAwesomeIcon.ARROW_UP));
         goUpButton.setTooltip(new Tooltip("Go up"));
-        goUpButton.setOnAction(event -> directoryProperty.setValue(directoryProperty.getValue() == null ? null : directoryProperty.getValue().getParentFile()));
-        Button reloadButton = new Button(null, new ImageView(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/refresh.png"))));
+        goUpButton.setOnAction(event -> {
+            if (directoryProperty.getValue() != null) {
+                File parentFile = directoryProperty.getValue().getParentFile();
+                if (parentFile != null) {
+                    directoryProperty.setValue(parentFile);
+                }
+            }
+        });
+        goUpButton.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(goUpButton, Priority.ALWAYS);
+        Button reloadButton = new Button(null, new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
         reloadButton.setTooltip(new Tooltip("Reload"));
         reloadButton.setOnAction(event -> this.loadFiles(directoryProperty.getValue(), files));
+        reloadButton.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(reloadButton, Priority.ALWAYS);
 
         this.setVgap(2);
         this.setHgap(2);
-        this.add(directoryLabel, 0, 0, 1, 1);
+        this.add(componentBuilder.createLabel("Directory"), 0, 0, 1, 1);
         this.add(directoryField, 0, 1, 1, 1);
-        this.add(goUpButton, 1, 1, 1, 1);
-        this.add(selectDirectoryButton, 2, 1, 1, 1);
+        this.add(selectDirectoryButton, 1, 1, 1, 1);
+        this.add(goUpButton, 2, 1, 1, 1);
         this.add(reloadButton, 3, 1, 1, 1);
         this.add(filesLabel, 0, 2, 4, 1);
         this.add(filesTableView, 0, 3, 4, 1);
@@ -155,7 +171,7 @@ class DocumentFilesPane extends GridPane {
         if (directory != null) {
 
             log.debug("Loading files from directory: {}", directory.getAbsolutePath());
-            File[] directoryChildren = directory.listFiles();
+            File[] directoryChildren = directory.listFiles(new FileFilterImpl());
             if (directoryChildren == null || directoryChildren.length == 0) {
                 targetList.clear();
             } else {
@@ -204,6 +220,15 @@ class DocumentFilesPane extends GridPane {
         if (directory != null && !Objects.equals(directory, directoryProperty.getValue())) {
             directoryProperty.setValue(directory);
         }
+    }
+
+    private static class FileFilterImpl implements FileFilter {
+
+        @Override
+        public boolean accept(File file) {
+            return !file.isHidden() && !file.getName().startsWith(".") && !file.getName().startsWith("$");
+        }
+
     }
 
     ObjectProperty<File> getSelectedFileProperty() {

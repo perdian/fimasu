@@ -23,7 +23,7 @@ public class Preferences {
     }
 
     public StringProperty getStringProperty(String propertyName, String defaultValue) {
-        StringProperty stringProperty = new SimpleStringProperty();
+        StringProperty stringProperty = new SimpleStringProperty(this.getValues().getOrDefault(propertyName, defaultValue));
         stringProperty.addListener((o, oldValue, newValue) -> {
             if (!Objects.equals(newValue, this.getValues().get(propertyName))) {
                 if (StringUtils.isEmpty(newValue)) {
@@ -34,12 +34,8 @@ public class Preferences {
             }
         });
         this.getValues().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
-            if (change.wasRemoved()) {
-                stringProperty.setValue(null);
-            } else {
-                if (!Objects.equals(change.getValueAdded(), stringProperty.getValue())) {
-                    stringProperty.setValue(change.getValueAdded());
-                }
+            if (!Objects.equals(change.getValueAdded(), stringProperty.getValue())) {
+                stringProperty.setValue(change.getValueAdded());
             }
         });
         return stringProperty;
