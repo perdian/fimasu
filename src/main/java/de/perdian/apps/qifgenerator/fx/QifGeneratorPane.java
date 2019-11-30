@@ -20,6 +20,7 @@ class QifGeneratorPane extends GridPane {
         GridPane.setVgrow(previewsPane, Priority.ALWAYS);
 
         ComponentBuilder componentBuilder = new ComponentBuilder();
+        componentBuilder.addOnKeyPressedEventHandler(previewsPane.createNavigationKeyPressedEventHandler());
 
         TransactionGroupsPane transactionGroupsPane = new TransactionGroupsPane(transactionGroups, componentBuilder, preferences);
         transactionGroupsPane.setMinWidth(775);
