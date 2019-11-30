@@ -19,8 +19,8 @@ class TransactionGroupPane extends VBox {
         transactionsTitledPane.setMaxHeight(Double.MAX_VALUE);
         VBox.setVgrow(transactionsTitledPane, Priority.ALWAYS);
 
-        TransactionGroupActionsPane actionsPane = new TransactionGroupActionsPane(transactionGroup, componentBuilder, preferences);
-        TitledPane actionsTitledPane = new TitledPane("Actions", actionsPane);
+        TransactionGroupExportPane actionsPane = new TransactionGroupExportPane(transactionGroup, componentBuilder, preferences);
+        TitledPane actionsTitledPane = new TitledPane("Export", actionsPane);
         actionsTitledPane.setCollapsible(false);
 
         this.setSpacing(8);
