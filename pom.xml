@@ -189,9 +189,6 @@
                                     <string>-Xdock:name=${project.name}</string>
                                 </JVMOptions>
                             </plist>
-                            <dmg>
-                                <generate>true</generate>
-                            </dmg>
                         </configuration>
                         <executions>
                             <execution>
