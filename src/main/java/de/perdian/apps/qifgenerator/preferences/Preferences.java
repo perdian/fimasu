@@ -25,7 +25,7 @@ public class Preferences {
     public StringProperty getStringProperty(String propertyName, String defaultValue) {
         StringProperty stringProperty = new SimpleStringProperty(this.getValues().getOrDefault(propertyName, defaultValue));
         stringProperty.addListener((o, oldValue, newValue) -> {
-            if (!Objects.equals(newValue, this.getValues().get(propertyName))) {
+            if (!Objects.equals(oldValue, newValue) && !Objects.equals(newValue, this.getValues().get(propertyName))) {
                 if (StringUtils.isEmpty(newValue)) {
                     this.getValues().remove(propertyName);
                 } else {
@@ -34,7 +34,7 @@ public class Preferences {
             }
         });
         this.getValues().addListener((MapChangeListener.Change<? extends String, ? extends String> change) -> {
-            if (!Objects.equals(change.getValueAdded(), stringProperty.getValue())) {
+            if (Objects.equals(propertyName, change.getKey()) && !Objects.equals(change.getValueAdded(), stringProperty.getValue())) {
                 stringProperty.setValue(change.getValueAdded());
             }
         });
