@@ -1,8 +1,10 @@
 # QIF Generator
 
+[![License](http://img.shields.io/:license-apache-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
 Quick solution to allow the generation of a QIF file ([Quicken Interchange Format](https://de.wikipedia.org/wiki/Quicken_Interchange_Format)).
 
-The idea here is to allow me (as the tool has been created to make my life easier) to make my life easier when adding new stock entries into my Quicken application.
+The idea here is to allow me to make my life easier when adding new stock entries into my Lexware Finanzmanager (formerly Quicken) application.
 
 My old cumbersome process was to download all the PDF files from my bank and then add each and every transaction manually into Quicken.
 This task however takes quite some time as it's clicking here, entering data there, clicking here again and so on - overall not very efficient.
@@ -13,7 +15,7 @@ With PgUp ad PgDn I can then navigate through the PDF files easily without havin
 
 Yes, the whole application is basically a simplified way to get information from a PDF into Quicken but it works for me and makes my life a little bit easier.
 
-![Main Window](docs/screenshots/main-window-20180720.png)
+![Main Window](docs/screenshots/main-window-20191201.jpg)
 
 ## Building the application
 
@@ -30,11 +32,11 @@ For building it simply checkout the repository from GitHub and call the Maven pa
 
 ### macOS build
 
-On macOS a simplified build that directly generated a DMG archive from which the application can be installed or distributed.
+On macOS a simplified build that directly genrates a macOS application from which the application can be installed or distributed.
 
 Then build the application activate the profile `macos-bundle`:
 
     $ git clone https://github.com/perdian/qifgenerator.git
     $ cd qifgenerator
     $ mvn clean package -Pmacos-bundle
-    $ open target/QIF\ Generator.dmg
+    $ open target/QIF\ Generator.app/Contents/MacOS/JavaLauncher
