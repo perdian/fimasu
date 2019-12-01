@@ -43,7 +43,7 @@ public class ING_TransactionParser implements TransactionParser {
                 PDFTextStripper pdfStripper = new PDFTextStripper();
                 String pdfText = pdfStripper.getText(pdfDocument);
 
-System.err.println("VALUE:\n---" + pdfText + "\n---");
+//System.err.println("VALUE:\n---" + pdfText + "\n---");
                 Transaction transaction = new Transaction();
                 try (BufferedReader lineReader = new BufferedReader(new StringReader(pdfText))) {
                     for (String line = lineReader.readLine(); line != null; line = lineReader.readLine()) {
@@ -62,22 +62,26 @@ System.err.println("VALUE:\n---" + pdfText + "\n---");
     }
 
     private void analyzeLine(String line, Transaction transaction) throws Exception {
-        this.analyzeLineIntoStringWithRegex(line, Pattern.compile("ISIN \\(WKN\\)\\s+([A-Z]{2}[0-9]+)\\s+\\(([0-9]+)\\)"), transaction.getIsin(), transaction.getWkn());
-        this.analyzeLineIntoDoubleSimple(line, "Nominale Stück", "0.00000", transaction.getNumberOfShares());
-        this.analyzeLineIntoDoubleWithCurrency(line, "Kurs", "0.00000", transaction.getMarketPrice(), transaction.getMarketCurrency());
-        this.analyzeLineIntoStringSimple(line, "Ausführungstag", transaction.getBookingDate(), string -> LocalDate.parse(string, DATE_FORMATTER));
-        this.analyzeLineIntoDoubleWithCurrency(line, "Rabatt", "0.00", transaction.getCharges(), transaction.getChargesCurrency());
+        this.analyzeLineIntoStringWithRegex(line, Pattern.compile("ISIN \\(WKN\\)\\s+([A-Z]{2}[0-9]+)\\s+\\(([A-Z0-9]+)\\)"), transaction.getIsin(), transaction.getWkn());
+        this.analyzeLineIntoStringSimple(line, "Wertpapierbezeichnung", transaction.getTitle(), Function.identity());
+        this.analyzeLineIntoDoubleSimple(line, "Nominale Stück", "#,##0.00000", transaction.getNumberOfShares());
+        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Kurs", "#,##0.00000", transaction.getMarketPrice(), transaction.getMarketCurrency());
+        this.analyzeLineIntoStringWithRegex(line, Pattern.compile("Ausführungstag \\/ \\-zeit\\s+([0-9]+\\.[0-9]+\\.[0-9]+).*?"), transaction.getBookingDate(), string -> LocalDate.parse(string, DATE_FORMATTER));
+        this.analyzeLineIntoStringWithRegex(line, Pattern.compile("Ausführungstag\\s+([0-9]+\\.[0-9]+\\.[0-9]+).*?"), transaction.getBookingDate(), string -> LocalDate.parse(string, DATE_FORMATTER));
+        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Rabatt", "#,##0.00", transaction.getCharges(), transaction.getChargesCurrency());
+        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Provision", "#,##0.00", transaction.getCharges(), transaction.getChargesCurrency());
         this.analyzeLineIntoStringSimple(line, "Valuta", transaction.getValutaDate(), string -> LocalDate.parse(string, DATE_FORMATTER));
-        this.analyzeLineIntoDoubleWithCurrency(line, "Endbetrag zu Ihren Lasten", "0.00", null, transaction.getBookingCurrency());
+        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Endbetrag zu Ihren Lasten", "#,##0.00", null, transaction.getBookingCurrency());
+        this.analyzeLineIntoDoubleWithCurrencyRegex(line, Pattern.compile("umger\\. zum Devisenkurs \\(([A-Z]{3}) \\= (.*?)\\).*?"), "#,##0.00", transaction.getBookingCurrencyExchangeRate(), null);
     }
 
     private void analyzeLineIntoDoubleSimple(String line, String prefix, String numberFormatValue, Property<? super Number> targetProperty) throws Exception {
         if (line.startsWith(prefix)) {
-            targetProperty.setValue(this.parseDoubleValue(line.substring(prefix.length()).trim(), "0.00000"));
+            targetProperty.setValue(this.parseDoubleValue(line.substring(prefix.length()).trim(), "#,##0.00000"));
         }
     }
 
-    private void analyzeLineIntoDoubleWithCurrency(String line, String prefix, String numberFormatValue, DoubleProperty targetValueProperty, StringProperty targetCurrencyProperty) throws Exception {
+    private void analyzeLineIntoDoubleWithCurrencySimple(String line, String prefix, String numberFormatValue, DoubleProperty targetValueProperty, StringProperty targetCurrencyProperty) throws Exception {
         if (line.startsWith(prefix)) {
             String remainingLine = line.substring(prefix.length()).trim();
             int nextSpaceIndex = remainingLine.indexOf(" ");
@@ -86,8 +90,20 @@ System.err.println("VALUE:\n---" + pdfText + "\n---");
                     targetCurrencyProperty.setValue(remainingLine.substring(0, nextSpaceIndex));
                 }
                 if (targetValueProperty != null) {
-                    targetValueProperty.setValue(this.parseDoubleValue(remainingLine.substring(nextSpaceIndex).trim(), "0.00000"));
+                    targetValueProperty.setValue(this.parseDoubleValue(remainingLine.substring(nextSpaceIndex).trim(), numberFormatValue));
                 }
+            }
+        }
+    }
+
+    private void analyzeLineIntoDoubleWithCurrencyRegex(String line, Pattern regexPattern, String numberFormatValue, DoubleProperty targetValueProperty, StringProperty targetCurrencyProperty) throws Exception {
+        Matcher regexMatcher = regexPattern.matcher(line);
+        if (regexMatcher.matches()) {
+            if (targetCurrencyProperty != null) {
+                targetCurrencyProperty.setValue(regexMatcher.group(1));
+            }
+            if (targetValueProperty != null) {
+                targetValueProperty.setValue(this.parseDoubleValue(regexMatcher.group(2).trim(), numberFormatValue));
             }
         }
     }
@@ -95,6 +111,13 @@ System.err.println("VALUE:\n---" + pdfText + "\n---");
     private <T> void analyzeLineIntoStringSimple(String line, String prefix, Property<T> targetProperty, Function<String, T> stringConverter) {
         if (line.startsWith(prefix)) {
             targetProperty.setValue(stringConverter.apply(line.substring(prefix.length()).trim()));
+        }
+    }
+
+    private <T> void analyzeLineIntoStringWithRegex(String line, Pattern regexPattern, Property<T> targetProperty, Function<String, T> stringConverter) throws Exception {
+        Matcher regexMatcher = regexPattern.matcher(line);
+        if (regexMatcher.matches()) {
+            targetProperty.setValue(stringConverter.apply(regexMatcher.group(1)));
         }
     }
 
