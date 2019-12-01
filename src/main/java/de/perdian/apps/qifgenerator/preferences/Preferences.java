@@ -44,6 +44,11 @@ public class Preferences {
     public IntegerProperty getIntegerProperty(String propertyName, int defaultValue) {
         StringProperty stringProperty = this.getStringProperty(propertyName, String.valueOf(defaultValue));
         IntegerProperty integerProperty = new SimpleIntegerProperty();
+        try {
+            integerProperty.setValue(Integer.valueOf(stringProperty.getValue()));
+        } catch (Exception e) {
+            // Ignore here
+        }
         stringProperty.addListener((o, oldValue, newValue) -> {
             if (StringUtils.isEmpty(newValue)) {
                 integerProperty.setValue(null);
