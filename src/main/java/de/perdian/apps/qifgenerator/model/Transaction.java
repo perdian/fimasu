@@ -102,20 +102,20 @@ public class Transaction implements Externalizable {
     }
 
     public void copyValuesInto(Transaction targetTransaction) {
-        Optional.ofNullable(targetTransaction.getBookingCurrency().getValue()).ifPresent(this.getBookingCurrency()::setValue);
-        Optional.ofNullable(targetTransaction.getBookingCurrencyExchangeRate().getValue()).ifPresent(this.getBookingCurrencyExchangeRate()::setValue);
-        Optional.ofNullable(targetTransaction.getBookingDate().getValue()).ifPresent(this.getBookingDate()::setValue);
-        Optional.ofNullable(targetTransaction.getCharges().getValue()).ifPresent(this.getCharges()::setValue);
-        Optional.ofNullable(targetTransaction.getChargesCurrency().getValue()).ifPresent(this.getChargesCurrency()::setValue);
-        Optional.ofNullable(targetTransaction.getFinanceTax().getValue()).ifPresent(this.getFinanceTax()::setValue);
-        Optional.ofNullable(targetTransaction.getFinanceTaxCurrency().getValue()).ifPresent(this.getFinanceTaxCurrency()::setValue);
-        Optional.ofNullable(targetTransaction.getMarketCurrency().getValue()).ifPresent(this.getMarketCurrency()::setValue);
-        Optional.ofNullable(targetTransaction.getMarketPrice().getValue()).ifPresent(this.getMarketPrice()::setValue);
-        Optional.ofNullable(targetTransaction.getNumberOfShares().getValue()).ifPresent(this.getNumberOfShares()::setValue);
-        Optional.ofNullable(targetTransaction.getSolidarityTax().getValue()).ifPresent(this.getSolidarityTax()::setValue);
-        Optional.ofNullable(targetTransaction.getSolidarityTaxCurrency().getValue()).ifPresent(this.getSolidarityTaxCurrency()::setValue);
-        Optional.ofNullable(targetTransaction.getType().getValue()).ifPresent(this.getType()::setValue);
-        Optional.ofNullable(targetTransaction.getValutaDate().getValue()).ifPresent(this.getValutaDate()::setValue);
+        Optional.ofNullable(this.getBookingCurrency().getValue()).ifPresent(targetTransaction.getBookingCurrency()::setValue);
+        Optional.ofNullable(this.getBookingCurrencyExchangeRate().getValue()).ifPresent(targetTransaction.getBookingCurrencyExchangeRate()::setValue);
+        Optional.ofNullable(this.getBookingDate().getValue()).ifPresent(targetTransaction.getBookingDate()::setValue);
+        Optional.ofNullable(this.getCharges().getValue()).ifPresent(targetTransaction.getCharges()::setValue);
+        Optional.ofNullable(this.getChargesCurrency().getValue()).ifPresent(targetTransaction.getChargesCurrency()::setValue);
+        Optional.ofNullable(this.getFinanceTax().getValue()).ifPresent(targetTransaction.getFinanceTax()::setValue);
+        Optional.ofNullable(this.getFinanceTaxCurrency().getValue()).ifPresent(targetTransaction.getFinanceTaxCurrency()::setValue);
+        Optional.ofNullable(this.getMarketCurrency().getValue()).ifPresent(targetTransaction.getMarketCurrency()::setValue);
+        Optional.ofNullable(this.getMarketPrice().getValue()).ifPresent(targetTransaction.getMarketPrice()::setValue);
+        Optional.ofNullable(this.getNumberOfShares().getValue()).ifPresent(targetTransaction.getNumberOfShares()::setValue);
+        Optional.ofNullable(this.getSolidarityTax().getValue()).ifPresent(targetTransaction.getSolidarityTax()::setValue);
+        Optional.ofNullable(this.getSolidarityTaxCurrency().getValue()).ifPresent(targetTransaction.getSolidarityTaxCurrency()::setValue);
+        Optional.ofNullable(this.getType().getValue()).ifPresent(targetTransaction.getType()::setValue);
+        Optional.ofNullable(this.getValutaDate().getValue()).ifPresent(targetTransaction.getValutaDate()::setValue);
     }
 
     @Override

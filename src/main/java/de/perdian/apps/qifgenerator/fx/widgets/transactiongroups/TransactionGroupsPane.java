@@ -42,6 +42,7 @@ public class TransactionGroupsPane extends BorderPane {
         }
         tabPane.setContextMenu(new ContextMenu(createTransactionGroupItem));
         tabPane.getSelectionModel().select(selectedTabIndexProperty.getValue());
+        tabPane.setOnKeyPressed(new TransactionGroupKeyPressedEventHandler(() -> ((TransactionGroupTab)tabPane.getSelectionModel().getSelectedItem()).getTransactionGroup(), files));
         transactionGroups.addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> {
             while (change.next()) {
                 for (TransactionGroup newGroup : change.getAddedSubList()) {
@@ -87,8 +88,10 @@ public class TransactionGroupsPane extends BorderPane {
 
     static class TransactionGroupTab extends Tab {
 
+        private TransactionGroup transactionGroup = null;
+
         TransactionGroupTab(ObservableList<TransactionGroup> transactionGroups, TransactionGroup transactionGroup, ObservableList<File> files, ComponentBuilder componentBuilder, Preferences preferences) {
-            componentBuilder.addOnKeyPressedEventHandler(new TransactionGroupKeyPressedEventHandler(transactionGroup));
+            componentBuilder.addOnKeyPressedEventHandler(new TransactionGroupKeyPressedEventHandler(() -> transactionGroup, files));
             this.textProperty().bind(transactionGroup.getTitle());
             this.setOnCloseRequest(event -> {
                 if (transactionGroups.size() > 1) {
@@ -105,7 +108,15 @@ public class TransactionGroupsPane extends BorderPane {
                     event.consume();
                 }
             });
+            this.setTransactionGroup(transactionGroup);
             this.setContent(new TransactionGroupPane(transactionGroup, files, componentBuilder, preferences));
+        }
+
+        private TransactionGroup getTransactionGroup() {
+            return this.transactionGroup;
+        }
+        private void setTransactionGroup(TransactionGroup transactionGroup) {
+            this.transactionGroup = transactionGroup;
         }
 
     }

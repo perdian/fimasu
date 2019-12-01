@@ -111,9 +111,7 @@ System.err.println("VALUE:\n---" + pdfText + "\n---");
     private double parseDoubleValue(String inputString, String numberFormatValue) throws Exception {
         NumberFormat numberFormat = new DecimalFormat(numberFormatValue, new DecimalFormatSymbols(Locale.GERMANY));
         Number numberValue = numberFormat.parse(inputString.replaceAll("\\s",  "").trim());
-System.err.println(inputString + " >> " + numberValue);
-//        return numberValue.doubleValue();
-        return 0;
+        return numberValue.doubleValue();
     }
 
 }

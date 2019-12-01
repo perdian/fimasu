@@ -10,7 +10,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ExportActionEventHandler;
-import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ParseFromFilesActionEventHandler;
+import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ImportFromFilesActionEventHandler;
 import de.perdian.apps.qifgenerator.fx.widgets.transactions.TransactionPane;
 import de.perdian.apps.qifgenerator.model.Transaction;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
@@ -27,6 +27,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -60,11 +61,15 @@ class TransactionGroupPane extends VBox {
             addTransactionButton.setOnAction(event -> transactionGroup.getTransactions().add(new Transaction()));
             this.getItems().add(addTransactionButton);
 
+            HBox separatorBox = new HBox();
+            HBox.setHgrow(separatorBox, Priority.ALWAYS);
+            this.getItems().add(separatorBox);
+
             Button exportButton = new Button("Export", new FontAwesomeIconView(FontAwesomeIcon.SAVE));
-            exportButton.setOnAction(new ExportActionEventHandler(transactionGroup));
+            exportButton.setOnAction(new ExportActionEventHandler(() -> transactionGroup));
             Button importFromFilesButton = new Button("Import from files", new FontAwesomeIconView(FontAwesomeIcon.FILE));
-            importFromFilesButton.setOnAction(new ParseFromFilesActionEventHandler(transactionGroup, files));
-            this.getItems().add(exportButton);
+            importFromFilesButton.setOnAction(new ImportFromFilesActionEventHandler(() -> transactionGroup, files));
+            this.getItems().addAll(importFromFilesButton, exportButton);
 
         }
 

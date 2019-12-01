@@ -1,6 +1,7 @@
 package de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions;
 
 import java.io.File;
+import java.util.function.Supplier;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,23 +19,24 @@ public class ExportActionEventHandler implements EventHandler<ActionEvent> {
 
     private static final Logger log = LoggerFactory.getLogger(ExportActionEventHandler.class);
 
-    private TransactionGroup transactionGroup = null;
+    private Supplier<TransactionGroup> transactionGroupSupplier = null;
 
-    public ExportActionEventHandler(TransactionGroup transactionGroup) {
-        this.setTransactionGroup(transactionGroup);
+    public ExportActionEventHandler(Supplier<TransactionGroup> transactionGroupSupplier) {
+        this.setTransactionGroupSupplier(transactionGroupSupplier);
     }
 
     @Override
     public void handle(ActionEvent event) {
+        TransactionGroup transactionGroup = this.getTransactionGroupSupplier().get();
         QifContentGenerator qifContentGenerator = new QifContentGenerator();
-        String qifContent = qifContentGenerator.generate(this.getTransactionGroup());
-        String qifFileLocation = this.getTransactionGroup().getTargetFilePath().getValue();
+        String qifContent = qifContentGenerator.generate(transactionGroup);
+        String qifFileLocation = transactionGroup.getTargetFilePath().getValue();
         if (StringUtils.isEmpty(qifFileLocation)) {
             this.showAlert(AlertType.ERROR, "Export failed", "No target file specified!");
         } else {
             try {
                 File qifFile = new File(qifFileLocation);
-                log.info("Exporting transaction group into file at '{}': {}", qifFile.getAbsolutePath(), this.getTransactionGroup());
+                log.info("Exporting transaction group into file at '{}': {}", qifFile.getAbsolutePath(), transactionGroup);
                 FileUtils.write(qifFile, qifContent, "UTF-8");
                 this.showAlert(AlertType.INFORMATION, "Export completed", "Exported transactions into file: " + qifFile.getName());
             } catch (Exception e) {
@@ -52,11 +54,12 @@ public class ExportActionEventHandler implements EventHandler<ActionEvent> {
         alert.showAndWait();
     }
 
-    private TransactionGroup getTransactionGroup() {
-        return this.transactionGroup;
+    private Supplier<TransactionGroup> getTransactionGroupSupplier() {
+        return this.transactionGroupSupplier;
     }
-    private void setTransactionGroup(TransactionGroup transactionGroup) {
-        this.transactionGroup = transactionGroup;
+    private void setTransactionGroupSupplier(Supplier<TransactionGroup> transactionGroupSupplier) {
+        this.transactionGroupSupplier = transactionGroupSupplier;
     }
+
 
 }
