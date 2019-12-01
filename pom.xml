@@ -129,7 +129,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.perdian.apps.qifgenerator_OLD.QifGeneratorLauncher</mainClass>
+                            <mainClass>de.perdian.apps.qifgenerator.fx.QifGeneratorLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
