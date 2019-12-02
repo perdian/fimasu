@@ -116,6 +116,9 @@ public class Transaction implements Externalizable {
         Optional.ofNullable(this.getSolidarityTaxCurrency().getValue()).ifPresent(targetTransaction.getSolidarityTaxCurrency()::setValue);
         Optional.ofNullable(this.getType().getValue()).ifPresent(targetTransaction.getType()::setValue);
         Optional.ofNullable(this.getValutaDate().getValue()).ifPresent(targetTransaction.getValutaDate()::setValue);
+        if (StringUtils.isEmpty(targetTransaction.getTitle().getValue())) {
+            Optional.ofNullable(this.getTitle().getValue()).ifPresent(targetTransaction.getTitle()::setValue);
+        }
     }
 
     @Override

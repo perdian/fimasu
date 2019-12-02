@@ -26,23 +26,25 @@ public class ImportFromFilesActionEventHandler implements EventHandler<ActionEve
     }
 
     @Override
-    public void handle(ActionEvent event) {
-        TransactionGroup transactionGroup = this.getTransactionGroupSupplier().get();
-        Map<String, Transaction> importedTransactionsByIsin = new TreeMap<>();
-        for (File file : this.getFiles()) {
-            List<Transaction> transactionsFromFile = TransactionParser.parseTransactions(file);
-            transactionsFromFile.stream().filter(transaction -> StringUtils.isNotEmpty(transaction.getIsin().getValue())).forEach(transaction -> importedTransactionsByIsin.put(transaction.getIsin().getValue(), transaction));
-        }
-        transactionGroup.getTransactions().forEach(transaction -> {
-            try {
-                Transaction importedTransaction = StringUtils.isEmpty(transaction.getIsin().getValue()) ? null : importedTransactionsByIsin.get(transaction.getIsin().getValue());
-                if (importedTransaction != null) {
-                    importedTransaction.copyValuesInto(transaction);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+    public synchronized void handle(ActionEvent event) {
+        if (!this.getFiles().isEmpty()) {
+            TransactionGroup transactionGroup = this.getTransactionGroupSupplier().get();
+            Map<String, Transaction> importedTransactionsByIsin = new TreeMap<>();
+            for (File file : this.getFiles()) {
+                List<Transaction> transactionsFromFile = TransactionParser.parseTransactions(file);
+                transactionsFromFile.stream().filter(transaction -> StringUtils.isNotEmpty(transaction.getIsin().getValue())).forEach(transaction -> importedTransactionsByIsin.put(transaction.getIsin().getValue(), transaction));
             }
-        });
+            transactionGroup.getTransactions().forEach(transaction -> {
+                try {
+                    Transaction importedTransaction = StringUtils.isEmpty(transaction.getIsin().getValue()) ? null : importedTransactionsByIsin.get(transaction.getIsin().getValue());
+                    if (importedTransaction != null) {
+                        importedTransaction.copyValuesInto(transaction);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     private Supplier<TransactionGroup> getTransactionGroupSupplier() {

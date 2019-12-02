@@ -33,7 +33,6 @@ class TransactionGroupKeyPressedEventHandler implements EventHandler<KeyEvent> {
         }
     }
 
-
     private Supplier<TransactionGroup> getTransactionGroupSupplier() {
         return this.transactionGroupSupplier;
     }

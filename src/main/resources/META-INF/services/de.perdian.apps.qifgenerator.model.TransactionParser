@@ -1,1 +1,2 @@
+de.perdian.apps.qifgenerator.model.impl.Comdirect_TransactionParser
 de.perdian.apps.qifgenerator.model.impl.ING_TransactionParser

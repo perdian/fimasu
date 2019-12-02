@@ -59,9 +59,9 @@ public class TransactionPane extends VBox {
         firstLinePane.add(componentBuilder.createLabel("Typ"), 1, 0, 1, 1);
         firstLinePane.add(componentBuilder.createComboBox(transaction.getType(), TransactionType::toString, List.of(Map.entry("Buy", TransactionType.BUY), Map.entry("Sell", TransactionType.SELL))).focusTraversable(false).width(70d).get(), 1, 1, 1, 1);
         firstLinePane.add(componentBuilder.createLabel("WKN"), 2, 0, 1, 1);
-        firstLinePane.add(componentBuilder.createTextField(transaction.getWkn()).focusTraversable(Bindings.length(transaction.getWkn()).lessThanOrEqualTo(0)).width(65d).get(), 2, 1, 1, 1);
+        firstLinePane.add(componentBuilder.createTextField(transaction.getWkn()).focusTraversable(Bindings.length(transaction.getWkn()).lessThanOrEqualTo(0)).width(75d).get(), 2, 1, 1, 1);
         firstLinePane.add(componentBuilder.createLabel("ISIN"), 3, 0, 1, 1);
-        firstLinePane.add(componentBuilder.createTextField(transaction.getIsin()).focusTraversable(Bindings.length(transaction.getIsin()).lessThanOrEqualTo(0)).width(115d).get(), 3, 1, 1, 1);
+        firstLinePane.add(componentBuilder.createTextField(transaction.getIsin()).focusTraversable(Bindings.length(transaction.getIsin()).lessThanOrEqualTo(0)).width(125d).get(), 3, 1, 1, 1);
         firstLinePane.add(componentBuilder.createLabel("Title"), 4, 0, 1, 1);
         firstLinePane.add(componentBuilder.createTextField(transaction.getTitle()).focusTraversable(Bindings.length(transaction.getTitle()).lessThanOrEqualTo(0)).get(), 4, 1, 1, 1);
         return firstLinePane;
