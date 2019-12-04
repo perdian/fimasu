@@ -39,20 +39,19 @@ public class ING_TransactionParser implements TransactionParser {
             try {
 
                 log.debug("Analyzing ING file at: {}", documentFile.getAbsolutePath());
-                PDDocument pdfDocument = PDDocument.load(documentFile);
-                PDFTextStripper pdfStripper = new PDFTextStripper();
-                String pdfText = pdfStripper.getText(pdfDocument);
-
-//System.err.println("VALUE:\n---" + pdfText + "\n---");
-                Transaction transaction = new Transaction();
-                try (BufferedReader lineReader = new BufferedReader(new StringReader(pdfText))) {
-                    for (String line = lineReader.readLine(); line != null; line = lineReader.readLine()) {
-                        if (StringUtils.isNotBlank(line)) {
-                            this.analyzeLine(line, transaction);
+                try (PDDocument pdfDocument = PDDocument.load(documentFile)) {
+                    PDFTextStripper pdfStripper = new PDFTextStripper();
+                    String pdfText = pdfStripper.getText(pdfDocument);
+                    Transaction transaction = new Transaction();
+                    try (BufferedReader lineReader = new BufferedReader(new StringReader(pdfText))) {
+                        for (String line = lineReader.readLine(); line != null; line = lineReader.readLine()) {
+                            if (StringUtils.isNotBlank(line)) {
+                                this.analyzeLine(line, transaction);
+                            }
                         }
                     }
+                    return List.of(transaction);
                 }
-                return List.of(transaction);
 
             } catch (Exception e) {
                 log.warn("Cannot analyze ING file at: {}", documentFile.getAbsolutePath(), e);
