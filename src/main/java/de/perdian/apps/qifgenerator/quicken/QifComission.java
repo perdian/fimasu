@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Objects;
 
 import de.perdian.apps.qifgenerator.model.Transaction;
 
@@ -26,22 +27,31 @@ class QifComission {
 
     static QifComission compute(Transaction transaction) {
 
-        double charges = transaction.getCharges().getValue() == null ? 0d : transaction.getCharges().getValue().doubleValue();
-
         QifComission commission = new QifComission();
+
+        double charges = QifComission.computeValueInBookingCurrency(transaction.getCharges().getValue() == null ? 0d : transaction.getCharges().getValue().doubleValue(), transaction.getChargesCurrency().getValue(), transaction);
         if (charges > 0) {
             commission.bankprovision = charges;
         } else if (charges < 0) {
             commission.sonstigekosten = charges;
         }
+
         if (transaction.getFinanceTax().getValue() != null) {
-            commission.kapitalertragsteuer = transaction.getFinanceTax().getValue().doubleValue();
+            commission.kapitalertragsteuer = QifComission.computeValueInBookingCurrency(transaction.getFinanceTax().getValue().doubleValue(), transaction.getFinanceTaxCurrency().getValue(), transaction);
         }
         if (transaction.getSolidarityTax().getValue() != null) {
-            commission.solidaritaetsuzschlag = transaction.getFinanceTax().getValue().doubleValue();
+            commission.solidaritaetsuzschlag = QifComission.computeValueInBookingCurrency(transaction.getSolidarityTax().getValue().doubleValue(), transaction.getSolidarityTaxCurrency().getValue(), transaction);
         }
         return commission;
 
+    }
+
+    private static double computeValueInBookingCurrency(double value, String sourceCurrency, Transaction transaction) {
+        if (Objects.equals(sourceCurrency, transaction.getBookingCurrency().getValue())) {
+            return value;
+        } else {
+            return value / transaction.getBookingCurrencyExchangeRate().doubleValue();
+        }
     }
 
     @Override
