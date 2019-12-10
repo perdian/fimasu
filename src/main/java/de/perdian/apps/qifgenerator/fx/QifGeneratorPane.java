@@ -3,6 +3,7 @@ package de.perdian.apps.qifgenerator.fx;
 import java.io.File;
 
 import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
+import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutorImpl;
 import de.perdian.apps.qifgenerator.fx.widgets.files.FilesPane;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.TransactionGroupsPane;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
@@ -29,7 +30,9 @@ class QifGeneratorPane extends GridPane {
         ComponentBuilder componentBuilder = new ComponentBuilder();
         componentBuilder.addOnKeyPressedEventHandler(filesPane.createNavigationKeyPressedEventHandler());
 
-        TransactionGroupsPane transactionGroupsPane = new TransactionGroupsPane(transactionGroups, files, componentBuilder, preferences);
+        GuiExecutorImpl executorImpl = new GuiExecutorImpl();
+
+        TransactionGroupsPane transactionGroupsPane = new TransactionGroupsPane(transactionGroups, files, executorImpl, componentBuilder, preferences);
         transactionGroupsPane.setMinWidth(775);
         transactionGroupsPane.setMaxWidth(775);
         GridPane.setVgrow(transactionGroupsPane, Priority.ALWAYS);

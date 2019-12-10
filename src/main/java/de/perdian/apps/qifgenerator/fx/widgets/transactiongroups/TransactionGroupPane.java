@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
+import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutor;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ExportActionEventHandler;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ImportFromFilesActionEventHandler;
 import de.perdian.apps.qifgenerator.fx.widgets.transactions.TransactionPane;
@@ -34,10 +35,10 @@ import javafx.stage.FileChooser;
 
 class TransactionGroupPane extends VBox {
 
-    TransactionGroupPane(TransactionGroup transactionGroup, ObservableList<File> files, ComponentBuilder componentBuilder, Preferences preferences) {
+    TransactionGroupPane(TransactionGroup transactionGroup, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
 
         TransactionsListPane transactionsListPane = new TransactionsListPane(transactionGroup.getTransactions(), componentBuilder, preferences);
-        transactionsListPane.setTop(new ActionsToolBar(transactionGroup, files, componentBuilder, preferences));
+        transactionsListPane.setTop(new ActionsToolBar(transactionGroup, files, guiExecutor, componentBuilder, preferences));
         TitledPane transactionsTitledPane = new TitledPane("Transactions", transactionsListPane);
         transactionsTitledPane.setCollapsible(false);
         transactionsTitledPane.setMaxHeight(Double.MAX_VALUE);
@@ -55,7 +56,7 @@ class TransactionGroupPane extends VBox {
 
     private static class ActionsToolBar extends ToolBar {
 
-        private ActionsToolBar(TransactionGroup transactionGroup, ObservableList<File> files, ComponentBuilder componentBuilder, Preferences preferences) {
+        private ActionsToolBar(TransactionGroup transactionGroup, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
 
             Button addTransactionButton = new Button("Add transaction", new FontAwesomeIconView(FontAwesomeIcon.PLUS));
             addTransactionButton.setOnAction(event -> transactionGroup.getTransactions().add(new Transaction()));
@@ -68,7 +69,7 @@ class TransactionGroupPane extends VBox {
             Button exportButton = new Button("Export", new FontAwesomeIconView(FontAwesomeIcon.SAVE));
             exportButton.setOnAction(new ExportActionEventHandler(() -> transactionGroup));
             Button importFromFilesButton = new Button("Import from files", new FontAwesomeIconView(FontAwesomeIcon.FILE));
-            importFromFilesButton.setOnAction(new ImportFromFilesActionEventHandler(() -> transactionGroup, files));
+            importFromFilesButton.setOnAction(new ImportFromFilesActionEventHandler(() -> transactionGroup, files, guiExecutor));
             this.getItems().addAll(importFromFilesButton, exportButton);
 
         }

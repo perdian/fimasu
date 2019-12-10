@@ -5,6 +5,8 @@ import java.io.File;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
+import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutor;
+import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutorListener;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
 import de.perdian.apps.qifgenerator.preferences.Preferences;
 import javafx.application.Platform;
@@ -29,7 +31,7 @@ import javafx.stage.Window;
 
 public class TransactionGroupsPane extends BorderPane {
 
-    public TransactionGroupsPane(ObservableList<TransactionGroup> transactionGroups, ObservableList<File> files, ComponentBuilder componentBuilder, Preferences preferences) {
+    public TransactionGroupsPane(ObservableList<TransactionGroup> transactionGroups, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
 
         MenuItem createTransactionGroupItem = new MenuItem("Add transaction group");
         createTransactionGroupItem.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PLUS));
@@ -38,15 +40,15 @@ public class TransactionGroupsPane extends BorderPane {
         IntegerProperty selectedTabIndexProperty = preferences.getIntegerProperty("transactions.selectedTabIndex", 0);
         TabPane tabPane = new TabPane();
         for (TransactionGroup transactionGroup : transactionGroups) {
-            tabPane.getTabs().add(new TransactionGroupTab(transactionGroups, transactionGroup, files, componentBuilder.createChild(), preferences));
+            tabPane.getTabs().add(new TransactionGroupTab(transactionGroups, transactionGroup, files, guiExecutor, componentBuilder.createChild(), preferences));
         }
         tabPane.setContextMenu(new ContextMenu(createTransactionGroupItem));
         tabPane.getSelectionModel().select(selectedTabIndexProperty.getValue());
-        tabPane.setOnKeyPressed(new TransactionGroupKeyPressedEventHandler(() -> ((TransactionGroupTab)tabPane.getSelectionModel().getSelectedItem()).getTransactionGroup(), files));
+        tabPane.setOnKeyPressed(new TransactionGroupKeyPressedEventHandler(() -> ((TransactionGroupTab)tabPane.getSelectionModel().getSelectedItem()).getTransactionGroup(), files, guiExecutor));
         transactionGroups.addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> {
             while (change.next()) {
                 for (TransactionGroup newGroup : change.getAddedSubList()) {
-                    Tab newTab = new TransactionGroupTab(transactionGroups, newGroup, files, componentBuilder.createChild(), preferences);
+                    Tab newTab = new TransactionGroupTab(transactionGroups, newGroup, files, guiExecutor, componentBuilder.createChild(), preferences);
                     tabPane.getTabs().add(newTab);
                     tabPane.getSelectionModel().select(newTab);
                 }
@@ -55,6 +57,17 @@ public class TransactionGroupsPane extends BorderPane {
         tabPane.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue) -> selectedTabIndexProperty.setValue(newValue));
 
         this.setCenter(tabPane);
+
+        guiExecutor.addExecutorListener(new GuiExecutorListener() {
+            @Override
+            public void onExecutionStarting() {
+                TransactionGroupsPane.this.setDisable(true);
+            }
+            @Override
+            public void onExecutionCompleted() {
+                TransactionGroupsPane.this.setDisable(false);
+            }
+        });
 
     }
 
@@ -90,8 +103,8 @@ public class TransactionGroupsPane extends BorderPane {
 
         private TransactionGroup transactionGroup = null;
 
-        TransactionGroupTab(ObservableList<TransactionGroup> transactionGroups, TransactionGroup transactionGroup, ObservableList<File> files, ComponentBuilder componentBuilder, Preferences preferences) {
-            componentBuilder.addOnKeyPressedEventHandler(new TransactionGroupKeyPressedEventHandler(() -> transactionGroup, files));
+        TransactionGroupTab(ObservableList<TransactionGroup> transactionGroups, TransactionGroup transactionGroup, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
+            componentBuilder.addOnKeyPressedEventHandler(new TransactionGroupKeyPressedEventHandler(() -> transactionGroup, files, guiExecutor));
             this.textProperty().bind(transactionGroup.getTitle());
             this.setOnCloseRequest(event -> {
                 if (transactionGroups.size() > 1) {
@@ -109,7 +122,7 @@ public class TransactionGroupsPane extends BorderPane {
                 }
             });
             this.setTransactionGroup(transactionGroup);
-            this.setContent(new TransactionGroupPane(transactionGroup, files, componentBuilder, preferences));
+            this.setContent(new TransactionGroupPane(transactionGroup, files, guiExecutor, componentBuilder, preferences));
         }
 
         private TransactionGroup getTransactionGroup() {

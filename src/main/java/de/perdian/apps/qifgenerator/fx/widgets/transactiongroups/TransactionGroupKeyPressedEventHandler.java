@@ -3,6 +3,7 @@ package de.perdian.apps.qifgenerator.fx.widgets.transactiongroups;
 import java.io.File;
 import java.util.function.Supplier;
 
+import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutor;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ExportActionEventHandler;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ImportFromFilesActionEventHandler;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
@@ -16,10 +17,12 @@ class TransactionGroupKeyPressedEventHandler implements EventHandler<KeyEvent> {
 
     private Supplier<TransactionGroup> transactionGroupSupplier = null;
     private ObservableList<File> files = null;
+    private GuiExecutor guiExecutor = null;
 
-    TransactionGroupKeyPressedEventHandler(Supplier<TransactionGroup> transactionGroupSupplier, ObservableList<File> files) {
+    TransactionGroupKeyPressedEventHandler(Supplier<TransactionGroup> transactionGroupSupplier, ObservableList<File> files, GuiExecutor guiExecutor) {
         this.setTransactionGroupSupplier(transactionGroupSupplier);
         this.setFiles(files);
+        this.setGuiExecutor(guiExecutor);
     }
 
     @Override
@@ -28,7 +31,7 @@ class TransactionGroupKeyPressedEventHandler implements EventHandler<KeyEvent> {
             new ExportActionEventHandler(this.getTransactionGroupSupplier()).handle(new ActionEvent(event.getSource(), event.getTarget()));
             event.consume();
         } else if (event.getCode() == KeyCode.I && event.isMetaDown()) {
-            new ImportFromFilesActionEventHandler(this.getTransactionGroupSupplier(), this.getFiles()).handle(new ActionEvent(event.getSource(), event.getTarget()));
+            new ImportFromFilesActionEventHandler(this.getTransactionGroupSupplier(), this.getFiles(), this.getGuiExecutor()).handle(new ActionEvent(event.getSource(), event.getTarget()));
             event.consume();
         }
     }
@@ -45,6 +48,13 @@ class TransactionGroupKeyPressedEventHandler implements EventHandler<KeyEvent> {
     }
     private void setFiles(ObservableList<File> files) {
         this.files = files;
+    }
+
+    private GuiExecutor getGuiExecutor() {
+        return this.guiExecutor;
+    }
+    private void setGuiExecutor(GuiExecutor guiExecutor) {
+        this.guiExecutor = guiExecutor;
     }
 
 }
