@@ -69,6 +69,8 @@ public class Comdirect_TransactionParser implements TransactionParser {
         this.analyzeLineRegex(line, Pattern.compile("Geschäftstag\\s+\\:\\s+(\\d+\\.\\d+\\.\\d+)\\s.*?"), transaction.getBookingDate(), string -> LocalDate.parse(string, DATE_FORMATTER));
         this.analyzeLineRegex(line, Pattern.compile("Die Belastung erfolgt mit Valuta (.*?) auf Konto .*"), transaction.getValutaDate(), string -> LocalDate.parse(string, DATE_FORMATTER));
         this.analyzeLineNumberOfSharesAndPrice(line, transaction);
+        this.analyzeLineReduction(line, transaction);
+        this.analyzeLineBookingCurrencyExchangeRate(line, transaction);
         this.analyzeLineIntoDoubleWithCurrencySimple(line, "Summe Entgelte", transaction.getCharges(), transaction.getChargesCurrency());
         this.analyzeLineWknIsin(line, transaction);
     }
@@ -114,6 +116,21 @@ public class Comdirect_TransactionParser implements TransactionParser {
             transaction.getTitle().setValue(regexMatcher.group(1).trim());
             transaction.getWkn().setValue(regexMatcher.group(2));
             transaction.getIsin().setValue(regexMatcher.group(3));
+        }
+    }
+
+    private void analyzeLineReduction(String line, Transaction transaction) throws Exception {
+        Matcher regexMatcher = Pattern.compile(".*?Reduktion Kaufaufschlag.*?([A-Z]{3})\\s+(.*?)\\-").matcher(line);
+        if (regexMatcher.matches()) {
+            transaction.getCharges().setValue(-1d * NUMBER_FORMAT.parse(regexMatcher.group(2)).doubleValue());
+            transaction.getChargesCurrency().setValue(regexMatcher.group(1));
+        }
+    }
+
+    private void analyzeLineBookingCurrencyExchangeRate(String line, Transaction transaction) throws Exception {
+        Matcher regexMatcher = Pattern.compile(".*?Umrechnung zum Devisenkurs\\s+(.*?)\\s+[A-Z]{3}\\s+(.*?)").matcher(line);
+        if (regexMatcher.matches()) {
+            transaction.getBookingCurrencyExchangeRate().setValue(NUMBER_FORMAT.parse(regexMatcher.group(1)).doubleValue());
         }
     }
 
