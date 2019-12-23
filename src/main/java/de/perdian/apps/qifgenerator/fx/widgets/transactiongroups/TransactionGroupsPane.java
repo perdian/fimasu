@@ -7,6 +7,7 @@ import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutor;
 import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutorListener;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
 import de.perdian.apps.qifgenerator.preferences.Preferences;
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -26,15 +27,17 @@ public class TransactionGroupsPane extends BorderPane {
         for (TransactionGroup transactionGroup : transactionGroups) {
             tabPane.getTabs().add(new TransactionGroupTab(transactionGroups, transactionGroup, files, guiExecutor, componentBuilder.createChild(), preferences));
         }
-        tabPane.setContextMenu(new TransactionGroupsContextMenu(transactionGroups));
+        tabPane.setContextMenu(new TransactionGroupsContextMenu(transactionGroups, guiExecutor, preferences));
         tabPane.getSelectionModel().select(selectedTabIndexProperty.getValue());
         tabPane.setOnKeyPressed(new TransactionGroupKeyPressedEventHandler(() -> ((TransactionGroupTab)tabPane.getSelectionModel().getSelectedItem()).getTransactionGroup(), files, guiExecutor));
         transactionGroups.addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> {
             while (change.next()) {
                 for (TransactionGroup newGroup : change.getAddedSubList()) {
-                    Tab newTab = new TransactionGroupTab(transactionGroups, newGroup, files, guiExecutor, componentBuilder.createChild(), preferences);
-                    tabPane.getTabs().add(newTab);
-                    tabPane.getSelectionModel().select(newTab);
+                    Platform.runLater(() -> {
+                        Tab newTab = new TransactionGroupTab(transactionGroups, newGroup, files, guiExecutor, componentBuilder.createChild(), preferences);
+                        tabPane.getTabs().add(newTab);
+                        tabPane.getSelectionModel().select(newTab);
+                    });
                 }
             }
         });
