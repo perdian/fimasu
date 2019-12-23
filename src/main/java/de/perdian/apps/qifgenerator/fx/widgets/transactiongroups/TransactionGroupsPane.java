@@ -6,6 +6,7 @@ import de.perdian.apps.qifgenerator.model.transactions.TransactionGroup;
 import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import de.perdian.commons.fx.execution.GuiExecutorListener;
+import de.perdian.commons.fx.execution.GuiJob;
 import de.perdian.commons.fx.preferences.Preferences;
 import de.perdian.commons.fx.properties.PropertyFactory;
 import javafx.application.Platform;
@@ -48,11 +49,11 @@ public class TransactionGroupsPane extends BorderPane {
 
         guiExecutor.addExecutorListener(new GuiExecutorListener() {
             @Override
-            public void onExecutionStarting() {
+            public void onExecutionStarting(GuiJob job) {
                 TransactionGroupsPane.this.setDisable(true);
             }
             @Override
-            public void onExecutionCompleted() {
+            public void onExecutionCompleted(GuiJob job) {
                 TransactionGroupsPane.this.setDisable(false);
             }
         });
