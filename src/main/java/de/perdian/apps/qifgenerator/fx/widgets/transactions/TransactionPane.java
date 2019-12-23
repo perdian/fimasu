@@ -10,7 +10,7 @@ import de.perdian.apps.qifgenerator.fx.support.converters.DoubleStringConverter;
 import de.perdian.apps.qifgenerator.fx.support.converters.LocalDateStringConverter;
 import de.perdian.apps.qifgenerator.model.Transaction;
 import de.perdian.apps.qifgenerator.model.TransactionType;
-import de.perdian.apps.qifgenerator.preferences.Preferences;
+import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Button;

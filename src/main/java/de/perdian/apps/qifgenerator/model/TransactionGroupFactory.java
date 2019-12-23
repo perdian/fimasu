@@ -2,11 +2,11 @@ package de.perdian.apps.qifgenerator.model;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class TransactionGroupFactory {
     private static final Logger log = LoggerFactory.getLogger(TransactionGroupFactory.class);
 
     @SuppressWarnings("unchecked")
-    public static ObservableList<TransactionGroup> loadTransactionGroups(File storageFile) {
+    public static ObservableList<TransactionGroup> loadTransactionGroups(Path storageFile) {
 
         ObservableList<TransactionGroup> transactionGroups = FXCollections.observableArrayList();
 
@@ -35,9 +35,9 @@ public class TransactionGroupFactory {
             }
         });
 
-        if (storageFile.exists()) {
-            log.info("Loading transaction groups from file: {}", storageFile.getAbsolutePath());
-            try (ObjectInputStream transactionGroupsStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(storageFile)))) {
+        if (Files.exists(storageFile)) {
+            log.info("Loading transaction groups from file: {}", storageFile);
+            try (ObjectInputStream transactionGroupsStream = new ObjectInputStream(new BufferedInputStream(Files.newInputStream(storageFile)))) {
                 List<TransactionGroup> storageTransactionGroups = (List<TransactionGroup>)transactionGroupsStream.readObject();
                 if (storageTransactionGroups != null) {
                     for (TransactionGroup transactionGroup : storageTransactionGroups) {
@@ -45,7 +45,7 @@ public class TransactionGroupFactory {
                     }
                 }
             } catch (Exception e) {
-                log.warn("Cannot load transaction groups from file: {}", storageFile.getAbsolutePath(), e);
+                log.warn("Cannot load transaction groups from file: {}", storageFile, e);
             }
         }
 
@@ -60,17 +60,21 @@ public class TransactionGroupFactory {
 
     }
 
-    private static void writeToStorageFile(List<TransactionGroup> transactionGroups, File storageFile) {
-        if (!storageFile.getParentFile().exists()) {
-            log.debug("Creating target directory: {}", storageFile.getParentFile().getAbsolutePath());
-            storageFile.getParentFile().mkdirs();
+    private static void writeToStorageFile(List<TransactionGroup> transactionGroups, Path storageFile) {
+        if (!Files.exists(storageFile.getParent())) {
+            try {
+                log.debug("Creating target directory: {}", storageFile.getParent());
+                Files.createDirectories(storageFile.getParent());
+            } catch (IOException e) {
+                log.warn("Cannot create target directory: {}", storageFile.getParent(), e);
+            }
         }
-        log.debug("Storing {} transaction groups into file: {}", transactionGroups.size(), storageFile.getAbsolutePath());
-        try (ObjectOutputStream transactionGroupsStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(storageFile)))) {
+        log.debug("Storing {} transaction groups into file: {}", transactionGroups.size(), storageFile);
+        try (ObjectOutputStream transactionGroupsStream = new ObjectOutputStream(new BufferedOutputStream(Files.newOutputStream(storageFile)))) {
             transactionGroupsStream.writeObject(new ArrayList<>(transactionGroups));
             transactionGroupsStream.flush();
         } catch (Exception e) {
-            log.warn("Cannot store transaction groups into file: {}", storageFile.getAbsolutePath(), e);
+            log.warn("Cannot store transaction groups into file: {}", storageFile, e);
         }
     }
 

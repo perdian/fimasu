@@ -7,7 +7,7 @@ import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.AddTran
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.BackupTransactionGroupsActionEventHandler;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.RestoreTransactionGroupsActionEventHandler;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
-import de.perdian.apps.qifgenerator.preferences.Preferences;
+import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ContextMenu;

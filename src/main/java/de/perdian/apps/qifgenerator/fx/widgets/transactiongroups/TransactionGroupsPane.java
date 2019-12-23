@@ -6,7 +6,8 @@ import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutor;
 import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutorListener;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
-import de.perdian.apps.qifgenerator.preferences.Preferences;
+import de.perdian.commons.fx.preferences.Preferences;
+import de.perdian.commons.fx.properties.PropertyFactory;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.ListChangeListener;
@@ -22,7 +23,7 @@ public class TransactionGroupsPane extends BorderPane {
 
     public TransactionGroupsPane(ObservableList<TransactionGroup> transactionGroups, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
 
-        IntegerProperty selectedTabIndexProperty = preferences.getIntegerProperty("transactions.selectedTabIndex", 0);
+        IntegerProperty selectedTabIndexProperty = PropertyFactory.createIntegerProperty(preferences.getStringProperty("transactions.selectedTabIndex", "0"));
         TabPane tabPane = new TabPane();
         for (TransactionGroup transactionGroup : transactionGroups) {
             tabPane.getTabs().add(new TransactionGroupTab(transactionGroups, transactionGroup, files, guiExecutor, componentBuilder.createChild(), preferences));

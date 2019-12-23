@@ -25,6 +25,7 @@
 
     <properties>
         <commons-io.version>2.6</commons-io.version>
+        <commons-fx.version>1.0.0-SNAPSHOT</commons-fx.version>
         <commons-lang3.version>3.9</commons-lang3.version>
         <fontawesomefx.version>4.7.0-9.1.2</fontawesomefx.version>
         <icepdf.version>6.2.2</icepdf.version>
@@ -37,6 +38,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>de.perdian.commons</groupId>
+            <artifactId>commons-fx</artifactId>
+            <version>${commons-fx.version}</version>
+        </dependency>
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-controls</artifactId>

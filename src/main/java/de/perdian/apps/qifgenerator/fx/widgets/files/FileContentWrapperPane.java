@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.qifgenerator.fx.widgets.files.impl.PdfContentPane;
-import de.perdian.apps.qifgenerator.preferences.Preferences;
+import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;

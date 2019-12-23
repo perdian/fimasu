@@ -3,7 +3,7 @@ package de.perdian.apps.qifgenerator.fx.widgets.files;
 import java.io.File;
 import java.util.Optional;
 
-import de.perdian.apps.qifgenerator.preferences.Preferences;
+import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
