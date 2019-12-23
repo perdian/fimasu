@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.fx.support.converters.FileStringConverter;
+import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;

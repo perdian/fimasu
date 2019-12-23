@@ -5,11 +5,11 @@ import java.util.Map;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.fx.support.converters.DoubleStringConverter;
 import de.perdian.apps.qifgenerator.fx.support.converters.LocalDateStringConverter;
 import de.perdian.apps.qifgenerator.model.Transaction;
 import de.perdian.apps.qifgenerator.model.TransactionType;
+import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;

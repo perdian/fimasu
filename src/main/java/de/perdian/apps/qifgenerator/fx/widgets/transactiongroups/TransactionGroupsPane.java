@@ -2,10 +2,10 @@ package de.perdian.apps.qifgenerator.fx.widgets.transactiongroups;
 
 import java.io.File;
 
-import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutor;
 import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutorListener;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
+import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.preferences.Preferences;
 import de.perdian.commons.fx.properties.PropertyFactory;
 import javafx.application.Platform;
@@ -64,7 +64,7 @@ public class TransactionGroupsPane extends BorderPane {
         private TransactionGroup transactionGroup = null;
 
         TransactionGroupTab(ObservableList<TransactionGroup> transactionGroups, TransactionGroup transactionGroup, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
-            componentBuilder.addOnKeyPressedEventHandler(new TransactionGroupKeyPressedEventHandler(() -> transactionGroup, files, guiExecutor));
+            componentBuilder.addListener(component -> component.setOnKeyPressed(new TransactionGroupKeyPressedEventHandler(() -> transactionGroup, files, guiExecutor)));
             this.textProperty().bind(transactionGroup.getTitle());
             this.setOnCloseRequest(event -> {
                 if (transactionGroups.size() > 1) {
