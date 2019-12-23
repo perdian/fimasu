@@ -2,11 +2,11 @@ package de.perdian.apps.qifgenerator.fx.widgets.transactiongroups;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutor;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.AddTransactionGroupActionEventHandler;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.BackupTransactionGroupsActionEventHandler;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.RestoreTransactionGroupsActionEventHandler;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
+import de.perdian.commons.fx.execution.GuiExecutor;
 import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;

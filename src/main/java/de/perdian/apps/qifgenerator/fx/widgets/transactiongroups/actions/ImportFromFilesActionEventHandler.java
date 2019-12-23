@@ -10,10 +10,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutor;
 import de.perdian.apps.qifgenerator.model.Transaction;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
 import de.perdian.apps.qifgenerator.model.TransactionParser;
+import de.perdian.commons.fx.execution.GuiExecutor;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

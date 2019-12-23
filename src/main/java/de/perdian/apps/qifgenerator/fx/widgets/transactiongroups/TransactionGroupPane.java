@@ -8,13 +8,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutor;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ExportAsQifActionEventHandler;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ImportFromFilesActionEventHandler;
 import de.perdian.apps.qifgenerator.fx.widgets.transactions.TransactionPane;
 import de.perdian.apps.qifgenerator.model.Transaction;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
 import de.perdian.commons.fx.components.ComponentBuilder;
+import de.perdian.commons.fx.execution.GuiExecutor;
 import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
