@@ -10,7 +10,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.qifgenerator.fx.support.components.ComponentBuilder;
 import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutor;
-import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ExportActionEventHandler;
+import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ExportAsQifActionEventHandler;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ImportFromFilesActionEventHandler;
 import de.perdian.apps.qifgenerator.fx.widgets.transactions.TransactionPane;
 import de.perdian.apps.qifgenerator.model.Transaction;
@@ -37,42 +37,25 @@ class TransactionGroupPane extends VBox {
 
     TransactionGroupPane(TransactionGroup transactionGroup, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
 
-        TransactionsListPane transactionsListPane = new TransactionsListPane(transactionGroup.getTransactions(), componentBuilder, preferences);
-        transactionsListPane.setTop(new ActionsToolBar(transactionGroup, files, guiExecutor, componentBuilder, preferences));
-        TitledPane transactionsTitledPane = new TitledPane("Transactions", transactionsListPane);
+        BorderPane groupPaneWrapper = new BorderPane();
+        groupPaneWrapper.setPadding(new Insets(0));
+        groupPaneWrapper.setTop(new DataToolBar(transactionGroup, files, guiExecutor, componentBuilder, preferences));
+        groupPaneWrapper.setCenter(new GroupPane(transactionGroup, componentBuilder, preferences));
+        TitledPane dataTitledPane = new TitledPane("Transaction group", groupPaneWrapper);
+        dataTitledPane.setCollapsible(false);
+
+        BorderPane transactionsListPaneWrapper = new BorderPane();
+        transactionsListPaneWrapper.setPadding(new Insets(0));
+        transactionsListPaneWrapper.setTop(new TransactionsListToolBar(transactionGroup, files, guiExecutor, componentBuilder, preferences));
+        transactionsListPaneWrapper.setCenter(new TransactionsListPane(transactionGroup.getTransactions(), componentBuilder, preferences));
+        TitledPane transactionsTitledPane = new TitledPane("Transactions", transactionsListPaneWrapper);
         transactionsTitledPane.setCollapsible(false);
         transactionsTitledPane.setMaxHeight(Double.MAX_VALUE);
         VBox.setVgrow(transactionsTitledPane, Priority.ALWAYS);
 
-        DataPane dataPane = new DataPane(transactionGroup, componentBuilder, preferences);
-        TitledPane dataTitledPane = new TitledPane("Data", dataPane);
-        dataTitledPane.setCollapsible(false);
-
         this.setSpacing(8);
         this.setPadding(new Insets(8, 8, 8, 8));
-        this.getChildren().addAll(transactionsTitledPane, dataTitledPane);
-
-    }
-
-    private static class ActionsToolBar extends ToolBar {
-
-        private ActionsToolBar(TransactionGroup transactionGroup, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
-
-            Button addTransactionButton = new Button("Add transaction", new FontAwesomeIconView(FontAwesomeIcon.PLUS));
-            addTransactionButton.setOnAction(event -> transactionGroup.getTransactions().add(new Transaction()));
-            this.getItems().add(addTransactionButton);
-
-            HBox separatorBox = new HBox();
-            HBox.setHgrow(separatorBox, Priority.ALWAYS);
-            this.getItems().add(separatorBox);
-
-            Button exportButton = new Button("Export", new FontAwesomeIconView(FontAwesomeIcon.SAVE));
-            exportButton.setOnAction(new ExportActionEventHandler(() -> transactionGroup));
-            Button importFromFilesButton = new Button("Import from files", new FontAwesomeIconView(FontAwesomeIcon.FILE));
-            importFromFilesButton.setOnAction(new ImportFromFilesActionEventHandler(() -> transactionGroup, files, guiExecutor));
-            this.getItems().addAll(importFromFilesButton, exportButton);
-
-        }
+        this.getChildren().addAll(dataTitledPane, transactionsTitledPane);
 
     }
 
@@ -121,9 +104,29 @@ class TransactionGroupPane extends VBox {
 
     }
 
-    private static class DataPane extends VBox {
+    private static class TransactionsListToolBar extends ToolBar {
 
-        DataPane(TransactionGroup transactionGroup, ComponentBuilder componentBuilder, Preferences preferences) {
+        private TransactionsListToolBar(TransactionGroup transactionGroup, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
+
+            Button addTransactionButton = new Button("Add transaction", new FontAwesomeIconView(FontAwesomeIcon.PLUS));
+            addTransactionButton.setOnAction(event -> transactionGroup.getTransactions().add(new Transaction()));
+            this.getItems().add(addTransactionButton);
+
+            HBox separatorBox = new HBox();
+            HBox.setHgrow(separatorBox, Priority.ALWAYS);
+            this.getItems().add(separatorBox);
+
+            Button importFromFilesButton = new Button("Import from files", new FontAwesomeIconView(FontAwesomeIcon.FILE));
+            importFromFilesButton.setOnAction(new ImportFromFilesActionEventHandler(() -> transactionGroup, files, guiExecutor));
+            this.getItems().addAll(importFromFilesButton);
+
+        }
+
+    }
+
+    private static class GroupPane extends VBox {
+
+        GroupPane(TransactionGroup transactionGroup, ComponentBuilder componentBuilder, Preferences preferences) {
 
             GridPane firstRowPane = new GridPane();
             firstRowPane.add(componentBuilder.createLabel("Transaction group title"), 0, 0, 1, 1);
@@ -160,6 +163,22 @@ class TransactionGroupPane extends VBox {
             secondRowPane.setHgap(2);
             secondRowPane.setPadding(new Insets(4, 8, 8, 8));
             this.getChildren().add(secondRowPane);
+
+        }
+
+    }
+
+    private static class DataToolBar extends ToolBar {
+
+        private DataToolBar(TransactionGroup transactionGroup, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
+
+            HBox separatorBox = new HBox();
+            HBox.setHgrow(separatorBox, Priority.ALWAYS);
+            this.getItems().add(separatorBox);
+
+            Button exportAsQifButton = new Button("Export as QIF", new FontAwesomeIconView(FontAwesomeIcon.SAVE));
+            exportAsQifButton.setOnAction(new ExportAsQifActionEventHandler(() -> transactionGroup, guiExecutor));
+            this.getItems().addAll(exportAsQifButton);
 
         }
 

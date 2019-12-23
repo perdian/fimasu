@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.function.Supplier;
 
 import de.perdian.apps.qifgenerator.fx.support.execution.GuiExecutor;
-import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ExportActionEventHandler;
+import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ExportAsQifActionEventHandler;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions.ImportFromFilesActionEventHandler;
 import de.perdian.apps.qifgenerator.model.TransactionGroup;
 import javafx.collections.ObservableList;
@@ -28,7 +28,7 @@ class TransactionGroupKeyPressedEventHandler implements EventHandler<KeyEvent> {
     @Override
     public void handle(KeyEvent event) {
         if (event.getCode() == KeyCode.E && event.isMetaDown()) {
-            new ExportActionEventHandler(this.getTransactionGroupSupplier()).handle(new ActionEvent(event.getSource(), event.getTarget()));
+            new ExportAsQifActionEventHandler(this.getTransactionGroupSupplier(), this.getGuiExecutor()).handle(new ActionEvent(event.getSource(), event.getTarget()));
             event.consume();
         } else if (event.getCode() == KeyCode.I && event.isMetaDown()) {
             new ImportFromFilesActionEventHandler(this.getTransactionGroupSupplier(), this.getFiles(), this.getGuiExecutor()).handle(new ActionEvent(event.getSource(), event.getTarget()));
