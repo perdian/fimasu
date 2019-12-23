@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.model;
+package de.perdian.apps.qifgenerator.model.transactions;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

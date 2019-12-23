@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.model.impl;
+package de.perdian.apps.qifgenerator.model.transactions.impl;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,8 +21,8 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.qifgenerator.model.Transaction;
-import de.perdian.apps.qifgenerator.model.TransactionParser;
+import de.perdian.apps.qifgenerator.model.transactions.Transaction;
+import de.perdian.apps.qifgenerator.model.transactions.TransactionParser;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;

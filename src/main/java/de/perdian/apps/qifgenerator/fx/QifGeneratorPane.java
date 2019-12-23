@@ -4,7 +4,7 @@ import java.io.File;
 
 import de.perdian.apps.qifgenerator.fx.widgets.files.FilesPane;
 import de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.TransactionGroupsPane;
-import de.perdian.apps.qifgenerator.model.TransactionGroup;
+import de.perdian.apps.qifgenerator.model.transactions.TransactionGroup;
 import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.execution.GuiExecutorImpl;
 import de.perdian.commons.fx.preferences.Preferences;

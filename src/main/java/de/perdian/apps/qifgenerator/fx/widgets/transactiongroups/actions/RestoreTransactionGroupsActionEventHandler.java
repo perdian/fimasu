@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.perdian.apps.qifgenerator.model.TransactionGroup;
-import de.perdian.apps.qifgenerator.model.TransactionGroupSerializer;
+import de.perdian.apps.qifgenerator.model.transactions.TransactionGroup;
+import de.perdian.apps.qifgenerator.model.transactions.TransactionGroupSerializer;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;

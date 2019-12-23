@@ -1,6 +1,6 @@
 package de.perdian.apps.qifgenerator.fx.widgets.transactiongroups.actions;
 
-import de.perdian.apps.qifgenerator.model.TransactionGroup;
+import de.perdian.apps.qifgenerator.model.transactions.TransactionGroup;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

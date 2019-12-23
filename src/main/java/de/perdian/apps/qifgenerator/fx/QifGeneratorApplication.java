@@ -5,8 +5,8 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.qifgenerator.model.TransactionGroup;
-import de.perdian.apps.qifgenerator.model.TransactionGroupFactory;
+import de.perdian.apps.qifgenerator.model.transactions.TransactionGroup;
+import de.perdian.apps.qifgenerator.model.transactions.TransactionGroupFactory;
 import de.perdian.commons.fx.AbstractApplication;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;

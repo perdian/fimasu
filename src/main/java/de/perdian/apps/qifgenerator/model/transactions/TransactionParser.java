@@ -1,4 +1,4 @@
-package de.perdian.apps.qifgenerator.model;
+package de.perdian.apps.qifgenerator.model.transactions;
 
 import java.io.File;
 import java.util.ArrayList;
