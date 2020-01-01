@@ -2,17 +2,17 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.perdian.personal</groupId>
-    <artifactId>qifgenerator</artifactId>
+    <artifactId>fimasu</artifactId>
     <version>2.0.0-SNAPSHOT</version>
 
-    <name>QIF Generator</name>
-    <description>QIF Generator</description>
-    <url>https://github.com/perdian/qifgenerator</url>
+    <name>FimaSu</name>
+    <description>FimaSu</description>
+    <url>https://github.com/perdian/fimasu</url>
 
     <scm>
-        <url>https://github.com/perdian/qifgenerator</url>
-        <connection>scm:git:https://github.com/perdian/qifgenerator.git</connection>
-        <developerConnection>scm:git:https://github.com/perdian/qifgenerator.git</developerConnection>
+        <url>https://github.com/perdian/fimasu</url>
+        <connection>scm:git:https://github.com/perdian/fimasu.git</connection>
+        <developerConnection>scm:git:https://github.com/perdian/fimasu.git</developerConnection>
     </scm>
 
     <developers>
@@ -25,7 +25,7 @@
 
     <properties>
         <commons-io.version>2.6</commons-io.version>
-        <commons-fx.version>1.0.0-SNAPSHOT</commons-fx.version>
+        <commons-fx.version>1.0.0</commons-fx.version>
         <commons-lang3.version>3.9</commons-lang3.version>
         <fontawesomefx.version>4.7.0-9.1.2</fontawesomefx.version>
         <icepdf.version>6.2.2</icepdf.version>
@@ -134,7 +134,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.perdian.apps.qifgenerator.fx.QifGeneratorLauncher</mainClass>
+                            <mainClass>de.perdian.apps.fimasu.fx.FimaSuLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -152,7 +152,7 @@
                         <artifactId>maven-shade-plugin</artifactId>
                         <version>3.2.1</version>
                         <configuration>
-                            <finalName>qifgenerator</finalName>
+                            <finalName>fimasu</finalName>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
@@ -186,8 +186,8 @@
                         <version>1.4.0</version>
                         <configuration>
                             <plist>
-                                <CFBundleIconFile>src/bundle/macos/resources/qifgenerator.icns</CFBundleIconFile>
-                                <JVMMainClassName>de.perdian.apps.qifgenerator.fx.QifGeneratorLauncher</JVMMainClassName>
+                                <CFBundleIconFile>src/bundle/macos/resources/fimasu.icns</CFBundleIconFile>
+                                <JVMMainClassName>de.perdian.apps.fimasu.fx.FimaSuLauncher</JVMMainClassName>
                                 <JVMVersion>${java.version}</JVMVersion>
                                 <JVMOptions>
                                     <string>-Dapple.laf.useScreenMenuBar=true</string>

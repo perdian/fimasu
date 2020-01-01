@@ -25,10 +25,10 @@ The application is written in pure Java, using a JavaFX frontend. It's therefore
 
 For building it simply checkout the repository from GitHub and call the Maven package target on the command line:
 
-    $ git clone https://github.com/perdian/qifgenerator.git
-    $ cd qifgenerator
+    $ git clone https://github.com/perdian/fimasu.git
+    $ cd fimasu
     $ mvn clean package -Puberjar
-    $ java -jar target/qifgenerator.jar
+    $ java -jar target/fimasu.jar
 
 ### macOS build
 
@@ -36,7 +36,7 @@ On macOS a simplified build that directly genrates a macOS application from whic
 
 Then build the application activate the profile `macos-bundle`:
 
-    $ git clone https://github.com/perdian/qifgenerator.git
-    $ cd qifgenerator
+    $ git clone https://github.com/perdian/fimasu.git
+    $ cd fimasu
     $ mvn clean package -Pmacos-bundle
-    $ open target/QIF\ Generator.app/Contents/MacOS/JavaLauncher
+    $ open target/FimaSu.app/Contents/MacOS/JavaLauncher
