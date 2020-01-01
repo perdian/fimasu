@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.fimasu.model.TransactionGroup;
-import de.perdian.apps.fimasu.model.transactions.TransactionGroupFactory;
+import de.perdian.apps.fimasu.model.TransactionGroupFactory;
 import de.perdian.commons.fx.AbstractApplication;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;

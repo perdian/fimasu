@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.TransactionGroup;
-import de.perdian.apps.fimasu.model.transactions.TransactionParser;
+import de.perdian.apps.fimasu.model.TransactionParser;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;

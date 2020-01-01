@@ -1,4 +1,4 @@
-package de.perdian.apps.fimasu.model.transactions;
+package de.perdian.apps.fimasu.model;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -13,7 +13,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.fimasu.model.TransactionGroup;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;

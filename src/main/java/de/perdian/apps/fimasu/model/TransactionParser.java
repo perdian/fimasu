@@ -1,11 +1,9 @@
-package de.perdian.apps.fimasu.model.transactions;
+package de.perdian.apps.fimasu.model;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
-
-import de.perdian.apps.fimasu.model.Transaction;
 
 public interface TransactionParser {
 

@@ -1,4 +1,4 @@
-package de.perdian.apps.fimasu.model.transactions.impl.parsers;
+package de.perdian.apps.fimasu.model.impl.parsers;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,12 +21,12 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.perdian.apps.fimasu.model.MonetaryValue;
 import de.perdian.apps.fimasu.model.Transaction;
-import de.perdian.apps.fimasu.model.TransactionType;
-import de.perdian.apps.fimasu.model.transactions.TransactionParser;
-import javafx.beans.property.DoubleProperty;
+import de.perdian.apps.fimasu.model.TransactionParser;
+import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
+import de.perdian.apps.fimasu.model.impl.transactions.StockChangeType;
 import javafx.beans.property.Property;
-import javafx.beans.property.StringProperty;
 
 public class Comdirect_TransactionParser implements TransactionParser {
 
@@ -45,8 +45,8 @@ public class Comdirect_TransactionParser implements TransactionParser {
                     PDFTextStripper pdfStripper = new PDFTextStripper();
                     String pdfText = pdfStripper.getText(pdfDocument);
 
-                    Transaction transaction = new Transaction();
-                    transaction.getType().setValue(documentFile.getName().startsWith("Wertpapierabrechnung_Verkauf") ? TransactionType.SELL : TransactionType.BUY);
+                    StockChangeTransaction transaction = new StockChangeTransaction();
+                    transaction.getType().setValue(documentFile.getName().startsWith("Wertpapierabrechnung_Verkauf") ? StockChangeType.SELL : StockChangeType.BUY);
 
                     try (BufferedReader lineReader = new BufferedReader(new StringReader(pdfText))) {
                         for (String line = lineReader.readLine(); line != null; line = lineReader.readLine()) {
@@ -65,13 +65,13 @@ public class Comdirect_TransactionParser implements TransactionParser {
         return Collections.emptyList();
     }
 
-    private void analyzeLine(String line, Transaction transaction) throws Exception {
+    private void analyzeLine(String line, StockChangeTransaction transaction) throws Exception {
         this.analyzeLineRegex(line, Pattern.compile("Geschäftstag\\s+\\:\\s+(\\d+\\.\\d+\\.\\d+)\\s.*?"), transaction.getBookingDate(), string -> LocalDate.parse(string, DATE_FORMATTER));
         this.analyzeLineRegex(line, Pattern.compile("Die Belastung erfolgt mit Valuta (.*?) auf Konto .*"), transaction.getValutaDate(), string -> LocalDate.parse(string, DATE_FORMATTER));
         this.analyzeLineNumberOfSharesAndPrice(line, transaction);
         this.analyzeLineReduction(line, transaction);
         this.analyzeLineBookingCurrencyExchangeRate(line, transaction);
-        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Summe Entgelte", transaction.getCharges(), transaction.getChargesCurrency());
+        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Summe Entgelte", transaction.getCharges());
         this.analyzeLineWknIsin(line, transaction);
     }
 
@@ -82,35 +82,29 @@ public class Comdirect_TransactionParser implements TransactionParser {
         }
     }
 
-    private void analyzeLineNumberOfSharesAndPrice(String line, Transaction transaction) throws Exception {
+    private void analyzeLineNumberOfSharesAndPrice(String line, StockChangeTransaction transaction) throws Exception {
         if (line.startsWith("St.")) {
             Matcher regexMatcher = Pattern.compile("St\\.\\s+(.*?)\\s+([A-Z]{3})\\s+(.*?)").matcher(line);
             if (regexMatcher.matches()) {
                 transaction.getNumberOfShares().setValue(NUMBER_FORMAT.parse(regexMatcher.group(1)).doubleValue());
-                transaction.getMarketCurrency().setValue(regexMatcher.group(2));
-                transaction.getMarketPrice().setValue(NUMBER_FORMAT.parse(regexMatcher.group(3)).doubleValue());
+                transaction.getMarketPrice().setValue(new MonetaryValue(NUMBER_FORMAT.parse(regexMatcher.group(3)).doubleValue(), regexMatcher.group(2)));
             }
         }
     }
 
-    private void analyzeLineIntoDoubleWithCurrencySimple(String line, String prefix, DoubleProperty targetValueProperty, StringProperty targetCurrencyProperty) throws Exception {
+    private void analyzeLineIntoDoubleWithCurrencySimple(String line, String prefix, Property<MonetaryValue> monetaryValueProperty) throws Exception {
         if (line.startsWith(prefix)) {
             int nextColonIndex = line.indexOf(":", prefix.length());
             if (nextColonIndex > -1) {
                 Matcher remainingLineMatcher = Pattern.compile("([A-Z]{3})\\s+(.*?)").matcher(line.substring(nextColonIndex + 1).trim());
                 if (remainingLineMatcher.matches()) {
-                    if (targetCurrencyProperty != null) {
-                        targetCurrencyProperty.setValue(remainingLineMatcher.group(1));
-                    }
-                    if (targetValueProperty != null) {
-                        targetValueProperty.setValue(NUMBER_FORMAT.parse(remainingLineMatcher.group(2)).doubleValue());
-                    }
+                    monetaryValueProperty.setValue(new MonetaryValue(NUMBER_FORMAT.parse(remainingLineMatcher.group(2)).doubleValue(), remainingLineMatcher.group(1)));
                 }
             }
         }
     }
 
-    private void analyzeLineWknIsin(String line, Transaction transaction) throws Exception {
+    private void analyzeLineWknIsin(String line, StockChangeTransaction transaction) throws Exception {
         Matcher regexMatcher = Pattern.compile("Stk\\..*?\\d+.*?\\s+(.*?)\\,.*?WKN.*?\\:\\s+(.*?)\\s+\\/\\s+(.*?)").matcher(line);
         if (regexMatcher.matches()) {
             transaction.getTitle().setValue(regexMatcher.group(1).trim());
@@ -119,18 +113,17 @@ public class Comdirect_TransactionParser implements TransactionParser {
         }
     }
 
-    private void analyzeLineReduction(String line, Transaction transaction) throws Exception {
+    private void analyzeLineReduction(String line, StockChangeTransaction transaction) throws Exception {
         Matcher regexMatcher = Pattern.compile(".*?Reduktion Kaufaufschlag.*?([A-Z]{3})\\s+(.*?)\\-").matcher(line);
         if (regexMatcher.matches()) {
-            transaction.getCharges().setValue(-1d * NUMBER_FORMAT.parse(regexMatcher.group(2)).doubleValue());
-            transaction.getChargesCurrency().setValue(regexMatcher.group(1));
+            transaction.getCharges().setValue(new MonetaryValue(-1d * NUMBER_FORMAT.parse(regexMatcher.group(2)).doubleValue(), regexMatcher.group(1)));
         }
     }
 
-    private void analyzeLineBookingCurrencyExchangeRate(String line, Transaction transaction) throws Exception {
+    private void analyzeLineBookingCurrencyExchangeRate(String line, StockChangeTransaction transaction) throws Exception {
         Matcher regexMatcher = Pattern.compile(".*?Umrechnung zum Devisenkurs\\s+(.*?)\\s+[A-Z]{3}\\s+(.*?)").matcher(line);
         if (regexMatcher.matches()) {
-            transaction.getBookingCurrencyExchangeRate().setValue(NUMBER_FORMAT.parse(regexMatcher.group(1)).doubleValue());
+            transaction.getBookingExchangeRate().setValue(NUMBER_FORMAT.parse(regexMatcher.group(1)).doubleValue());
         }
     }
 

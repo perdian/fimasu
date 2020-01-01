@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import de.perdian.apps.fimasu.model.MonetaryValue;
 import de.perdian.apps.fimasu.model.Transaction;
+import de.perdian.apps.fimasu.model.support.PersistenceHelper;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -95,6 +98,30 @@ public class StockChangeTransaction extends Transaction {
                 property.setValue(new MonetaryValue(property.getValue().getValue(), consolidatedCurrencies.isEmpty() ? null : consolidatedCurrencies.get(0)));
             }
         });
+    }
+
+    @Override
+    protected void loadFromXML(Element transactionElement) {
+        super.loadFromXML(transactionElement);
+        this.getPersistent().setValue(Boolean.TRUE);
+        this.getBookingCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "bookingCurrency").orElse("EUR"));
+        this.getBookingDate().setValue(PersistenceHelper.extractAttributeDate(transactionElement, "bookingDate").orElse(null));
+        this.getBookingExchangeRate().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "bookingExchangeRate").orElse(null));
+        this.getCharges().setValue(PersistenceHelper.extractAttributeMonetaryValue(transactionElement, "charges").orElse(null));
+        this.getFinanceTax().setValue(PersistenceHelper.extractAttributeMonetaryValue(transactionElement, "financeTax").orElse(null));
+        this.getSolidarityTax().setValue(PersistenceHelper.extractAttributeMonetaryValue(transactionElement, "solidarityTax").orElse(null));
+    }
+
+    @Override
+    protected void appendToXML(Element transactionElement, Document document) {
+        super.appendToXML(transactionElement, document);
+        PersistenceHelper.appendAttribute(transactionElement, "bookingCurrency", this.getBookingCurrency().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "bookingDate", this.getBookingDate().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "bookingExchangeRate", this.getBookingExchangeRate().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "charges", this.getCharges().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "financeTax", this.getFinanceTax().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "solidarityTax", this.getSolidarityTax().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "type", this.getType().getValue().name());
     }
 
     public ObjectProperty<StockChangeType> getType() {

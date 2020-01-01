@@ -5,6 +5,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import de.perdian.apps.fimasu.model.support.PersistenceHelper;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -51,6 +55,18 @@ public abstract class Transaction {
             }
             this.getValutaDate().setValue(nextValutaDate);
         }
+    }
+
+    protected void loadFromXML(Element transactionElement) {
+        this.getTitle().setValue(PersistenceHelper.extractAttributeString(transactionElement, "title").orElse(null));
+        this.getWkn().setValue(PersistenceHelper.extractAttributeString(transactionElement, "wkn").orElse(null));
+        this.getIsin().setValue(PersistenceHelper.extractAttributeString(transactionElement, "isin").orElse(null));
+    }
+
+    protected void appendToXML(Element transactionElement, Document document) {
+        PersistenceHelper.appendAttribute(transactionElement, "title", this.getTitle().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "wkn", this.getTitle().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "isin", this.getTitle().getValue());
     }
 
     public StringProperty getWkn() {
