@@ -2,7 +2,7 @@ package de.perdian.apps.fimasu.fx.widgets.transactiongroups;
 
 import java.io.File;
 
-import de.perdian.apps.fimasu.model.transactions.TransactionGroup;
+import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import de.perdian.commons.fx.execution.GuiExecutorListener;

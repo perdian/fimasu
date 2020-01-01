@@ -1,6 +1,6 @@
 package de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions;
 
-import de.perdian.apps.fimasu.model.transactions.TransactionGroup;
+import de.perdian.apps.fimasu.model.TransactionGroup;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

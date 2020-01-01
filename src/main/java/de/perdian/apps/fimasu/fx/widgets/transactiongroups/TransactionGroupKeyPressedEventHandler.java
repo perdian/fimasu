@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.ExportAsQifActionEventHandler;
 import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.ImportFromFilesActionEventHandler;
-import de.perdian.apps.fimasu.model.transactions.TransactionGroup;
+import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;

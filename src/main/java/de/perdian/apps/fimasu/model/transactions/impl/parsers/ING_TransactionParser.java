@@ -1,4 +1,4 @@
-package de.perdian.apps.fimasu.model.transactions.impl;
+package de.perdian.apps.fimasu.model.transactions.impl.parsers;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,7 +21,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.fimasu.model.transactions.Transaction;
+import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.transactions.TransactionParser;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;

@@ -8,8 +8,8 @@ import java.util.Map;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.fimasu.model.transactions.Transaction;
-import de.perdian.apps.fimasu.model.transactions.TransactionType;
+import de.perdian.apps.fimasu.model.Transaction;
+import de.perdian.apps.fimasu.model.TransactionType;
 import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.preferences.Preferences;
 import de.perdian.commons.fx.properties.converters.DoubleStringConverter;

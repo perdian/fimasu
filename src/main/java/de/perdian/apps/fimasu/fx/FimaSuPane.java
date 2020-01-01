@@ -4,7 +4,7 @@ import java.io.File;
 
 import de.perdian.apps.fimasu.fx.widgets.files.FilesPane;
 import de.perdian.apps.fimasu.fx.widgets.transactiongroups.TransactionGroupsPane;
-import de.perdian.apps.fimasu.model.transactions.TransactionGroup;
+import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.execution.GuiExecutorImpl;
 import de.perdian.commons.fx.preferences.Preferences;

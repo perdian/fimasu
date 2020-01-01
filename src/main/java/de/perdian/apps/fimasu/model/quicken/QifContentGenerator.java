@@ -11,9 +11,9 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.perdian.apps.fimasu.model.transactions.Transaction;
-import de.perdian.apps.fimasu.model.transactions.TransactionGroup;
-import de.perdian.apps.fimasu.model.transactions.TransactionType;
+import de.perdian.apps.fimasu.model.Transaction;
+import de.perdian.apps.fimasu.model.TransactionGroup;
+import de.perdian.apps.fimasu.model.TransactionType;
 
 public class QifContentGenerator {
 

@@ -1,2 +1,2 @@
-de.perdian.apps.fimasu.model.transactions.impl.Comdirect_TransactionParser
-de.perdian.apps.fimasu.model.transactions.impl.ING_TransactionParser
+de.perdian.apps.fimasu.model.transactions.impl.parsers.Comdirect_TransactionParser
+de.perdian.apps.fimasu.model.transactions.impl.parsers.ING_TransactionParser

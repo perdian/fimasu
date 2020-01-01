@@ -5,7 +5,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.AddTransactionGroupActionEventHandler;
 import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.BackupTransactionGroupsActionEventHandler;
 import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.RestoreTransactionGroupsActionEventHandler;
-import de.perdian.apps.fimasu.model.transactions.TransactionGroup;
+import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.property.StringProperty;

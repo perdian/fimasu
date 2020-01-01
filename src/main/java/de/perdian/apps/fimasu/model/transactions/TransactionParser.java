@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import de.perdian.apps.fimasu.model.Transaction;
+
 public interface TransactionParser {
 
     public static List<Transaction> parseTransactions(File file) {

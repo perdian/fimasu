@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.perdian.apps.fimasu.model.transactions.TransactionGroup;
+import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.apps.fimasu.model.transactions.TransactionGroupSerializer;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import javafx.application.Platform;

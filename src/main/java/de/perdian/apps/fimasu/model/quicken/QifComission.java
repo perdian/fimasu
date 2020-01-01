@@ -6,7 +6,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Objects;
 
-import de.perdian.apps.fimasu.model.transactions.Transaction;
+import de.perdian.apps.fimasu.model.Transaction;
 
 class QifComission {
 

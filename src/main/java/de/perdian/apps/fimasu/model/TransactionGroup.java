@@ -1,4 +1,4 @@
-package de.perdian.apps.fimasu.model.transactions;
+package de.perdian.apps.fimasu.model;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -11,6 +11,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -25,6 +27,7 @@ public class TransactionGroup implements Externalizable {
     private final StringProperty title = new SimpleStringProperty();
     private final StringProperty account = new SimpleStringProperty();
     private final StringProperty targetFilePath = new SimpleStringProperty();
+    private final BooleanProperty persistent = new SimpleBooleanProperty(false);
     private final ObservableList<Transaction> transactions = FXCollections.observableArrayList();
     private final List<ChangeListener<TransactionGroup>> changeListeners = new CopyOnWriteArrayList<>();
 
@@ -91,6 +94,10 @@ public class TransactionGroup implements Externalizable {
 
     public StringProperty getTargetFilePath() {
         return this.targetFilePath;
+    }
+
+    public BooleanProperty getPersistent() {
+        return this.persistent;
     }
 
     public ObservableList<Transaction> getTransactions() {
