@@ -11,8 +11,10 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.ExportAsQifActionEventHandler;
 import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.ImportFromFilesActionEventHandler;
 import de.perdian.apps.fimasu.fx.widgets.transactions.TransactionPane;
+import de.perdian.apps.fimasu.fx.widgets.transactions.TransactionPaneFactory;
 import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.TransactionGroup;
+import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
 import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import de.perdian.commons.fx.preferences.Preferences;
@@ -67,7 +69,7 @@ class TransactionGroupPane extends VBox {
             VBox transactionsWrapper = new VBox(8);
             transactionsWrapper.setPadding(new Insets(8, 8, 8, 8));
             for (Transaction transaction : transactions) {
-                TransactionPane transactionPane = new TransactionPane(transaction, transactions, componentBuilder, preferences);
+                TransactionPane transactionPane = TransactionPaneFactory.createTransactionPane(transaction, transactions, componentBuilder, preferences);
                 transactionPane.setPadding(new Insets(0, 0, 12, 0));
                 transactionPanesByTransaction.put(transaction, transactionPane);
                 transactionsWrapper.getChildren().add(transactionPane);
@@ -83,7 +85,7 @@ class TransactionGroupPane extends VBox {
                         });
                         change.getAddedSubList().forEach(addedTransaction -> {
                             int transactionIndex = transactions.indexOf(addedTransaction);
-                            TransactionPane transactionPane = new TransactionPane(addedTransaction, transactions, componentBuilder, preferences);
+                            TransactionPane transactionPane = TransactionPaneFactory.createTransactionPane(addedTransaction, transactions, componentBuilder, preferences);
                             transactionPane.setPadding(new Insets(0, 0, 12, 0));
                             transactionPanesByTransaction.put(addedTransaction, transactionPane);
                             transactionsWrapper.getChildren().add(transactionIndex, transactionPane);
@@ -109,7 +111,7 @@ class TransactionGroupPane extends VBox {
         private TransactionsListToolBar(TransactionGroup transactionGroup, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
 
             Button addTransactionButton = new Button("Add transaction", new FontAwesomeIconView(FontAwesomeIcon.PLUS));
-            addTransactionButton.setOnAction(event -> transactionGroup.getTransactions().add(new Transaction()));
+            addTransactionButton.setOnAction(event -> transactionGroup.getTransactions().add(new StockChangeTransaction()));
             this.getItems().add(addTransactionButton);
 
             HBox separatorBox = new HBox();

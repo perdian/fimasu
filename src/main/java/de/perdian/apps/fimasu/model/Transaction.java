@@ -3,8 +3,10 @@ package de.perdian.apps.fimasu.model;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -67,6 +69,14 @@ public abstract class Transaction {
         PersistenceHelper.appendAttribute(transactionElement, "title", this.getTitle().getValue());
         PersistenceHelper.appendAttribute(transactionElement, "wkn", this.getTitle().getValue());
         PersistenceHelper.appendAttribute(transactionElement, "isin", this.getTitle().getValue());
+    }
+
+    public void copyValuesInto(Transaction targetTransaction) {
+        Optional.ofNullable(this.getBookingDate().getValue()).ifPresent(targetTransaction.getBookingDate()::setValue);
+        Optional.ofNullable(this.getValutaDate().getValue()).ifPresent(targetTransaction.getValutaDate()::setValue);
+        if (StringUtils.isEmpty(targetTransaction.getTitle().getValue())) {
+            Optional.ofNullable(this.getTitle().getValue()).ifPresent(targetTransaction.getTitle()::setValue);
+        }
     }
 
     public StringProperty getWkn() {

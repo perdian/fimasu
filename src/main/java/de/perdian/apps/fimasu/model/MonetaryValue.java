@@ -4,6 +4,12 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class MonetaryValue {
 
     private Double value = null;
@@ -38,6 +44,39 @@ public class MonetaryValue {
 
     public MonetaryValue multiply(Number factor) {
         return new MonetaryValue(this.getValue().doubleValue() * factor.doubleValue(), this.getCurrency());
+    }
+
+    public static StringProperty asCurrencyProperty(Property<MonetaryValue> inputProperty) {
+        StringProperty stringProperty = new SimpleStringProperty(inputProperty.getValue().getCurrency());
+        inputProperty.addListener((o, oldValue, newValue) -> {
+            if (!Objects.equals(newValue.getCurrency(), stringProperty.getValue())) {
+                stringProperty.setValue(newValue.getCurrency());
+            }
+        });
+        stringProperty.addListener((o, oldValue, newValue) -> {
+            if (!Objects.equals(newValue, inputProperty.getValue().getCurrency())) {
+                inputProperty.setValue(new MonetaryValue(inputProperty.getValue().getValue(), newValue));
+            }
+        });
+        return stringProperty;
+    }
+
+    public static DoubleProperty asValueProperty(Property<MonetaryValue> inputProperty) {
+        DoubleProperty doubleProperty = new SimpleDoubleProperty();
+        if (inputProperty.getValue().getValue() != null) {
+            doubleProperty.setValue(inputProperty.getValue().getValue());
+        }
+        inputProperty.addListener((o, oldValue, newValue) -> {
+            if (!Objects.equals(newValue.getValue(), doubleProperty.getValue())) {
+                doubleProperty.setValue(newValue.getValue());
+            }
+        });
+        doubleProperty.addListener((o, oldValue, newValue) -> {
+            if (!Objects.equals(newValue, inputProperty.getValue().getValue())) {
+                inputProperty.setValue(new MonetaryValue(newValue == null ? null : newValue.doubleValue(), inputProperty.getValue().getCurrency()));
+            }
+        });
+        return doubleProperty;
     }
 
     public Double getValue() {

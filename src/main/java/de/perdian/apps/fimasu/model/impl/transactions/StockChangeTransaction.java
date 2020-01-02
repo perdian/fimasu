@@ -1,6 +1,7 @@
 package de.perdian.apps.fimasu.model.impl.transactions;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -122,6 +123,21 @@ public class StockChangeTransaction extends Transaction {
         PersistenceHelper.appendAttribute(transactionElement, "financeTax", this.getFinanceTax().getValue());
         PersistenceHelper.appendAttribute(transactionElement, "solidarityTax", this.getSolidarityTax().getValue());
         PersistenceHelper.appendAttribute(transactionElement, "type", this.getType().getValue().name());
+    }
+
+    @Override
+    public void copyValuesInto(Transaction targetTransaction) {
+        super.copyValuesInto(targetTransaction);
+        if (targetTransaction instanceof StockChangeTransaction) {
+            Optional.ofNullable(this.getBookingCurrency().getValue()).ifPresent(value -> ((StockChangeTransaction)targetTransaction).getBookingCurrency().setValue(value));
+            Optional.ofNullable(this.getBookingExchangeRate().getValue()).ifPresent(value -> ((StockChangeTransaction)targetTransaction).getBookingExchangeRate().setValue(value));
+            Optional.ofNullable(this.getCharges().getValue()).ifPresent(value -> ((StockChangeTransaction)targetTransaction).getCharges().setValue(value));
+            Optional.ofNullable(this.getFinanceTax().getValue()).ifPresent(value -> ((StockChangeTransaction)targetTransaction).getFinanceTax().setValue(value));
+            Optional.ofNullable(this.getMarketPrice().getValue()).ifPresent(value -> ((StockChangeTransaction)targetTransaction).getMarketPrice().setValue(new MonetaryValue(((StockChangeTransaction)targetTransaction).getMarketPrice().getValue().getValue(), value.getCurrency())));
+            Optional.ofNullable(this.getNumberOfShares().getValue()).ifPresent(value -> ((StockChangeTransaction)targetTransaction).getNumberOfShares().setValue(value));
+            Optional.ofNullable(this.getSolidarityTax().getValue()).ifPresent(value -> ((StockChangeTransaction)targetTransaction).getSolidarityTax().setValue(value));
+            Optional.ofNullable(this.getType().getValue()).ifPresent(value -> ((StockChangeTransaction)targetTransaction).getType().setValue(value));
+        }
     }
 
     public ObjectProperty<StockChangeType> getType() {
