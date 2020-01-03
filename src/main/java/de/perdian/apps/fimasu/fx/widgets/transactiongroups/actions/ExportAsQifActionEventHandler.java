@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.fimasu.export.quicken_OLD.QifContentGenerator;
+import de.perdian.apps.fimasu.export.quicken.QIFWriter;
 import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import javafx.application.Platform;
@@ -33,8 +33,9 @@ public class ExportAsQifActionEventHandler implements EventHandler<ActionEvent> 
     public void handle(ActionEvent event) {
         TransactionGroup transactionGroup = this.getTransactionGroupSupplier().get();
         this.getGuiExecutor().execute(progressController -> {
-            QifContentGenerator qifContentGenerator = new QifContentGenerator();
-            String qifContent = qifContentGenerator.generate(transactionGroup);
+            QIFWriter qifWriter = new QIFWriter();
+            transactionGroup.appendToQIF(qifWriter);
+            String qifContent = qifWriter.toOutput();
             String qifFileLocation = transactionGroup.getTargetFilePath().getValue();
             if (StringUtils.isEmpty(qifFileLocation)) {
                 this.showAlert(AlertType.ERROR, "Export failed", "No target file specified!");

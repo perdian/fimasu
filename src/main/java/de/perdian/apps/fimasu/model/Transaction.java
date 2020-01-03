@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import de.perdian.apps.fimasu.export.quicken.QIFWriter;
 import de.perdian.apps.fimasu.persistence.PersistenceHelper;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -74,6 +75,9 @@ public abstract class Transaction {
         PersistenceHelper.appendAttribute(transactionElement, "title", this.getTitle().getValue());
         PersistenceHelper.appendAttribute(transactionElement, "wkn", this.getWkn().getValue());
         PersistenceHelper.appendAttribute(transactionElement, "isin", this.getIsin().getValue());
+    }
+
+    public void appendToQIF(QIFWriter qifWriter, TransactionGroup parentGroup) {
     }
 
     public void copyValuesInto(Transaction targetTransaction) {

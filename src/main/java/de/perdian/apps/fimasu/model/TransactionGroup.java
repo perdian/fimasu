@@ -10,6 +10,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import de.perdian.apps.fimasu.export.quicken.QIFWriter;
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
 import de.perdian.apps.fimasu.persistence.PersistenceHelper;
 import javafx.beans.property.BooleanProperty;
@@ -112,6 +113,12 @@ public class TransactionGroup {
         }
         transactionGroupElement.appendChild(transactionsElement);
 
+    }
+
+    public void appendToQIF(QIFWriter qifWriter) {
+        for (Transaction transaction : this.getTransactions()) {
+            transaction.appendToQIF(qifWriter, this);
+        }
     }
 
     public StringProperty getTitle() {
