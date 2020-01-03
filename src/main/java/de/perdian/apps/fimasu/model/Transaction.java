@@ -12,8 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.perdian.apps.fimasu.export.quicken.QIFWriter;
 import de.perdian.apps.fimasu.persistence.PersistenceHelper;
+import de.perdian.apps.fimasu.support.quicken.QIFWriter;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
