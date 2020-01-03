@@ -4,11 +4,23 @@ import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.preferences.Preferences;
 import javafx.collections.ObservableList;
-import javafx.scene.layout.VBox;
+import javafx.geometry.Insets;
+import javafx.scene.layout.BorderPane;
 
-public abstract class TransactionPane extends VBox {
+class TransactionPane extends BorderPane {
 
-    protected TransactionPane(Transaction transaction, ObservableList<Transaction> allTransactions, ComponentBuilder componentBuilder, Preferences preferences) {
+    TransactionPane(Transaction transaction, ObservableList<Transaction> allTransactions, ComponentBuilder componentBuilder, Preferences preferences) {
+
+        this.setPadding(new Insets(0, 0, 12, 0));
+
+        TransactionDetailsPane transactionDetailsPane = TransactionDetailsPaneFactory.createTransactionDetailsPane(transaction, allTransactions, componentBuilder, preferences);
+        transactionDetailsPane.setPadding(new Insets(2, 0, 0, 0));
+        this.setCenter(transactionDetailsPane);
+
+        TransactionActionsPane transactionActionsPane = new TransactionActionsPane(transactionDetailsPane.getTitle(), transaction, allTransactions, componentBuilder, preferences);
+        transactionActionsPane.setPadding(new Insets(0, 0, 2, 0));
+        this.setTop(transactionActionsPane);
+
     }
 
 }

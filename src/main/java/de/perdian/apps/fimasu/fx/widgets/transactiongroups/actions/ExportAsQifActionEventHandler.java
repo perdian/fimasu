@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.fimasu.export.quicken.QifContentGenerator;
+import de.perdian.apps.fimasu.export.quicken_OLD.QifContentGenerator;
 import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import javafx.application.Platform;

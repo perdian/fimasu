@@ -1,8 +1,6 @@
 package de.perdian.apps.fimasu.fx.widgets.transactiongroups;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -10,8 +8,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.ExportAsQifActionEventHandler;
 import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.ImportFromFilesActionEventHandler;
-import de.perdian.apps.fimasu.fx.widgets.transactions.TransactionPane;
-import de.perdian.apps.fimasu.fx.widgets.transactions.TransactionPaneFactory;
+import de.perdian.apps.fimasu.fx.widgets.transactions.TransactionsPane;
 import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
@@ -19,15 +16,14 @@ import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.property.StringProperty;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -41,7 +37,6 @@ class TransactionGroupPane extends VBox {
 
         BorderPane groupPaneWrapper = new BorderPane();
         groupPaneWrapper.setPadding(new Insets(0));
-        groupPaneWrapper.setTop(new DataToolBar(transactionGroup, files, guiExecutor, componentBuilder, preferences));
         groupPaneWrapper.setCenter(new GroupPane(transactionGroup, componentBuilder, preferences));
         TitledPane dataTitledPane = new TitledPane("Transaction group", groupPaneWrapper);
         dataTitledPane.setCollapsible(false);
@@ -49,7 +44,7 @@ class TransactionGroupPane extends VBox {
         BorderPane transactionsListPaneWrapper = new BorderPane();
         transactionsListPaneWrapper.setPadding(new Insets(0));
         transactionsListPaneWrapper.setTop(new TransactionsListToolBar(transactionGroup, files, guiExecutor, componentBuilder, preferences));
-        transactionsListPaneWrapper.setCenter(new TransactionsListPane(transactionGroup.getTransactions(), componentBuilder, preferences));
+        transactionsListPaneWrapper.setCenter(new TransactionsPane(transactionGroup.getTransactions(), componentBuilder, preferences));
         TitledPane transactionsTitledPane = new TitledPane("Transactions", transactionsListPaneWrapper);
         transactionsTitledPane.setCollapsible(false);
         transactionsTitledPane.setMaxHeight(Double.MAX_VALUE);
@@ -58,51 +53,6 @@ class TransactionGroupPane extends VBox {
         this.setSpacing(8);
         this.setPadding(new Insets(8, 8, 8, 8));
         this.getChildren().addAll(dataTitledPane, transactionsTitledPane);
-
-    }
-
-    private static class TransactionsListPane extends BorderPane {
-
-        private TransactionsListPane(ObservableList<Transaction> transactions, ComponentBuilder componentBuilder, Preferences preferences) {
-
-            Map<Transaction, TransactionPane> transactionPanesByTransaction = new HashMap<>();
-            VBox transactionsWrapper = new VBox(8);
-            transactionsWrapper.setPadding(new Insets(8, 8, 8, 8));
-            for (Transaction transaction : transactions) {
-                TransactionPane transactionPane = TransactionPaneFactory.createTransactionPane(transaction, transactions, componentBuilder, preferences);
-                transactionPane.setPadding(new Insets(0, 0, 12, 0));
-                transactionPanesByTransaction.put(transaction, transactionPane);
-                transactionsWrapper.getChildren().add(transactionPane);
-            }
-            transactions.addListener((ListChangeListener.Change<? extends Transaction> change) -> {
-                synchronized (transactionPanesByTransaction) {
-                    while (change.next()) {
-                        change.getRemoved().forEach(removedTransaction -> {
-                            TransactionPane transactionPane = transactionPanesByTransaction.remove(removedTransaction);
-                            if (transactionPane != null) {
-                                transactionsWrapper.getChildren().remove(transactionPane);
-                            }
-                        });
-                        change.getAddedSubList().forEach(addedTransaction -> {
-                            int transactionIndex = transactions.indexOf(addedTransaction);
-                            TransactionPane transactionPane = TransactionPaneFactory.createTransactionPane(addedTransaction, transactions, componentBuilder, preferences);
-                            transactionPane.setPadding(new Insets(0, 0, 12, 0));
-                            transactionPanesByTransaction.put(addedTransaction, transactionPane);
-                            transactionsWrapper.getChildren().add(transactionIndex, transactionPane);
-                            transactionPane.requestFocus();
-                        });
-                    }
-                }
-            });
-            ScrollPane transactionsWrapperScrollPane = new ScrollPane(transactionsWrapper);
-            transactionsWrapperScrollPane.setFitToWidth(true);
-            transactionsWrapperScrollPane.setFocusTraversable(false);
-            transactionsWrapperScrollPane.setStyle("-fx-background-color: transparent");
-            transactionsWrapperScrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
-            transactionsWrapperScrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-            this.setCenter(transactionsWrapperScrollPane);
-
-        }
 
     }
 
@@ -123,9 +73,11 @@ class TransactionGroupPane extends VBox {
             HBox.setHgrow(separatorBox, Priority.ALWAYS);
             this.getItems().add(separatorBox);
 
-            Button importFromFilesButton = new Button("Import from files", new FontAwesomeIconView(FontAwesomeIcon.FILE));
+            Button importFromFilesButton = new Button("Import from files", new FontAwesomeIconView(FontAwesomeIcon.UPLOAD));
             importFromFilesButton.setOnAction(new ImportFromFilesActionEventHandler(() -> transactionGroup, files, guiExecutor));
-            this.getItems().addAll(importFromFilesButton);
+            Button exportAsQifButton = new Button("Export as QIF", new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
+            exportAsQifButton.setOnAction(new ExportAsQifActionEventHandler(() -> transactionGroup, guiExecutor));
+            this.getItems().addAll(importFromFilesButton, exportAsQifButton);
 
         }
 
@@ -134,12 +86,15 @@ class TransactionGroupPane extends VBox {
     private static class GroupPane extends VBox {
 
         GroupPane(TransactionGroup transactionGroup, ComponentBuilder componentBuilder, Preferences preferences) {
-
+            ToggleButton persistentToggleButon = new ToggleButton(null, new FontAwesomeIconView(FontAwesomeIcon.SAVE));
+            persistentToggleButon.setTooltip(new Tooltip("Save transaction group when existing the application"));
+            persistentToggleButon.selectedProperty().bindBidirectional(transactionGroup.getPersistent());
             GridPane firstRowPane = new GridPane();
-            firstRowPane.add(componentBuilder.createLabel("Transaction group title"), 0, 0, 1, 1);
-            firstRowPane.add(componentBuilder.createTextField(transactionGroup.getTitle()).width(200d).focusTraversable(false).get(), 0, 1, 1, 1);
-            firstRowPane.add(componentBuilder.createLabel("Account name"), 1, 0, 1, 1);
-            firstRowPane.add(componentBuilder.createTextField(transactionGroup.getAccount()).focusTraversable(false).get(), 1, 1, 1, 1);
+            firstRowPane.add(persistentToggleButon, 0, 1, 1, 1);
+            firstRowPane.add(componentBuilder.createLabel("Transaction group title"), 0, 0, 2, 1);
+            firstRowPane.add(componentBuilder.createTextField(transactionGroup.getTitle()).width(200d).focusTraversable(false).get(), 1, 1, 1, 1);
+            firstRowPane.add(componentBuilder.createLabel("Account name"), 2, 0, 1, 1);
+            firstRowPane.add(componentBuilder.createTextField(transactionGroup.getAccount()).focusTraversable(false).get(), 2, 1, 1, 1);
             firstRowPane.setHgap(4);
             firstRowPane.setVgap(2);
             firstRowPane.setPadding(new Insets(8, 8, 4, 8));
@@ -170,22 +125,6 @@ class TransactionGroupPane extends VBox {
             secondRowPane.setHgap(2);
             secondRowPane.setPadding(new Insets(4, 8, 8, 8));
             this.getChildren().add(secondRowPane);
-
-        }
-
-    }
-
-    private static class DataToolBar extends ToolBar {
-
-        private DataToolBar(TransactionGroup transactionGroup, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
-
-            HBox separatorBox = new HBox();
-            HBox.setHgrow(separatorBox, Priority.ALWAYS);
-            this.getItems().add(separatorBox);
-
-            Button exportAsQifButton = new Button("Export as QIF", new FontAwesomeIconView(FontAwesomeIcon.SAVE));
-            exportAsQifButton.setOnAction(new ExportAsQifActionEventHandler(() -> transactionGroup, guiExecutor));
-            this.getItems().addAll(exportAsQifButton);
 
         }
 

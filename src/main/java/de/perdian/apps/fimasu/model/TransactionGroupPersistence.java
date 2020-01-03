@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -37,7 +38,7 @@ public class TransactionGroupPersistence {
         }
     }
 
-    public static void writeTransactionGroups(List<TransactionGroup> transactionGroups, OutputStream outputStream) throws IOException {
+    public static void writeTransactionGroups(Collection<TransactionGroup> transactionGroups, OutputStream outputStream) throws IOException {
         try {
 
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();

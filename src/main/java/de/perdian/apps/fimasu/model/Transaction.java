@@ -44,6 +44,7 @@ public abstract class Transaction {
         this.getValutaDate().addListener((o, oldValue, newValue) -> this.fireChange());
         this.getBookingAmount().addListener((o, oldValue, newValue) -> this.fireChange());
         this.getBookingCurrency().addListener((o, oldValue, newValue) -> this.fireChange());
+        this.getPersistent().addListener((o, oldValue, newValue) -> this.fireChange());
 
         this.getBookingDate().addListener((o, oldValue, newValue) -> this.recomputeValutaDate(newValue));
 

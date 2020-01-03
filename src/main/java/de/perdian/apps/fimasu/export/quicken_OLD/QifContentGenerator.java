@@ -1,4 +1,4 @@
-package de.perdian.apps.fimasu.export.quicken;
+package de.perdian.apps.fimasu.export.quicken_OLD;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
