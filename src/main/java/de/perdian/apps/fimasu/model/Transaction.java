@@ -30,7 +30,7 @@ public abstract class Transaction {
     private final StringProperty isin = new SimpleStringProperty();
     private final StringProperty title = new SimpleStringProperty();
     private final ObjectProperty<LocalDate> bookingDate = new SimpleObjectProperty<>();
-    private final DoubleProperty bookingAmount = new SimpleDoubleProperty();
+    private final DoubleProperty totalAmount = new SimpleDoubleProperty();
     private final StringProperty bookingCurrency = new SimpleStringProperty("EUR");
     private final ObjectProperty<LocalDate> valutaDate = new SimpleObjectProperty<>();
     private final BooleanProperty persistent = new SimpleBooleanProperty(false);
@@ -43,7 +43,7 @@ public abstract class Transaction {
         this.getTitle().addListener((o, oldValue, newValue) -> this.fireChange());
         this.getBookingDate().addListener((o, oldValue, newValue) -> this.fireChange());
         this.getValutaDate().addListener((o, oldValue, newValue) -> this.fireChange());
-        this.getBookingAmount().addListener((o, oldValue, newValue) -> this.fireChange());
+        this.getTotalAmount().addListener((o, oldValue, newValue) -> this.fireChange());
         this.getBookingCurrency().addListener((o, oldValue, newValue) -> this.fireChange());
         this.getPersistent().addListener((o, oldValue, newValue) -> this.fireChange());
 
@@ -104,8 +104,8 @@ public abstract class Transaction {
         return this.bookingDate;
     }
 
-    public DoubleProperty getBookingAmount() {
-        return this.bookingAmount;
+    public DoubleProperty getTotalAmount() {
+        return this.totalAmount;
     }
 
     public StringProperty getBookingCurrency() {

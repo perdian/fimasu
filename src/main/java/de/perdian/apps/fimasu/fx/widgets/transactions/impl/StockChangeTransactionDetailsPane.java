@@ -68,7 +68,7 @@ public class StockChangeTransactionDetailsPane extends TransactionDetailsPane {
         secondLinePane.add(componentBuilder.createTextField(transaction.getBookingCurrency()).width(50d).get(), 6, 1, 1, 1);
         secondLinePane.add(marketExchangeRateField, 7, 1, 1, 1);
         secondLinePane.add(componentBuilder.createLabel("Converted amount"), 8, 0, 1, 1);
-        secondLinePane.add(componentBuilder.createTextField(transaction.getMarketAmountConverted(), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).disabled().get(), 8, 1, 1, 1);
+        secondLinePane.add(componentBuilder.createTextField(transaction.getBookingAmount(), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).disabled().get(), 8, 1, 1, 1);
         secondLinePane.setVgap(2);
         secondLinePane.setHgap(4);
         return secondLinePane;
@@ -86,7 +86,7 @@ public class StockChangeTransactionDetailsPane extends TransactionDetailsPane {
         thirdLinePane.add(componentBuilder.createTextField(transaction.getSolidarityTaxAmount(), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).width(80d).get(), 4, 1, 1, 1);
         thirdLinePane.add(componentBuilder.createCurrencySelectionComboBox(transaction.getSolidarityTaxCurrency(), List.of(transaction.getMarketCurrency(), transaction.getBookingCurrency())).focusTraversable(false).width(80d).get(), 5, 1, 1, 1);
         thirdLinePane.add(componentBuilder.createLabel("Booking amount"), 6, 0, 2, 1);
-        thirdLinePane.add(componentBuilder.createTextField(transaction.getBookingAmount(), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).disabled().get(), 6, 1, 1, 1);
+        thirdLinePane.add(componentBuilder.createTextField(transaction.getTotalAmount(), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).disabled().get(), 6, 1, 1, 1);
         thirdLinePane.add(componentBuilder.createTextField(transaction.getBookingCurrency()).disabled().width(50d).get(), 7, 1, 1, 1);
         thirdLinePane.setVgap(2);
         thirdLinePane.setHgap(4);
