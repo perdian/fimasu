@@ -1,4 +1,4 @@
-package de.perdian.apps.fimasu.model.impl.transactions;
+package de.perdian.apps.fimasu.model;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -6,9 +6,9 @@ import java.util.function.Predicate;
 
 import javafx.beans.property.Property;
 
-class StockChangeHelper {
+public class TransactionHelper {
 
-    static double convert(Number sourceValue, String sourceCurrency, Number exchangeRate, String targetCurrency) {
+    public static double convert(Number sourceValue, String sourceCurrency, Number exchangeRate, String targetCurrency) {
         if (sourceValue == null || sourceValue.doubleValue() == 0d) {
             return 0d;
         } else if (Objects.equals(sourceCurrency, targetCurrency)) {

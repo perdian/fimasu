@@ -1,10 +1,8 @@
 package de.perdian.apps.fimasu.model.impl.transactions;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
@@ -13,71 +11,34 @@ import org.w3c.dom.Element;
 import de.perdian.apps.fimasu.export.quicken.QIFWriter;
 import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.TransactionGroup;
+import de.perdian.apps.fimasu.model.TransactionHelper;
 import de.perdian.apps.fimasu.persistence.PersistenceHelper;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 public class StockChangeTransaction extends Transaction {
 
     private final ObjectProperty<StockChangeType> type = new SimpleObjectProperty<>(StockChangeType.BUY);
     private final DoubleProperty numberOfShares = new SimpleDoubleProperty();
-    private final StringProperty marketCurrency = new SimpleStringProperty("EUR");
     private final DoubleProperty marketPrice = new SimpleDoubleProperty();
-    private final DoubleProperty marketAmount = new SimpleDoubleProperty();
-    private final DoubleProperty marketExchangeRate = new SimpleDoubleProperty();
-    private final DoubleProperty bookingAmount = new SimpleDoubleProperty();
-    private final DoubleProperty chargesAmount = new SimpleDoubleProperty();
-    private final StringProperty chargesCurrency = new SimpleStringProperty();
-    private final DoubleProperty financeTaxAmount = new SimpleDoubleProperty();
-    private final StringProperty financeTaxCurrency = new SimpleStringProperty();
-    private final DoubleProperty solidarityTaxAmount = new SimpleDoubleProperty();
-    private final StringProperty solidarityTaxCurrency = new SimpleStringProperty();
 
     public StockChangeTransaction() {
 
         this.getType().addListener((o, oldValue, newValue) -> this.fireChange());
         this.getNumberOfShares().addListener((o, oldValue, newValue) -> this.fireChange());
-        this.getMarketCurrency().addListener((o, oldValue, newValue) -> this.fireChange());
         this.getMarketPrice().addListener((o, oldValue, newValue) -> this.fireChange());
-        this.getMarketAmount().addListener((o, oldValue, newValue) -> this.fireChange());
-        this.getMarketExchangeRate().addListener((o, oldValue, newValue) -> this.fireChange());
-        this.getChargesAmount().addListener((o, oldValue, newValue) -> this.fireChange());
-        this.getChargesCurrency().addListener((o, oldValue, newValue) -> this.fireChange());
-        this.getFinanceTaxAmount().addListener((o, oldValue, newValue) -> this.fireChange());
-        this.getFinanceTaxCurrency().addListener((o, oldValue, newValue) -> this.fireChange());
-        this.getSolidarityTaxAmount().addListener((o, oldValue, newValue) -> this.fireChange());
-        this.getSolidarityTaxCurrency().addListener((o, oldValue, newValue) -> this.fireChange());
 
         this.getNumberOfShares().addListener((o, oldValue, newValue) -> this.recomputeMarketAmount(newValue, this.getMarketPrice().getValue()));
         this.getMarketPrice().addListener((o, oldValue, newValue) -> this.recomputeMarketAmount(this.getNumberOfShares().getValue(), newValue));
 
-        this.getMarketAmount().addListener((o, oldValue, newValue) -> this.recomputeBookingAmount(newValue, this.getMarketCurrency().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue()));
-        this.getMarketCurrency().addListener((o, oldValue, newValue) -> this.recomputeBookingAmount(this.getMarketAmount().getValue(), newValue, this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue()));
-        this.getMarketExchangeRate().addListener((o, oldValue, newValue) -> this.recomputeBookingAmount(this.getMarketAmount().getValue(), this.getMarketCurrency().getValue(), newValue, this.getBookingCurrency().getValue()));
-        this.getBookingCurrency().addListener((o, oldValue, newValue) -> this.recomputeBookingAmount(this.getMarketAmount().getValue(), this.getMarketCurrency().getValue(), this.getMarketExchangeRate().getValue(), newValue));
-
-        this.getType().addListener((o, oldValue, newValue) -> this.recomputeTotalAmount(newValue, this.getBookingAmount().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue(), this.getChargesAmount().getValue(), this.getChargesCurrency().getValue(), this.getFinanceTaxAmount().getValue(), this.getFinanceTaxCurrency().getValue(), this.getSolidarityTaxAmount().getValue(), this.getSolidarityTaxCurrency().getValue()));
-        this.getBookingAmount().addListener((o, oldValue, newValue) -> this.recomputeTotalAmount(this.getType().getValue(), newValue, this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue(), this.getChargesAmount().getValue(), this.getChargesCurrency().getValue(), this.getFinanceTaxAmount().getValue(), this.getFinanceTaxCurrency().getValue(), this.getSolidarityTaxAmount().getValue(), this.getSolidarityTaxCurrency().getValue()));
-        this.getMarketExchangeRate().addListener((o, oldValue, newValue) -> this.recomputeTotalAmount(this.getType().getValue(), this.getBookingAmount().getValue(), newValue, this.getBookingCurrency().getValue(), this.getChargesAmount().getValue(), this.getChargesCurrency().getValue(), this.getFinanceTaxAmount().getValue(), this.getFinanceTaxCurrency().getValue(), this.getSolidarityTaxAmount().getValue(), this.getSolidarityTaxCurrency().getValue()));
-        this.getBookingCurrency().addListener((o, oldValue, newValue) -> this.recomputeTotalAmount(this.getType().getValue(), this.getBookingAmount().getValue(), this.getMarketExchangeRate().getValue(), newValue, this.getChargesAmount().getValue(), this.getChargesCurrency().getValue(), this.getFinanceTaxAmount().getValue(), this.getFinanceTaxCurrency().getValue(), this.getSolidarityTaxAmount().getValue(), this.getSolidarityTaxCurrency().getValue()));
-        this.getChargesAmount().addListener((o, oldValue, newValue) -> this.recomputeTotalAmount(this.getType().getValue(), this.getBookingAmount().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue(), newValue, this.getChargesCurrency().getValue(), this.getFinanceTaxAmount().getValue(), this.getFinanceTaxCurrency().getValue(), this.getSolidarityTaxAmount().getValue(), this.getSolidarityTaxCurrency().getValue()));
-        this.getChargesCurrency().addListener((o, oldValue, newValue) -> this.recomputeTotalAmount(this.getType().getValue(), this.getBookingAmount().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue(), this.getChargesAmount().getValue(), newValue, this.getFinanceTaxAmount().getValue(), this.getFinanceTaxCurrency().getValue(), this.getSolidarityTaxAmount().getValue(), this.getSolidarityTaxCurrency().getValue()));
-        this.getFinanceTaxAmount().addListener((o, oldValue, newValue) -> this.recomputeTotalAmount(this.getType().getValue(), this.getBookingAmount().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue(), this.getChargesAmount().getValue(), this.getChargesCurrency().getValue(), newValue, this.getFinanceTaxCurrency().getValue(), this.getSolidarityTaxAmount().getValue(), this.getSolidarityTaxCurrency().getValue()));
-        this.getFinanceTaxCurrency().addListener((o, oldValue, newValue) -> this.recomputeTotalAmount(this.getType().getValue(), this.getBookingAmount().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue(), this.getChargesAmount().getValue(), this.getChargesCurrency().getValue(), this.getFinanceTaxAmount().getValue(), newValue, this.getSolidarityTaxAmount().getValue(), this.getSolidarityTaxCurrency().getValue()));
-        this.getSolidarityTaxAmount().addListener((o, oldValue, newValue) -> this.recomputeTotalAmount(this.getType().getValue(), this.getBookingAmount().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue(), this.getChargesAmount().getValue(), this.getChargesCurrency().getValue(), this.getFinanceTaxAmount().getValue(), this.getFinanceTaxCurrency().getValue(), newValue, this.getSolidarityTaxCurrency().getValue()));
-        this.getSolidarityTaxCurrency().addListener((o, oldValue, newValue) -> this.recomputeTotalAmount(this.getType().getValue(), this.getBookingAmount().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue(), this.getChargesAmount().getValue(), this.getChargesCurrency().getValue(), this.getFinanceTaxAmount().getValue(), this.getFinanceTaxCurrency().getValue(), this.getSolidarityTaxAmount().getValue(), newValue));
-
-        this.getBookingCurrency().addListener((o, oldValue, newValue) -> this.recomputeCurrencies(List.of(newValue, this.getMarketCurrency().getValue())));
-        this.getMarketCurrency().addListener((o, oldValue, newValue) -> this.recomputeCurrencies(List.of(this.getBookingCurrency().getValue(), newValue)));
+        this.getType().addListener((o, oldValue, newValue) -> this.recomputeTotalAmount(this.getBookingAmount().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue(), this.getChargesAmount().getValue(), this.getChargesCurrency().getValue(), this.getFinanceTaxAmount().getValue(), this.getFinanceTaxCurrency().getValue(), this.getSolidarityTaxAmount().getValue(), this.getSolidarityTaxCurrency().getValue()));
 
     }
 
-    private void recomputeMarketAmount(Number numberOfShares, Number marketPrice) {
+    protected void recomputeMarketAmount(Number numberOfShares, Number marketPrice) {
         if (numberOfShares == null || numberOfShares.doubleValue() == 0d || marketPrice == null || marketPrice.doubleValue() == 0d) {
             this.getMarketAmount().setValue(null);
         } else {
@@ -85,65 +46,21 @@ public class StockChangeTransaction extends Transaction {
         }
     }
 
-    private void recomputeBookingAmount(Number marketAmount, String marketCurrency, Number marketExchangeRate, String bookingCurrency) {
-        if (marketAmount == null || marketAmount.doubleValue() == 0d) {
-            this.getBookingAmount().setValue(null);
-        } else if (Objects.equals(marketCurrency, bookingCurrency)) {
-            this.getBookingAmount().setValue(marketAmount);
-        } else if (marketExchangeRate == null || marketExchangeRate.doubleValue() == 0) {
-            this.getBookingAmount().setValue(null);
-        } else {
-            this.getBookingAmount().setValue(marketAmount.doubleValue() / marketExchangeRate.doubleValue());
-        }
-    }
-
-    private void recomputeTotalAmount(StockChangeType type, Number bookingAmount, Number marketExchangeRate, String bookingCurrency, Number chargesAmount, String chargesCurrency, Number financeTaxAmount, String financeTaxCurrency, Number solidarityTaxAmount, String solidarityTaxCurrency) {
-        if (bookingAmount == null || bookingAmount.doubleValue() == 0d) {
-            this.getTotalAmount().setValue(null);
-        } else {
-            double totalAmount = bookingAmount.doubleValue();
-            totalAmount += StockChangeHelper.convert(chargesAmount, StringUtils.defaultIfEmpty(chargesCurrency, bookingCurrency), marketExchangeRate, bookingCurrency) * type.getFactor();
-            totalAmount += StockChangeHelper.convert(financeTaxAmount, StringUtils.defaultIfEmpty(financeTaxCurrency, bookingCurrency), marketExchangeRate, bookingCurrency) * type.getFactor();
-            totalAmount += StockChangeHelper.convert(solidarityTaxAmount, StringUtils.defaultIfEmpty(solidarityTaxCurrency, bookingCurrency), marketExchangeRate, bookingCurrency) * type.getFactor();
-            this.getTotalAmount().setValue(totalAmount == 0d ? null : Double.valueOf(totalAmount));
-        }
-    }
-
-    private void recomputeCurrencies(List<String> inputValues) {
-        List<String> consolidatedCurrencies = inputValues.stream().filter(StringUtils::isNotEmpty).distinct().collect(Collectors.toList());
-        List.of(this.getChargesCurrency(), this.getFinanceTaxCurrency(), this.getSolidarityTaxCurrency()).stream().forEach(property -> {
-            if (StringUtils.isEmpty(property.getValue()) || !consolidatedCurrencies.contains(property.getValue())) {
-                property.setValue(consolidatedCurrencies.isEmpty() ? null : consolidatedCurrencies.get(0));
-            }
-        });
+    @Override
+    protected double computeChargesFactor() {
+        return this.getType().getValue().getFactor();
     }
 
     @Override
     protected void loadFromXML(Element transactionElement) {
         super.loadFromXML(transactionElement);
         this.getPersistent().setValue(Boolean.TRUE);
-        this.getBookingCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "bookingCurrency").orElse("EUR"));
-        this.getMarketCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "marketCurrency").orElse(this.getBookingCurrency().getValue()));
-        this.getChargesAmount().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "chargesAmount").orElse(null));
-        this.getChargesCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "chargesCurrency").orElse(this.getBookingCurrency().getValue()));
-        this.getFinanceTaxAmount().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "financeTaxAmount").orElse(null));
-        this.getFinanceTaxCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "financeTaxCurrency").orElse(this.getBookingCurrency().getValue()));
-        this.getSolidarityTaxAmount().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "solidarityTaxAmount").orElse(null));
-        this.getSolidarityTaxCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "solidarityTaxTaxCurrency").orElse(this.getBookingCurrency().getValue()));
         this.getType().setValue(PersistenceHelper.extractAttributeEnum(transactionElement, "type", StockChangeType.class).orElse(StockChangeType.BUY));
     }
 
     @Override
     protected void appendToXML(Element transactionElement, Document document) {
         super.appendToXML(transactionElement, document);
-        PersistenceHelper.appendAttribute(transactionElement, "bookingCurrency", this.getBookingCurrency().getValue());
-        PersistenceHelper.appendAttribute(transactionElement, "marketCurrency", this.getMarketCurrency().getValue());
-        PersistenceHelper.appendAttribute(transactionElement, "chargesAmount", this.getChargesAmount().getValue());
-        PersistenceHelper.appendAttribute(transactionElement, "chargesCurrency", this.getChargesCurrency().getValue());
-        PersistenceHelper.appendAttribute(transactionElement, "financeTaxAmount", this.getFinanceTaxAmount().getValue());
-        PersistenceHelper.appendAttribute(transactionElement, "financeTexCurrency", this.getFinanceTaxCurrency().getValue());
-        PersistenceHelper.appendAttribute(transactionElement, "solidarityTaxAmount", this.getSolidarityTaxAmount().getValue());
-        PersistenceHelper.appendAttribute(transactionElement, "solidarityTaxCurrency", this.getSolidarityTaxCurrency().getValue());
         PersistenceHelper.appendAttribute(transactionElement, "type", this.getType().getValue().name());
     }
 
@@ -205,7 +122,7 @@ public class StockChangeTransaction extends Transaction {
         if (doubleProperty.getValue() == null || doubleProperty.getValue().doubleValue() == 0d) {
             return "";
         } else {
-            double convertedValue = StockChangeHelper.convert(doubleProperty.getValue(), currencyProperty.getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue());
+            double convertedValue = TransactionHelper.convert(doubleProperty.getValue(), currencyProperty.getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue());
             return convertedValue == 0d ? "" : QIFWriter.SHORT_NUMBER_FORMAT.format(convertedValue);
         }
     }
@@ -214,22 +131,9 @@ public class StockChangeTransaction extends Transaction {
     public void copyValuesInto(Transaction targetTransaction) {
         super.copyValuesInto(targetTransaction);
         if (targetTransaction instanceof StockChangeTransaction) {
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getTotalAmount, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getBookingCurrency, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getChargesAmount, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getChargesCurrency, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getFinanceTaxAmount, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getFinanceTaxCurrency, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getIsin, StringUtils::isEmpty);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getMarketAmount, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getMarketCurrency, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getMarketExchangeRate, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getMarketPrice, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getNumberOfShares, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getSolidarityTaxAmount, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getSolidarityTaxCurrency, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getType, existingValue -> true);
-            StockChangeHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getWkn, StringUtils::isEmpty);
+            TransactionHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getMarketPrice, existingValue -> true);
+            TransactionHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getNumberOfShares, existingValue -> true);
+            TransactionHelper.copyValue(this, (StockChangeTransaction)targetTransaction, StockChangeTransaction::getType, existingValue -> true);
         }
     }
 
@@ -241,48 +145,8 @@ public class StockChangeTransaction extends Transaction {
         return this.numberOfShares;
     }
 
-    public StringProperty getMarketCurrency() {
-        return this.marketCurrency;
-    }
-
     public DoubleProperty getMarketPrice() {
         return this.marketPrice;
-    }
-
-    public DoubleProperty getMarketAmount() {
-        return this.marketAmount;
-    }
-
-    public DoubleProperty getMarketExchangeRate() {
-        return this.marketExchangeRate;
-    }
-
-    public DoubleProperty getBookingAmount() {
-        return this.bookingAmount;
-    }
-
-    public DoubleProperty getChargesAmount() {
-        return this.chargesAmount;
-    }
-
-    public StringProperty getChargesCurrency() {
-        return this.chargesCurrency;
-    }
-
-    public DoubleProperty getFinanceTaxAmount() {
-        return this.financeTaxAmount;
-    }
-
-    public StringProperty getFinanceTaxCurrency() {
-        return this.financeTaxCurrency;
-    }
-
-    public DoubleProperty getSolidarityTaxAmount() {
-        return this.solidarityTaxAmount;
-    }
-
-    public StringProperty getSolidarityTaxCurrency() {
-        return this.solidarityTaxCurrency;
     }
 
 }

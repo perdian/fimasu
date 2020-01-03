@@ -27,7 +27,7 @@ public class TransactionGroupsPane extends BorderPane {
             tabPane.getTabs().add(new TransactionGroupTab(transactionGroups, transactionGroup, files, guiExecutor, componentBuilder.createChild(), preferences));
         }
         tabPane.setContextMenu(new TransactionGroupsContextMenu(transactionGroups, guiExecutor, preferences));
-        tabPane.getSelectionModel().select(selectedTabIndexProperty.getValue());
+        tabPane.getSelectionModel().select(Math.min(selectedTabIndexProperty.getValue(), tabPane.getTabs().size() - 1));
         tabPane.setOnKeyPressed(new TransactionGroupKeyPressedEventHandler(() -> ((TransactionGroupTab)tabPane.getSelectionModel().getSelectedItem()).getTransactionGroup(), files, guiExecutor));
         transactionGroups.addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> {
             while (change.next()) {

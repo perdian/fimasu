@@ -16,7 +16,6 @@ public class AddTransactionGroupActionEventHandler implements EventHandler<Actio
     @Override
     public void handle(ActionEvent event) {
         TransactionGroup newTransactionGroup = new TransactionGroup();
-        newTransactionGroup.getPersistent().setValue(Boolean.TRUE);
         newTransactionGroup.getTitle().setValue("New transaction group");
         this.getTransactionGroups().add(newTransactionGroup);
     }
