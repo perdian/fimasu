@@ -97,9 +97,9 @@ public class StockChangeTransaction extends Transaction {
             this.getBookingAmount().setValue(null);
         } else {
             double bookingAmount = marketAmountConverted.doubleValue();
-            bookingAmount += StockChangeHelper.convert(chargesAmount, chargesCurrency, marketExchangeRate, bookingCurrency) * type.getFactor();
-            bookingAmount += StockChangeHelper.convert(financeTaxAmount, financeTaxCurrency, marketExchangeRate, bookingCurrency) * type.getFactor();
-            bookingAmount += StockChangeHelper.convert(solidarityTaxAmount, solidarityTaxCurrency, marketExchangeRate, bookingCurrency) * type.getFactor();
+            bookingAmount += StockChangeHelper.convert(chargesAmount, StringUtils.defaultIfEmpty(chargesCurrency, bookingCurrency), marketExchangeRate, bookingCurrency) * type.getFactor();
+            bookingAmount += StockChangeHelper.convert(financeTaxAmount, StringUtils.defaultIfEmpty(financeTaxCurrency, bookingCurrency), marketExchangeRate, bookingCurrency) * type.getFactor();
+            bookingAmount += StockChangeHelper.convert(solidarityTaxAmount, StringUtils.defaultIfEmpty(solidarityTaxCurrency, bookingCurrency), marketExchangeRate, bookingCurrency) * type.getFactor();
             this.getBookingAmount().setValue(bookingAmount == 0d ? null : Double.valueOf(bookingAmount));
         }
     }
@@ -118,13 +118,13 @@ public class StockChangeTransaction extends Transaction {
         super.loadFromXML(transactionElement);
         this.getPersistent().setValue(Boolean.TRUE);
         this.getBookingCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "bookingCurrency").orElse("EUR"));
-        this.getMarketCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "marketCurrency").orElse("EUR"));
+        this.getMarketCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "marketCurrency").orElse(this.getBookingCurrency().getValue()));
         this.getChargesAmount().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "chargesAmount").orElse(null));
-        this.getChargesCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "chargesCurrency").orElse(null));
+        this.getChargesCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "chargesCurrency").orElse(this.getBookingCurrency().getValue()));
         this.getFinanceTaxAmount().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "financeTaxAmount").orElse(null));
-        this.getFinanceTaxCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "financeTaxCurrency").orElse(null));
+        this.getFinanceTaxCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "financeTaxCurrency").orElse(this.getBookingCurrency().getValue()));
         this.getSolidarityTaxAmount().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "solidarityTaxAmount").orElse(null));
-        this.getSolidarityTaxCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "solidarityTaxTaxCurrency").orElse(null));
+        this.getSolidarityTaxCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "solidarityTaxTaxCurrency").orElse(this.getBookingCurrency().getValue()));
         this.getType().setValue(PersistenceHelper.extractAttributeEnum(transactionElement, "type", StockChangeType.class).orElse(StockChangeType.BUY));
     }
 
