@@ -1,9 +1,9 @@
 package de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +14,7 @@ import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.apps.fimasu.model.TransactionParser;
 import de.perdian.commons.fx.execution.GuiExecutor;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -35,29 +36,38 @@ public class ImportFromFilesActionEventHandler implements EventHandler<ActionEve
     @Override
     public synchronized void handle(ActionEvent event) {
         TransactionGroup transactionGroup = this.getTransactionGroupSupplier().get();
-        if (!this.getFiles().isEmpty() && !transactionGroup.getTransactions().isEmpty()) {
+        if (!this.getFiles().isEmpty()) {
             this.getGuiExecutor().execute(progressController -> {
-                Map<String, Transaction> importedTransactionsByIsin = new TreeMap<>();
+                List<Transaction> importedTransactions = new ArrayList<>();
                 for (int fileIndex = 0; fileIndex < this.getFiles().size(); fileIndex++) {
                     File file = this.getFiles().get(fileIndex);
                     progressController.updateProgress("Analyzing file: " + file.getName(), (double)fileIndex / (double)this.getFiles().size());
                     List<Transaction> transactionsFromFile = TransactionParser.parseTransactions(file);
-                    transactionsFromFile.stream().filter(transaction -> StringUtils.isNotEmpty(transaction.getIsin().getValue())).forEach(transaction -> importedTransactionsByIsin.put(transaction.getIsin().getValue(), transaction));
+                    transactionsFromFile.stream()
+                        .filter(transaction -> StringUtils.isNotEmpty(transaction.getIsin().getValue()))
+                        .forEach(importedTransactions::add);
                 }
-                for (int transactionIndex = 0; transactionIndex < transactionGroup.getTransactions().size(); transactionIndex++) {
-                    progressController.updateProgress("", (double)transactionIndex / (double)transactionGroup.getTransactions().size());
-                    Transaction targetTransaction = transactionGroup.getTransactions().get(transactionIndex);
-                    try {
-                        Transaction importedTransaction = StringUtils.isEmpty(targetTransaction.getIsin().getValue()) ? null : importedTransactionsByIsin.get(targetTransaction.getIsin().getValue());
-                        if (importedTransaction != null) {
-                            importedTransaction.copyValuesInto(targetTransaction);
-                        }
-                    } catch (Exception e) {
-                        log.info("Cannot update transaction: {}", targetTransaction, e);
-                    }
+                for (int transactionIndex = 0; transactionIndex < importedTransactions.size(); transactionIndex++) {
+                    progressController.updateProgress("", (double)transactionIndex / (double)importedTransactions.size());
+                    this.updateImportedTransaction(importedTransactions.get(transactionIndex), transactionGroup);
                 }
             });
         }
+    }
+
+    private void updateImportedTransaction(Transaction importedTransaction, TransactionGroup targetTransactionGroup) {
+        Transaction targetTransaction = targetTransactionGroup.getTransactions().stream().filter(transaction -> Objects.equals(transaction.getIsin().getValue(), importedTransaction.getIsin().getValue())).findFirst().orElse(null);
+        Platform.runLater(() -> {
+            if (targetTransaction == null) {
+                targetTransactionGroup.getTransactions().add(importedTransaction);
+            } else {
+                try {
+                    importedTransaction.copyValuesInto(targetTransaction);
+                } catch (Exception e) {
+                    log.info("Cannot update transaction: {}", targetTransaction, e);
+                }
+            }
+        });
     }
 
     private Supplier<TransactionGroup> getTransactionGroupSupplier() {
