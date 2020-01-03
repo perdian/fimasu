@@ -9,7 +9,6 @@ import java.util.Map;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.fimasu.fx.widgets.transactions.TransactionPane;
-import de.perdian.apps.fimasu.model.MonetaryValue;
 import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeType;
@@ -76,8 +75,8 @@ public class StockChangeTransactionPane extends TransactionPane {
 
     private Pane createSecondLinePane(StockChangeTransaction transaction, ObservableList<Transaction> allTransactions, ComponentBuilder componentBuilder) {
         GridPane secondLinePane = new GridPane();
-        TextField bookingCurrencyExchangeRateField = componentBuilder.createTextField(transaction.getBookingExchangeRate(), new DoubleStringConverter(new DecimalFormat("0.00000", new DecimalFormatSymbols(Locale.GERMANY)))).width(80d).get();
-        bookingCurrencyExchangeRateField.disableProperty().bind(Bindings.equal(MonetaryValue.asCurrencyProperty(transaction.getMarketValue()), transaction.getBookingCurrency()));
+        TextField marketExchangeRateField = componentBuilder.createTextField(transaction.getMarketExchangeRate(), new DoubleStringConverter(new DecimalFormat("0.00000", new DecimalFormatSymbols(Locale.GERMANY)))).width(80d).get();
+        marketExchangeRateField.disableProperty().bind(Bindings.equal(transaction.getMarketCurrency(), transaction.getBookingCurrency()));
         secondLinePane.add(componentBuilder.createLabel("Booking date"), 0, 0, 1, 1);
         secondLinePane.add(componentBuilder.createTextField(transaction.getBookingDate(), new LocalDateStringConverter()).width(80d).get(), 0, 1, 1, 1);
         secondLinePane.add(componentBuilder.createLabel("Valuta date"), 1, 0, 1, 1);
@@ -85,15 +84,15 @@ public class StockChangeTransactionPane extends TransactionPane {
         secondLinePane.add(componentBuilder.createLabel("# Shares"), 2, 0, 1, 1);
         secondLinePane.add(componentBuilder.createTextField(transaction.getNumberOfShares(), new DoubleStringConverter(new DecimalFormat("0.00000", new DecimalFormatSymbols(Locale.GERMANY)))).width(80d).get(), 2, 1, 1, 1);
         secondLinePane.add(componentBuilder.createLabel("Market price / currency "), 3, 0, 2, 1);
-        secondLinePane.add(componentBuilder.createTextField(MonetaryValue.asValueProperty(transaction.getMarketPrice()), new DoubleStringConverter(new DecimalFormat("0.000000", new DecimalFormatSymbols(Locale.GERMANY)))).width(90d).get(), 3, 1, 1, 1);
-        secondLinePane.add(componentBuilder.createTextField(MonetaryValue.asCurrencyProperty(transaction.getMarketPrice())).width(50d).get(), 4, 1, 1, 1);
-        secondLinePane.add(componentBuilder.createLabel("Market value"), 5, 0, 1, 1);
-        secondLinePane.add(componentBuilder.createTextField(MonetaryValue.asValueProperty(transaction.getMarketValue()), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).disabled().width(90d).get(), 5, 1, 1, 1);
+        secondLinePane.add(componentBuilder.createTextField(transaction.getMarketPrice(), new DoubleStringConverter(new DecimalFormat("0.000000", new DecimalFormatSymbols(Locale.GERMANY)))).width(90d).get(), 3, 1, 1, 1);
+        secondLinePane.add(componentBuilder.createTextField(transaction.getMarketCurrency()).width(50d).get(), 4, 1, 1, 1);
+        secondLinePane.add(componentBuilder.createLabel("Market amount"), 5, 0, 1, 1);
+        secondLinePane.add(componentBuilder.createTextField(transaction.getMarketAmount(), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).disabled().width(90d).get(), 5, 1, 1, 1);
         secondLinePane.add(componentBuilder.createLabel("Booking currency / rate"), 6, 0, 2, 1);
         secondLinePane.add(componentBuilder.createTextField(transaction.getBookingCurrency()).width(50d).get(), 6, 1, 1, 1);
-        secondLinePane.add(bookingCurrencyExchangeRateField, 7, 1, 1, 1);
-        secondLinePane.add(componentBuilder.createLabel("Booking value"), 8, 0, 1, 1);
-        secondLinePane.add(componentBuilder.createTextField(MonetaryValue.asValueProperty(transaction.getBookingValue()), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).disabled().get(), 8, 1, 1, 1);
+        secondLinePane.add(marketExchangeRateField, 7, 1, 1, 1);
+        secondLinePane.add(componentBuilder.createLabel("Converted amount"), 8, 0, 1, 1);
+        secondLinePane.add(componentBuilder.createTextField(transaction.getMarketAmountConverted(), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).disabled().get(), 8, 1, 1, 1);
         secondLinePane.setVgap(2);
         secondLinePane.setHgap(4);
         return secondLinePane;
@@ -102,16 +101,16 @@ public class StockChangeTransactionPane extends TransactionPane {
     private Pane createThirdLinePane(StockChangeTransaction transaction, ObservableList<Transaction> allTransactions, ComponentBuilder componentBuilder) {
         GridPane thirdLinePane = new GridPane();
         thirdLinePane.add(componentBuilder.createLabel("Charges"), 0, 0, 2, 1);
-        thirdLinePane.add(componentBuilder.createTextField(MonetaryValue.asValueProperty(transaction.getCharges()), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).width(80d).get(), 0, 1, 1, 1);
-        thirdLinePane.add(componentBuilder.createCurrencySelectionComboBox(MonetaryValue.asCurrencyProperty(transaction.getCharges()), List.of(MonetaryValue.asCurrencyProperty(transaction.getMarketValue()), transaction.getBookingCurrency())).focusTraversable(false).width(80d).get(), 1, 1, 1, 1);
+        thirdLinePane.add(componentBuilder.createTextField(transaction.getChargesAmount(), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).width(80d).get(), 0, 1, 1, 1);
+        thirdLinePane.add(componentBuilder.createCurrencySelectionComboBox(transaction.getChargesCurrency(), List.of(transaction.getMarketCurrency(), transaction.getBookingCurrency())).focusTraversable(false).width(80d).get(), 1, 1, 1, 1);
         thirdLinePane.add(componentBuilder.createLabel("Finance tax"), 2, 0, 2, 1);
-        thirdLinePane.add(componentBuilder.createTextField(MonetaryValue.asValueProperty(transaction.getFinanceTax()), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).width(80d).get(), 2, 1, 1, 1);
-        thirdLinePane.add(componentBuilder.createCurrencySelectionComboBox(MonetaryValue.asCurrencyProperty(transaction.getFinanceTax()), List.of(MonetaryValue.asCurrencyProperty(transaction.getMarketValue()), transaction.getBookingCurrency())).focusTraversable(false).width(80d).get(), 3, 1, 1, 1);
+        thirdLinePane.add(componentBuilder.createTextField(transaction.getFinanceTaxAmount(), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).width(80d).get(), 2, 1, 1, 1);
+        thirdLinePane.add(componentBuilder.createCurrencySelectionComboBox(transaction.getFinanceTaxCurrency(), List.of(transaction.getMarketCurrency(), transaction.getBookingCurrency())).focusTraversable(false).width(80d).get(), 3, 1, 1, 1);
         thirdLinePane.add(componentBuilder.createLabel("Solidarity tax"), 4, 0, 2, 1);
-        thirdLinePane.add(componentBuilder.createTextField(MonetaryValue.asValueProperty(transaction.getSolidarityTax()), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).width(80d).get(), 4, 1, 1, 1);
-        thirdLinePane.add(componentBuilder.createCurrencySelectionComboBox(MonetaryValue.asCurrencyProperty(transaction.getSolidarityTax()), List.of(MonetaryValue.asCurrencyProperty(transaction.getMarketValue()), transaction.getBookingCurrency())).focusTraversable(false).width(80d).get(), 5, 1, 1, 1);
-        thirdLinePane.add(componentBuilder.createLabel("Total value"), 6, 0, 2, 1);
-        thirdLinePane.add(componentBuilder.createTextField(MonetaryValue.asValueProperty(transaction.getTotalValue()), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).disabled().get(), 6, 1, 1, 1);
+        thirdLinePane.add(componentBuilder.createTextField(transaction.getSolidarityTaxAmount(), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).width(80d).get(), 4, 1, 1, 1);
+        thirdLinePane.add(componentBuilder.createCurrencySelectionComboBox(transaction.getSolidarityTaxCurrency(), List.of(transaction.getMarketCurrency(), transaction.getBookingCurrency())).focusTraversable(false).width(80d).get(), 5, 1, 1, 1);
+        thirdLinePane.add(componentBuilder.createLabel("Booking amount"), 6, 0, 2, 1);
+        thirdLinePane.add(componentBuilder.createTextField(transaction.getBookingAmount(), new DoubleStringConverter(new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.GERMANY)))).disabled().get(), 6, 1, 1, 1);
         thirdLinePane.add(componentBuilder.createTextField(transaction.getBookingCurrency()).disabled().width(50d).get(), 7, 1, 1, 1);
         thirdLinePane.setVgap(2);
         thirdLinePane.setHgap(4);

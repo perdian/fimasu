@@ -46,7 +46,7 @@ public class TransactionGroupPersistence {
             document.appendChild(rootElement);
             for (TransactionGroup transactionGroup : transactionGroups) {
                 if (transactionGroup.getPersistent().get()) {
-                    Element transactionGroupElement = document.createElement(transactionGroup.getClass().getSimpleName());
+                    Element transactionGroupElement = document.createElement("transactionGroup");
                     transactionGroup.appendToXML(transactionGroupElement, document);
                     rootElement.appendChild(transactionGroupElement);
                 }

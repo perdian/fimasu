@@ -11,7 +11,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
-import de.perdian.apps.fimasu.model.support.PersistenceHelper;
+import de.perdian.apps.fimasu.persistence.PersistenceHelper;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -70,22 +70,25 @@ public class TransactionGroup {
 
     protected void loadFromXML(Element transactionGroupElement) {
 
+        this.getPersistent().setValue(Boolean.TRUE);
         this.getTitle().setValue(PersistenceHelper.extractAttributeString(transactionGroupElement, "title").orElse(null));
         this.getAccount().setValue(PersistenceHelper.extractAttributeString(transactionGroupElement, "account").orElse(null));
         this.getTargetFilePath().setValue(PersistenceHelper.extractAttributeString(transactionGroupElement, "targetFilePath").orElse(null));
 
         Element transactionsElement = (Element)transactionGroupElement.getElementsByTagName("transactions").item(0);
-        NodeList transactionElements = transactionsElement.getElementsByTagName("transaction");
+        NodeList transactionElements = transactionsElement.getChildNodes();
         List<Transaction> transactions = new ArrayList<>(transactionElements.getLength());
         for (int transactionIndex = 0; transactionIndex < transactionElements.getLength(); transactionIndex++) {
-            Element transactionElement = (Element)transactionElements.item(transactionIndex);
-            String transactionClass = this.getClass().getPackage().getName() + ".impl.transactions." + StringUtils.defaultIfEmpty(transactionElement.getAttribute("class"), StockChangeTransaction.class.getSimpleName());
-            try {
-                Transaction transaction = (Transaction)this.getClass().getClassLoader().loadClass(transactionClass).getDeclaredConstructor().newInstance();
-                transaction.loadFromXML(transactionElement);
-                transactions.add(transaction);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Cannot load transaction from XML for class: " + transactionClass, e);
+            if (transactionElements.item(transactionIndex) instanceof Element) {
+                Element transactionElement = (Element)transactionElements.item(transactionIndex);
+                String transactionClass = this.getClass().getPackage().getName() + ".impl.transactions." + StringUtils.defaultIfEmpty(transactionElement.getNodeName(), StockChangeTransaction.class.getSimpleName());
+                try {
+                    Transaction transaction = (Transaction)this.getClass().getClassLoader().loadClass(transactionClass).getDeclaredConstructor().newInstance();
+                    transaction.loadFromXML(transactionElement);
+                    transactions.add(transaction);
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Cannot load transaction from XML for class: " + transactionClass, e);
+                }
             }
         }
         this.getTransactions().addAll(transactions);
@@ -106,6 +109,7 @@ public class TransactionGroup {
                 transactionsElement.appendChild(transactionElement);
             }
         }
+        transactionGroupElement.appendChild(transactionsElement);
 
     }
 

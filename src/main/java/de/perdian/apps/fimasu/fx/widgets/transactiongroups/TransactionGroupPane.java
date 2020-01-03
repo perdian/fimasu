@@ -111,7 +111,11 @@ class TransactionGroupPane extends VBox {
         private TransactionsListToolBar(TransactionGroup transactionGroup, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
 
             Button addTransactionButton = new Button("Add transaction", new FontAwesomeIconView(FontAwesomeIcon.PLUS));
-            addTransactionButton.setOnAction(event -> transactionGroup.getTransactions().add(new StockChangeTransaction()));
+            addTransactionButton.setOnAction(event -> {
+                Transaction newTransaction = new StockChangeTransaction();
+                newTransaction.getPersistent().setValue(Boolean.TRUE);
+                transactionGroup.getTransactions().add(newTransaction);
+            });
             this.getItems().add(addTransactionButton);
 
             HBox separatorBox = new HBox();

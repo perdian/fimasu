@@ -3,11 +3,10 @@ package de.perdian.apps.fimasu.model;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -22,7 +21,6 @@ public class TransactionGroupFactory {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionGroupFactory.class);
 
-    @SuppressWarnings("unchecked")
     public static ObservableList<TransactionGroup> loadTransactionGroups(Path storageFile) {
 
         ObservableList<TransactionGroup> transactionGroups = FXCollections.observableArrayList();
@@ -37,13 +35,8 @@ public class TransactionGroupFactory {
 
         if (Files.exists(storageFile)) {
             log.info("Loading transaction groups from file: {}", storageFile);
-            try (ObjectInputStream transactionGroupsStream = new ObjectInputStream(new BufferedInputStream(Files.newInputStream(storageFile)))) {
-                List<TransactionGroup> storageTransactionGroups = (List<TransactionGroup>)transactionGroupsStream.readObject();
-                if (storageTransactionGroups != null) {
-                    for (TransactionGroup transactionGroup : storageTransactionGroups) {
-                        transactionGroups.add(transactionGroup);
-                    }
-                }
+            try (InputStream transactionGroupsStream = new BufferedInputStream(Files.newInputStream(storageFile))) {
+                transactionGroups.addAll(TransactionGroupPersistence.loadTransactionGroups(transactionGroupsStream));
             } catch (Exception e) {
                 log.warn("Cannot load transaction groups from file: {}", storageFile, e);
             }
@@ -51,6 +44,7 @@ public class TransactionGroupFactory {
 
         if (transactionGroups.isEmpty()) {
             TransactionGroup defaultTransactionGroup = new TransactionGroup();
+            defaultTransactionGroup.getPersistent().setValue(Boolean.TRUE);
             defaultTransactionGroup.getTitle().setValue("Default");
             transactionGroups.add(defaultTransactionGroup);
         }
@@ -70,8 +64,8 @@ public class TransactionGroupFactory {
             }
         }
         log.debug("Storing {} transaction groups into file: {}", transactionGroups.size(), storageFile);
-        try (ObjectOutputStream transactionGroupsStream = new ObjectOutputStream(new BufferedOutputStream(Files.newOutputStream(storageFile)))) {
-            transactionGroupsStream.writeObject(new ArrayList<>(transactionGroups));
+        try (OutputStream transactionGroupsStream = new BufferedOutputStream(Files.newOutputStream(storageFile))) {
+            TransactionGroupPersistence.writeTransactionGroups(transactionGroups, transactionGroupsStream);
             transactionGroupsStream.flush();
         } catch (Exception e) {
             log.warn("Cannot store transaction groups into file: {}", storageFile, e);

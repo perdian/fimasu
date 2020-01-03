@@ -10,10 +10,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.perdian.apps.fimasu.model.support.PersistenceHelper;
+import de.perdian.apps.fimasu.persistence.PersistenceHelper;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -27,7 +29,8 @@ public abstract class Transaction {
     private final StringProperty isin = new SimpleStringProperty();
     private final StringProperty title = new SimpleStringProperty();
     private final ObjectProperty<LocalDate> bookingDate = new SimpleObjectProperty<>();
-    private final ObjectProperty<MonetaryValue> bookingValue = new SimpleObjectProperty<>();
+    private final DoubleProperty bookingAmount = new SimpleDoubleProperty();
+    private final StringProperty bookingCurrency = new SimpleStringProperty("EUR");
     private final ObjectProperty<LocalDate> valutaDate = new SimpleObjectProperty<>();
     private final BooleanProperty persistent = new SimpleBooleanProperty(false);
     private final List<ChangeListener<Transaction>> changeListeners = new CopyOnWriteArrayList<>();
@@ -39,7 +42,8 @@ public abstract class Transaction {
         this.getTitle().addListener((o, oldValue, newValue) -> this.fireChange());
         this.getBookingDate().addListener((o, oldValue, newValue) -> this.fireChange());
         this.getValutaDate().addListener((o, oldValue, newValue) -> this.fireChange());
-        this.getBookingValue().addListener((o, oldValue, newValue) -> this.fireChange());
+        this.getBookingAmount().addListener((o, oldValue, newValue) -> this.fireChange());
+        this.getBookingCurrency().addListener((o, oldValue, newValue) -> this.fireChange());
 
         this.getBookingDate().addListener((o, oldValue, newValue) -> this.recomputeValutaDate(newValue));
 
@@ -67,8 +71,8 @@ public abstract class Transaction {
 
     protected void appendToXML(Element transactionElement, Document document) {
         PersistenceHelper.appendAttribute(transactionElement, "title", this.getTitle().getValue());
-        PersistenceHelper.appendAttribute(transactionElement, "wkn", this.getTitle().getValue());
-        PersistenceHelper.appendAttribute(transactionElement, "isin", this.getTitle().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "wkn", this.getWkn().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "isin", this.getIsin().getValue());
     }
 
     public void copyValuesInto(Transaction targetTransaction) {
@@ -95,8 +99,12 @@ public abstract class Transaction {
         return this.bookingDate;
     }
 
-    public ObjectProperty<MonetaryValue> getBookingValue() {
-        return this.bookingValue;
+    public DoubleProperty getBookingAmount() {
+        return this.bookingAmount;
+    }
+
+    public StringProperty getBookingCurrency() {
+        return this.bookingCurrency;
     }
 
     public ObjectProperty<LocalDate> getValutaDate() {
