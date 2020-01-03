@@ -21,12 +21,13 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.fimasu.model.MonetaryValue;
 import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.TransactionParser;
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeType;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.StringProperty;
 
 public class Comdirect_TransactionParser implements TransactionParser {
 
@@ -71,7 +72,7 @@ public class Comdirect_TransactionParser implements TransactionParser {
         this.analyzeLineNumberOfSharesAndPrice(line, transaction);
         this.analyzeLineReduction(line, transaction);
         this.analyzeLineBookingCurrencyExchangeRate(line, transaction);
-        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Summe Entgelte", transaction.getCharges());
+        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Summe Entgelte", transaction.getChargesAmount(), transaction.getChargesCurrency());
         this.analyzeLineWknIsin(line, transaction);
     }
 
@@ -87,18 +88,24 @@ public class Comdirect_TransactionParser implements TransactionParser {
             Matcher regexMatcher = Pattern.compile("St\\.\\s+(.*?)\\s+([A-Z]{3})\\s+(.*?)").matcher(line);
             if (regexMatcher.matches()) {
                 transaction.getNumberOfShares().setValue(NUMBER_FORMAT.parse(regexMatcher.group(1)).doubleValue());
-                transaction.getMarketPrice().setValue(new MonetaryValue(NUMBER_FORMAT.parse(regexMatcher.group(3)).doubleValue(), regexMatcher.group(2)));
+                transaction.getMarketCurrency().setValue(regexMatcher.group(2));
+                transaction.getMarketPrice().setValue(NUMBER_FORMAT.parse(regexMatcher.group(3)).doubleValue());
             }
         }
     }
 
-    private void analyzeLineIntoDoubleWithCurrencySimple(String line, String prefix, Property<MonetaryValue> monetaryValueProperty) throws Exception {
+    private void analyzeLineIntoDoubleWithCurrencySimple(String line, String prefix, DoubleProperty targetValueProperty, StringProperty targetCurrencyProperty) throws Exception {
         if (line.startsWith(prefix)) {
             int nextColonIndex = line.indexOf(":", prefix.length());
             if (nextColonIndex > -1) {
                 Matcher remainingLineMatcher = Pattern.compile("([A-Z]{3})\\s+(.*?)").matcher(line.substring(nextColonIndex + 1).trim());
                 if (remainingLineMatcher.matches()) {
-                    monetaryValueProperty.setValue(new MonetaryValue(NUMBER_FORMAT.parse(remainingLineMatcher.group(2)).doubleValue(), remainingLineMatcher.group(1)));
+                    if (targetCurrencyProperty != null) {
+                        targetCurrencyProperty.setValue(remainingLineMatcher.group(1));
+                    }
+                    if (targetValueProperty != null) {
+                        targetValueProperty.setValue(NUMBER_FORMAT.parse(remainingLineMatcher.group(2)).doubleValue());
+                    }
                 }
             }
         }
@@ -116,14 +123,15 @@ public class Comdirect_TransactionParser implements TransactionParser {
     private void analyzeLineReduction(String line, StockChangeTransaction transaction) throws Exception {
         Matcher regexMatcher = Pattern.compile(".*?Reduktion Kaufaufschlag.*?([A-Z]{3})\\s+(.*?)\\-").matcher(line);
         if (regexMatcher.matches()) {
-            transaction.getCharges().setValue(new MonetaryValue(-1d * NUMBER_FORMAT.parse(regexMatcher.group(2)).doubleValue(), regexMatcher.group(1)));
+            transaction.getChargesAmount().setValue(-1d * NUMBER_FORMAT.parse(regexMatcher.group(2)).doubleValue());
+            transaction.getChargesCurrency().setValue(regexMatcher.group(1));
         }
     }
 
     private void analyzeLineBookingCurrencyExchangeRate(String line, StockChangeTransaction transaction) throws Exception {
         Matcher regexMatcher = Pattern.compile(".*?Umrechnung zum Devisenkurs\\s+(.*?)\\s+[A-Z]{3}\\s+(.*?)").matcher(line);
         if (regexMatcher.matches()) {
-            transaction.getBookingExchangeRate().setValue(NUMBER_FORMAT.parse(regexMatcher.group(1)).doubleValue());
+            transaction.getMarketExchangeRate().setValue(NUMBER_FORMAT.parse(regexMatcher.group(1)).doubleValue());
         }
     }
 

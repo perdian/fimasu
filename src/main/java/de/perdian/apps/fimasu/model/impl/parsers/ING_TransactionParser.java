@@ -21,19 +21,18 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.fimasu.model.MonetaryValue;
 import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.TransactionParser;
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.StringProperty;
 
 public class ING_TransactionParser implements TransactionParser {
 
     private static final Logger log = LoggerFactory.getLogger(ING_TransactionParser.class);
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy").withLocale(Locale.GERMANY);
-    private static final NumberFormat NUMBER_FORMAT = new DecimalFormat("#,##0.00000", new DecimalFormatSymbols(Locale.GERMANY));
 
     @Override
     public List<Transaction> parseTransactionsFromFile(File documentFile) {
@@ -65,31 +64,46 @@ public class ING_TransactionParser implements TransactionParser {
     private void analyzeLine(String line, StockChangeTransaction transaction) throws Exception {
         this.analyzeLineIntoStringWithRegex(line, Pattern.compile("ISIN \\(WKN\\)\\s+([A-Z]{2}[0-9]+)\\s+\\(([A-Z0-9]+)\\)"), transaction.getIsin(), transaction.getWkn());
         this.analyzeLineIntoStringSimple(line, "Wertpapierbezeichnung", transaction.getTitle(), Function.identity());
-        this.analyzeLineIntoDoubleSimple(line, "Nominale Stück", transaction.getNumberOfShares());
-        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Kurs", transaction.getMarketPrice());
+        this.analyzeLineIntoDoubleSimple(line, "Nominale Stück", "#,##0.00000", transaction.getNumberOfShares());
+        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Kurs", "#,##0.00000", transaction.getMarketPrice(), transaction.getMarketCurrency());
         this.analyzeLineIntoStringWithRegex(line, Pattern.compile("Ausführungstag \\/ \\-zeit\\s+([0-9]+\\.[0-9]+\\.[0-9]+).*?"), transaction.getBookingDate(), string -> LocalDate.parse(string, DATE_FORMATTER));
         this.analyzeLineIntoStringWithRegex(line, Pattern.compile("Ausführungstag\\s+([0-9]+\\.[0-9]+\\.[0-9]+).*?"), transaction.getBookingDate(), string -> LocalDate.parse(string, DATE_FORMATTER));
-        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Rabatt", transaction.getCharges());
-        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Provision", transaction.getCharges());
+        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Rabatt", "#,##0.00", transaction.getChargesAmount(), transaction.getChargesCurrency());
+        this.analyzeLineIntoDoubleWithCurrencySimple(line, "Provision", "#,##0.00", transaction.getChargesAmount(), transaction.getChargesCurrency());
         this.analyzeLineIntoStringSimple(line, "Valuta", transaction.getValutaDate(), string -> LocalDate.parse(string, DATE_FORMATTER));
         this.analyzeLineIntoDoubleWithCurrencySimple(line, "Endbetrag zu Ihren Lasten", "#,##0.00", null, transaction.getBookingCurrency());
-        this.analyzeLineIntoDoubleWithCurrencyRegex(line, Pattern.compile("umger\\. zum Devisenkurs \\(([A-Z]{3}) \\= (.*?)\\).*?"), "#,##0.00", transaction.getBookingCurrencyExchangeRate(), null);
+        this.analyzeLineIntoDoubleWithCurrencyRegex(line, Pattern.compile("umger\\. zum Devisenkurs \\(([A-Z]{3}) \\= (.*?)\\).*?"), "#,##0.00", transaction.getMarketExchangeRate(), null);
     }
 
-    private void analyzeLineIntoDoubleSimple(String line, String prefix, DoubleProperty targetProperty) throws Exception {
+    private void analyzeLineIntoDoubleSimple(String line, String prefix, String numberFormatValue, Property<? super Number> targetProperty) throws Exception {
         if (line.startsWith(prefix)) {
             targetProperty.setValue(this.parseDoubleValue(line.substring(prefix.length()).trim(), "#,##0.00000"));
         }
     }
 
-    private void analyzeLineIntoDoubleWithCurrencySimple(String line, String prefix, Property<MonetaryValue> monetaryValueProperty) throws Exception {
+    private void analyzeLineIntoDoubleWithCurrencySimple(String line, String prefix, String numberFormatValue, DoubleProperty targetValueProperty, StringProperty targetCurrencyProperty) throws Exception {
         if (line.startsWith(prefix)) {
-            int nextColonIndex = line.indexOf(":", prefix.length());
-            if (nextColonIndex > -1) {
-                Matcher remainingLineMatcher = Pattern.compile("([A-Z]{3})\\s+(.*?)").matcher(line.substring(nextColonIndex + 1).trim());
-                if (remainingLineMatcher.matches()) {
-                    monetaryValueProperty.setValue(new MonetaryValue(NUMBER_FORMAT.parse(remainingLineMatcher.group(2)).doubleValue(), remainingLineMatcher.group(1)));
+            String remainingLine = line.substring(prefix.length()).trim();
+            int nextSpaceIndex = remainingLine.indexOf(" ");
+            if (nextSpaceIndex == 3) {
+                if (targetCurrencyProperty != null) {
+                    targetCurrencyProperty.setValue(remainingLine.substring(0, nextSpaceIndex));
                 }
+                if (targetValueProperty != null) {
+                    targetValueProperty.setValue(this.parseDoubleValue(remainingLine.substring(nextSpaceIndex).trim(), numberFormatValue));
+                }
+            }
+        }
+    }
+
+    private void analyzeLineIntoDoubleWithCurrencyRegex(String line, Pattern regexPattern, String numberFormatValue, DoubleProperty targetValueProperty, StringProperty targetCurrencyProperty) throws Exception {
+        Matcher regexMatcher = regexPattern.matcher(line);
+        if (regexMatcher.matches()) {
+            if (targetCurrencyProperty != null) {
+                targetCurrencyProperty.setValue(regexMatcher.group(1));
+            }
+            if (targetValueProperty != null) {
+                targetValueProperty.setValue(this.parseDoubleValue(regexMatcher.group(2).trim(), numberFormatValue));
             }
         }
     }
