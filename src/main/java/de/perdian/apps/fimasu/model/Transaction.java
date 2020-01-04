@@ -13,9 +13,11 @@ import org.w3c.dom.Element;
 
 import de.perdian.apps.fimasu.persistence.PersistenceHelper;
 import de.perdian.apps.fimasu.support.quicken.QIFWriter;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -130,6 +132,14 @@ public abstract class Transaction {
 
     protected abstract double computeChargesFactor();
 
+    public BooleanExpression computeTaxesEditable() {
+        return new ReadOnlyBooleanWrapper(false);
+    }
+
+    public BooleanExpression computeMarketAmountEditable() {
+        return new ReadOnlyBooleanWrapper(false);
+    }
+
     protected void recomputeCurrencies(List<String> inputValues) {
         List<String> consolidatedCurrencies = inputValues.stream().filter(StringUtils::isNotEmpty).distinct().collect(Collectors.toList());
         List.of(this.getChargesCurrency(), this.getFinanceTaxCurrency(), this.getSolidarityTaxCurrency()).stream().forEach(property -> {
@@ -192,7 +202,6 @@ public abstract class Transaction {
     public StringProperty getWkn() {
         return this.wkn;
     }
-
 
     public StringProperty getIsin() {
         return this.isin;

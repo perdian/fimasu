@@ -13,6 +13,8 @@ import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.apps.fimasu.model.TransactionHelper;
 import de.perdian.apps.fimasu.persistence.PersistenceHelper;
 import de.perdian.apps.fimasu.support.quicken.QIFWriter;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
@@ -61,6 +63,11 @@ public class StockChangeTransaction extends Transaction {
     protected void appendToXML(Element transactionElement, Document document) {
         super.appendToXML(transactionElement, document);
         PersistenceHelper.appendAttribute(transactionElement, "type", this.getType().getValue().name());
+    }
+
+    @Override
+    public BooleanBinding computeTaxesEditable() {
+        return Bindings.equal(StockChangeType.SELL, this.getType());
     }
 
     @Override
