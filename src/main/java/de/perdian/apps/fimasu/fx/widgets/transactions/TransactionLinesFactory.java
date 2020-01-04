@@ -15,7 +15,7 @@ import de.perdian.apps.fimasu.fx.widgets.transactions.support.LoadStockInfoChang
 import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.impl.transactions.PayoutTransaction;
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
-import de.perdian.apps.fimasu.support.stockinfo.StockInfoClient;
+import de.perdian.apps.fimasu.support.stockinfo.StockInfoProvider;
 import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.preferences.Preferences;
 import de.perdian.commons.fx.properties.converters.DoubleStringConverter;
@@ -80,8 +80,8 @@ public abstract class TransactionLinesFactory {
         TextField isinField = componentBuilder.createTextField(transaction.getIsin()).focusTraversable(Bindings.length(transaction.getIsin()).lessThanOrEqualTo(0)).width(125d).get();
         TextField titleField = componentBuilder.createTextField(transaction.getTitle()).focusTraversable(Bindings.length(transaction.getTitle()).lessThanOrEqualTo(0)).get();
         BooleanProperty loadStockInfoBusy = new SimpleBooleanProperty(false);
-        wknField.textProperty().addListener(new LoadStockInfoChangeListener(transaction, wkn -> StockInfoClient.findStockInfoByWkn(wkn), 6, List.of(isinField, titleField), loadStockInfoBusy));
-        isinField.textProperty().addListener(new LoadStockInfoChangeListener(transaction, isin -> StockInfoClient.findStockInfoByIsin(isin), 12, List.of(wknField, titleField), loadStockInfoBusy));
+        wknField.textProperty().addListener(new LoadStockInfoChangeListener(transaction, wkn -> StockInfoProvider.resolveStockInfoProvider().findStockInfoByWkn(wkn), 6, List.of(isinField, titleField), loadStockInfoBusy));
+        isinField.textProperty().addListener(new LoadStockInfoChangeListener(transaction, isin -> StockInfoProvider.resolveStockInfoProvider().findStockInfoByIsin(isin), 12, List.of(wknField, titleField), loadStockInfoBusy));
 
         TransactionLine transactionLine = new TransactionLine();
         transactionLine.item(componentBuilder.createLabel(this.createTitle()), buttonsBox);
