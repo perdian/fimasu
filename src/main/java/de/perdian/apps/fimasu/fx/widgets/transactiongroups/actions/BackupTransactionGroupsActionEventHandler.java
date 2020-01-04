@@ -9,8 +9,8 @@ import java.util.Collection;
 import org.apache.commons.lang3.StringUtils;
 
 import de.perdian.apps.fimasu.model.TransactionGroup;
-import de.perdian.apps.fimasu.model.TransactionGroupPersistence;
 import de.perdian.commons.fx.execution.GuiExecutor;
+import de.perdian.commons.fx.persistence.PersistenceEnabled;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
@@ -48,7 +48,7 @@ public class BackupTransactionGroupsActionEventHandler implements EventHandler<A
             this.getGuiExecutor().execute(progressController -> {
                 progressController.updateProgress("Backup transaction groups", null);
                 try (OutputStream fileStream = new BufferedOutputStream(new FileOutputStream(selectedFile))) {
-                    TransactionGroupPersistence.writeTransactionGroups(this.getTransactionGroups(), fileStream);
+                    PersistenceEnabled.writeRecords(this.getTransactionGroups(), fileStream);
                     fileStream.flush();
                 }
                 Platform.runLater(() -> {

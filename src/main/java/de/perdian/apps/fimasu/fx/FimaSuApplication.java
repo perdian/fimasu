@@ -6,8 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.fimasu.model.TransactionGroup;
-import de.perdian.apps.fimasu.model.TransactionGroupFactory;
 import de.perdian.commons.fx.AbstractApplication;
+import de.perdian.commons.fx.persistence.PersistenceEnabled;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -32,7 +32,13 @@ public class FimaSuApplication extends AbstractApplication {
 
         log.debug("Loading transaction groups");
         Path transactionGroupsPath = this.resolveApplicationDirectory().resolve("transactionGroups");
-        ObservableList<TransactionGroup> transactionGroups = TransactionGroupFactory.loadTransactionGroups(transactionGroupsPath);
+        ObservableList<TransactionGroup> transactionGroups = PersistenceEnabled.loadRecordsObserved(transactionGroupsPath, TransactionGroup.class);
+        if (transactionGroups.isEmpty()) {
+            TransactionGroup defaultTransactionGroup = new TransactionGroup();
+            defaultTransactionGroup.getPersistent().setValue(Boolean.TRUE);
+            defaultTransactionGroup.getTitle().setValue("Default");
+            transactionGroups.add(defaultTransactionGroup);
+        }
 
         log.debug("Creating FimaSuPane");
         return new FimaSuPane(transactionGroups, this.getPreferences());

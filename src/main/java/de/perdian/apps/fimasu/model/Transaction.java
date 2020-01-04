@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.perdian.apps.fimasu.persistence.PersistenceHelper;
 import de.perdian.apps.fimasu.support.quicken.Record;
 import de.perdian.apps.fimasu.support.quicken.model.AccountRecordItem;
 import de.perdian.apps.fimasu.support.quicken.model.BookedAmountRecordItem;
@@ -23,6 +22,7 @@ import de.perdian.apps.fimasu.support.quicken.model.SecurityRecordItem;
 import de.perdian.apps.fimasu.support.quicken.model.TotalAmountRecordItem;
 import de.perdian.apps.fimasu.support.quicken.model.ValutaDateRecordItem;
 import de.perdian.apps.fimasu.support.quicken.model.WknRecordItem;
+import de.perdian.commons.fx.persistence.PersistenceHelper;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -165,11 +165,11 @@ public abstract class Transaction {
         this.getIsin().setValue(PersistenceHelper.extractAttributeString(transactionElement, "isin").orElse(null));
         this.getBookingCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "bookingCurrency").orElse("EUR"));
         this.getMarketCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "marketCurrency").orElse(this.getBookingCurrency().getValue()));
-        this.getChargesAmount().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "chargesAmount").orElse(null));
+        this.getChargesAmount().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "chargesAmount", TransactionHelper.XML_NUMBER_FORMAT).orElse(null));
         this.getChargesCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "chargesCurrency").orElse(this.getBookingCurrency().getValue()));
-        this.getFinanceTaxAmount().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "financeTaxAmount").orElse(null));
+        this.getFinanceTaxAmount().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "financeTaxAmount", TransactionHelper.XML_NUMBER_FORMAT).orElse(null));
         this.getFinanceTaxCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "financeTaxCurrency").orElse(this.getBookingCurrency().getValue()));
-        this.getSolidarityTaxAmount().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "solidarityTaxAmount").orElse(null));
+        this.getSolidarityTaxAmount().setValue(PersistenceHelper.extractAttributeDouble(transactionElement, "solidarityTaxAmount", TransactionHelper.XML_NUMBER_FORMAT).orElse(null));
         this.getSolidarityTaxCurrency().setValue(PersistenceHelper.extractAttributeString(transactionElement, "solidarityTaxTaxCurrency").orElse(this.getBookingCurrency().getValue()));
         this.getPersistent().setValue(Boolean.TRUE);
     }
@@ -180,11 +180,11 @@ public abstract class Transaction {
         PersistenceHelper.appendAttribute(transactionElement, "isin", this.getIsin().getValue());
         PersistenceHelper.appendAttribute(transactionElement, "bookingCurrency", this.getBookingCurrency().getValue());
         PersistenceHelper.appendAttribute(transactionElement, "marketCurrency", this.getMarketCurrency().getValue());
-        PersistenceHelper.appendAttribute(transactionElement, "chargesAmount", this.getChargesAmount().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "chargesAmount", this.getChargesAmount().getValue(), TransactionHelper.XML_NUMBER_FORMAT);
         PersistenceHelper.appendAttribute(transactionElement, "chargesCurrency", this.getChargesCurrency().getValue());
-        PersistenceHelper.appendAttribute(transactionElement, "financeTaxAmount", this.getFinanceTaxAmount().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "financeTaxAmount", this.getFinanceTaxAmount().getValue(), TransactionHelper.XML_NUMBER_FORMAT);
         PersistenceHelper.appendAttribute(transactionElement, "financeTexCurrency", this.getFinanceTaxCurrency().getValue());
-        PersistenceHelper.appendAttribute(transactionElement, "solidarityTaxAmount", this.getSolidarityTaxAmount().getValue());
+        PersistenceHelper.appendAttribute(transactionElement, "solidarityTaxAmount", this.getSolidarityTaxAmount().getValue(), TransactionHelper.XML_NUMBER_FORMAT);
         PersistenceHelper.appendAttribute(transactionElement, "solidarityTaxCurrency", this.getSolidarityTaxCurrency().getValue());
     }
 

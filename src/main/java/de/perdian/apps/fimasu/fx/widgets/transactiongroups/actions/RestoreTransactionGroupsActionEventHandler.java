@@ -10,8 +10,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import de.perdian.apps.fimasu.model.TransactionGroup;
-import de.perdian.apps.fimasu.model.TransactionGroupPersistence;
 import de.perdian.commons.fx.execution.GuiExecutor;
+import de.perdian.commons.fx.persistence.PersistenceEnabled;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
@@ -49,7 +49,7 @@ public class RestoreTransactionGroupsActionEventHandler implements EventHandler<
             this.getGuiExecutor().execute(progressController -> {
                 progressController.updateProgress("Restore transaction groups from backup", null);
                 try (InputStream fileStream = new BufferedInputStream(new FileInputStream(selectedFile))) {
-                    List<TransactionGroup> transactionGroups = TransactionGroupPersistence.loadTransactionGroups(fileStream);
+                    List<TransactionGroup> transactionGroups = PersistenceEnabled.loadRecords(fileStream, TransactionGroup.class);
                     this.getTransactionGroups().addAll(transactionGroups);
                     Platform.runLater(() -> {
                         Alert alert = new Alert(AlertType.INFORMATION);

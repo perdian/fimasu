@@ -13,8 +13,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
-import de.perdian.apps.fimasu.persistence.PersistenceHelper;
 import de.perdian.apps.fimasu.support.quicken.RecordList;
+import de.perdian.commons.fx.persistence.PersistenceEnabled;
+import de.perdian.commons.fx.persistence.PersistenceHelper;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -24,7 +25,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class TransactionGroup {
+public class TransactionGroup implements PersistenceEnabled {
 
     static final long serialVersionUID = 1L;
 
@@ -33,7 +34,7 @@ public class TransactionGroup {
     private final StringProperty targetFilePath = new SimpleStringProperty();
     private final BooleanProperty persistent = new SimpleBooleanProperty(false);
     private final ObservableList<Transaction> transactions = FXCollections.observableArrayList();
-    private final List<ChangeListener<TransactionGroup>> changeListeners = new CopyOnWriteArrayList<>();
+    private final List<ChangeListener<Object>> changeListeners = new CopyOnWriteArrayList<>();
 
     public TransactionGroup() {
         this.getTitle().addListener((x, oldValue, newValue) -> this.fireChange());
@@ -52,7 +53,7 @@ public class TransactionGroup {
     }
 
     private void fireChange() {
-        for (ChangeListener<TransactionGroup> changeListener : this.changeListeners) {
+        for (ChangeListener<Object> changeListener : this.changeListeners) {
             changeListener.changed(null, null, this);
         }
     }
@@ -72,7 +73,8 @@ public class TransactionGroup {
         }
     }
 
-    protected void loadFromXML(Element transactionGroupElement) {
+    @Override
+    public void loadFromXML(Element transactionGroupElement, Document document) {
 
         this.getPersistent().setValue(Boolean.TRUE);
         this.getTitle().setValue(PersistenceHelper.extractAttributeString(transactionGroupElement, "title").orElse(null));
@@ -99,6 +101,7 @@ public class TransactionGroup {
 
     }
 
+    @Override
     public void appendToXML(Element transactionGroupElement, Document document) {
 
         PersistenceHelper.appendAttribute(transactionGroupElement, "title", this.getTitle().getValue());
@@ -115,6 +118,11 @@ public class TransactionGroup {
         }
         transactionGroupElement.appendChild(transactionsElement);
 
+    }
+
+    @Override
+    public boolean isPersistable() {
+        return this.getPersistent().get();
     }
 
     public RecordList toQifRecordList() {
@@ -143,13 +151,15 @@ public class TransactionGroup {
         return this.transactions;
     }
 
-    public boolean addChangeListener(ChangeListener<TransactionGroup> changeListener) {
+    @Override
+    public boolean addChangeListener(ChangeListener<Object> changeListener) {
         return this.getChangeListeners().add(changeListener);
     }
-    public boolean removeChangeListener(ChangeListener<TransactionGroup> changeListener) {
+    @Override
+    public boolean removeChangeListener(ChangeListener<Object> changeListener) {
         return this.getChangeListeners().remove(changeListener);
     }
-    private List<ChangeListener<TransactionGroup>> getChangeListeners() {
+    private List<ChangeListener<Object>> getChangeListeners() {
         return this.changeListeners;
     }
 
