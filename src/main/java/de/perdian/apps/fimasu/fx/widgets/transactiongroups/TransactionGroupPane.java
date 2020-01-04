@@ -6,12 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.ExportAsQifActionEventHandler;
-import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.ImportFromFilesActionEventHandler;
 import de.perdian.apps.fimasu.fx.widgets.transactions.TransactionsPane;
-import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.TransactionGroup;
-import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
 import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import de.perdian.commons.fx.preferences.Preferences;
@@ -22,11 +18,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -43,7 +37,7 @@ class TransactionGroupPane extends VBox {
 
         BorderPane transactionsListPaneWrapper = new BorderPane();
         transactionsListPaneWrapper.setPadding(new Insets(0));
-        transactionsListPaneWrapper.setTop(new TransactionsListToolBar(transactionGroup, files, guiExecutor, componentBuilder, preferences));
+        transactionsListPaneWrapper.setTop(new TransactionGroupToolBar(transactionGroup, files, guiExecutor, componentBuilder, preferences));
         transactionsListPaneWrapper.setCenter(new TransactionsPane(transactionGroup.getTransactions(), componentBuilder, preferences));
         TitledPane transactionsTitledPane = new TitledPane("Transactions", transactionsListPaneWrapper);
         transactionsTitledPane.setCollapsible(false);
@@ -53,33 +47,6 @@ class TransactionGroupPane extends VBox {
         this.setSpacing(8);
         this.setPadding(new Insets(8, 8, 8, 8));
         this.getChildren().addAll(dataTitledPane, transactionsTitledPane);
-
-    }
-
-    private static class TransactionsListToolBar extends ToolBar {
-
-        private TransactionsListToolBar(TransactionGroup transactionGroup, ObservableList<File> files, GuiExecutor guiExecutor, ComponentBuilder componentBuilder, Preferences preferences) {
-
-            Button addBuySellTransactionButton = new Button("Buy/Sell", new FontAwesomeIconView(FontAwesomeIcon.PLUS));
-            addBuySellTransactionButton.setOnAction(event -> {
-                Transaction newTransaction = new StockChangeTransaction();
-                newTransaction.getPersistent().setValue(Boolean.TRUE);
-                transactionGroup.getTransactions().add(newTransaction);
-            });
-            HBox addTransactionButtonBox = new HBox(0, addBuySellTransactionButton);
-            this.getItems().add(addTransactionButtonBox);
-
-            HBox separatorBox = new HBox();
-            HBox.setHgrow(separatorBox, Priority.ALWAYS);
-            this.getItems().add(separatorBox);
-
-            Button importFromFilesButton = new Button("Import from files", new FontAwesomeIconView(FontAwesomeIcon.UPLOAD));
-            importFromFilesButton.setOnAction(new ImportFromFilesActionEventHandler(() -> transactionGroup, files, guiExecutor));
-            Button exportAsQifButton = new Button("Export as QIF", new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
-            exportAsQifButton.setOnAction(new ExportAsQifActionEventHandler(() -> transactionGroup, guiExecutor));
-            this.getItems().addAll(importFromFilesButton, exportAsQifButton);
-
-        }
 
     }
 

@@ -54,7 +54,6 @@ public class StockChangeTransaction extends Transaction {
     @Override
     protected void loadFromXML(Element transactionElement) {
         super.loadFromXML(transactionElement);
-        this.getPersistent().setValue(Boolean.TRUE);
         this.getType().setValue(PersistenceHelper.extractAttributeEnum(transactionElement, "type", StockChangeType.class).orElse(StockChangeType.BUY));
     }
 

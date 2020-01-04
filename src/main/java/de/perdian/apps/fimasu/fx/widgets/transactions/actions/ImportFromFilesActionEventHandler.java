@@ -1,17 +1,15 @@
-package de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions;
+package de.perdian.apps.fimasu.fx.widgets.transactions.actions;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.fimasu.model.Transaction;
-import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.apps.fimasu.model.TransactionParser;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import javafx.application.Platform;
@@ -23,19 +21,18 @@ public class ImportFromFilesActionEventHandler implements EventHandler<ActionEve
 
     private static final Logger log = LoggerFactory.getLogger(ImportFromFilesActionEventHandler.class);
 
-    private Supplier<TransactionGroup> transactionGroupSupplier = null;
+    private ObservableList<Transaction> transactions = null;
     private ObservableList<File> files = null;
     private GuiExecutor guiExecutor = null;
 
-    public ImportFromFilesActionEventHandler(Supplier<TransactionGroup> transactionGroupSupplier, ObservableList<File> files, GuiExecutor guiExecutor) {
-        this.setTransactionGroupSupplier(transactionGroupSupplier);
+    public ImportFromFilesActionEventHandler(ObservableList<Transaction> transactions, ObservableList<File> files, GuiExecutor guiExecutor) {
+        this.setTransactions(transactions);
         this.setFiles(files);
         this.setGuiExecutor(guiExecutor);
     }
 
     @Override
     public synchronized void handle(ActionEvent event) {
-        TransactionGroup transactionGroup = this.getTransactionGroupSupplier().get();
         if (!this.getFiles().isEmpty()) {
             this.getGuiExecutor().execute(progressController -> {
                 List<Transaction> importedTransactions = new ArrayList<>();
@@ -49,17 +46,17 @@ public class ImportFromFilesActionEventHandler implements EventHandler<ActionEve
                 }
                 for (int transactionIndex = 0; transactionIndex < importedTransactions.size(); transactionIndex++) {
                     progressController.updateProgress("", (double)transactionIndex / (double)importedTransactions.size());
-                    this.updateImportedTransaction(importedTransactions.get(transactionIndex), transactionGroup);
+                    this.updateImportedTransaction(importedTransactions.get(transactionIndex));
                 }
             });
         }
     }
 
-    private void updateImportedTransaction(Transaction importedTransaction, TransactionGroup targetTransactionGroup) {
-        Transaction targetTransaction = targetTransactionGroup.getTransactions().stream().filter(transaction -> Objects.equals(transaction.getIsin().getValue(), importedTransaction.getIsin().getValue())).findFirst().orElse(null);
+    private void updateImportedTransaction(Transaction importedTransaction) {
+        Transaction targetTransaction = this.getTransactions().stream().filter(transaction -> Objects.equals(transaction.getIsin().getValue(), importedTransaction.getIsin().getValue())).findFirst().orElse(null);
         Platform.runLater(() -> {
             if (targetTransaction == null) {
-                targetTransactionGroup.getTransactions().add(importedTransaction);
+                this.getTransactions().add(importedTransaction);
             } else {
                 try {
                     importedTransaction.copyValuesInto(targetTransaction);
@@ -70,11 +67,11 @@ public class ImportFromFilesActionEventHandler implements EventHandler<ActionEve
         });
     }
 
-    private Supplier<TransactionGroup> getTransactionGroupSupplier() {
-        return this.transactionGroupSupplier;
+    private ObservableList<Transaction> getTransactions() {
+        return this.transactions;
     }
-    private void setTransactionGroupSupplier(Supplier<TransactionGroup> transactionGroupSupplier) {
-        this.transactionGroupSupplier = transactionGroupSupplier;
+    private void setTransactions(ObservableList<Transaction> transactions) {
+        this.transactions = transactions;
     }
 
     private ObservableList<File> getFiles() {

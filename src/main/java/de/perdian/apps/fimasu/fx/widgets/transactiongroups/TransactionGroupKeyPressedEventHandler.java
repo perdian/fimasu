@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.function.Supplier;
 
 import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.ExportAsQifActionEventHandler;
-import de.perdian.apps.fimasu.fx.widgets.transactiongroups.actions.ImportFromFilesActionEventHandler;
+import de.perdian.apps.fimasu.fx.widgets.transactions.actions.ImportFromFilesActionEventHandler;
 import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import javafx.collections.ObservableList;
@@ -28,10 +28,10 @@ class TransactionGroupKeyPressedEventHandler implements EventHandler<KeyEvent> {
     @Override
     public void handle(KeyEvent event) {
         if (event.getCode() == KeyCode.E && event.isMetaDown()) {
-            new ExportAsQifActionEventHandler(this.getTransactionGroupSupplier(), this.getGuiExecutor()).handle(new ActionEvent(event.getSource(), event.getTarget()));
+            new ExportAsQifActionEventHandler(this.getTransactionGroupSupplier().get(), this.getGuiExecutor()).handle(new ActionEvent(event.getSource(), event.getTarget()));
             event.consume();
         } else if (event.getCode() == KeyCode.I && event.isMetaDown()) {
-            new ImportFromFilesActionEventHandler(this.getTransactionGroupSupplier(), this.getFiles(), this.getGuiExecutor()).handle(new ActionEvent(event.getSource(), event.getTarget()));
+            new ImportFromFilesActionEventHandler(this.getTransactionGroupSupplier().get().getTransactions(), this.getFiles(), this.getGuiExecutor()).handle(new ActionEvent(event.getSource(), event.getTarget()));
             event.consume();
         }
     }
