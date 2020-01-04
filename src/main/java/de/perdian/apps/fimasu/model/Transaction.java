@@ -4,7 +4,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -172,11 +171,9 @@ public abstract class Transaction {
     protected abstract void appendToQIF(QIFWriter qifWriter, TransactionGroup parentGroup);
 
     public void copyValuesInto(Transaction targetTransaction) {
-        Optional.ofNullable(this.getBookingDate().getValue()).ifPresent(targetTransaction.getBookingDate()::setValue);
-        Optional.ofNullable(this.getValutaDate().getValue()).ifPresent(targetTransaction.getValutaDate()::setValue);
-        if (StringUtils.isEmpty(targetTransaction.getTitle().getValue())) {
-            Optional.ofNullable(this.getTitle().getValue()).ifPresent(targetTransaction.getTitle()::setValue);
-        }
+        TransactionHelper.copyValue(this, targetTransaction, Transaction::getBookingDate, existingValue -> true);
+        TransactionHelper.copyValue(this, targetTransaction, Transaction::getValutaDate, existingValue -> true);
+        TransactionHelper.copyValue(this, targetTransaction, Transaction::getTitle, StringUtils::isEmpty);
         TransactionHelper.copyValue(this, targetTransaction, Transaction::getBookingCurrency, existingValue -> true);
         TransactionHelper.copyValue(this, targetTransaction, Transaction::getChargesAmount, existingValue -> true);
         TransactionHelper.copyValue(this, targetTransaction, Transaction::getChargesCurrency, existingValue -> true);
