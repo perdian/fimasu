@@ -53,18 +53,22 @@ public class ImportFromFilesActionEventHandler implements EventHandler<ActionEve
     }
 
     private void updateImportedTransaction(Transaction importedTransaction) {
-        Transaction targetTransaction = this.getTransactions().stream().filter(transaction -> Objects.equals(transaction.getIsin().getValue(), importedTransaction.getIsin().getValue())).findFirst().orElse(null);
-        Platform.runLater(() -> {
-            if (targetTransaction == null) {
-                this.getTransactions().add(importedTransaction);
-            } else {
-                try {
-                    importedTransaction.copyValuesInto(targetTransaction);
-                } catch (Exception e) {
-                    log.info("Cannot update transaction: {}", targetTransaction, e);
+        synchronized (this.getTransactions()) {
+            Transaction targetTransaction = this.getTransactions().stream().filter(transaction -> Objects.equals(transaction.getIsin().getValue(), importedTransaction.getIsin().getValue())).findFirst().orElse(null);
+            Platform.runLater(() -> {
+                if (targetTransaction == null) {
+                    synchronized (this.getTransactions()) {
+                        this.getTransactions().add(importedTransaction);
+                    }
+                } else {
+                    try {
+                        importedTransaction.copyValuesInto(targetTransaction);
+                    } catch (Exception e) {
+                        log.info("Cannot update transaction: {}", targetTransaction, e);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     private ObservableList<Transaction> getTransactions() {
