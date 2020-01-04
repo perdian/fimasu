@@ -12,7 +12,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.perdian.apps.fimasu.persistence.PersistenceHelper;
-import de.perdian.apps.fimasu.support.quicken.QIFWriter;
+import de.perdian.apps.fimasu.support.quicken.Record;
+import de.perdian.apps.fimasu.support.quicken.model.AccountRecordItem;
+import de.perdian.apps.fimasu.support.quicken.model.BookedAmountRecordItem;
+import de.perdian.apps.fimasu.support.quicken.model.BookingDateRecordItem;
+import de.perdian.apps.fimasu.support.quicken.model.CommissionRecordItem;
+import de.perdian.apps.fimasu.support.quicken.model.CurrencyRecordItem;
+import de.perdian.apps.fimasu.support.quicken.model.IsinRecordItem;
+import de.perdian.apps.fimasu.support.quicken.model.SecurityRecordItem;
+import de.perdian.apps.fimasu.support.quicken.model.TotalAmountRecordItem;
+import de.perdian.apps.fimasu.support.quicken.model.ValutaDateRecordItem;
+import de.perdian.apps.fimasu.support.quicken.model.WknRecordItem;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -178,8 +188,6 @@ public abstract class Transaction {
         PersistenceHelper.appendAttribute(transactionElement, "solidarityTaxCurrency", this.getSolidarityTaxCurrency().getValue());
     }
 
-    protected abstract void appendToQIF(QIFWriter qifWriter, TransactionGroup parentGroup);
-
     public void copyValuesInto(Transaction targetTransaction) {
         TransactionHelper.copyValue(this, targetTransaction, Transaction::getBookingDate, existingValue -> true);
         TransactionHelper.copyValue(this, targetTransaction, Transaction::getValutaDate, existingValue -> true);
@@ -197,6 +205,30 @@ public abstract class Transaction {
         TransactionHelper.copyValue(this, targetTransaction, Transaction::getSolidarityTaxCurrency, existingValue -> true);
         TransactionHelper.copyValue(this, targetTransaction, Transaction::getTotalAmount, existingValue -> true);
         TransactionHelper.copyValue(this, targetTransaction, Transaction::getWkn, StringUtils::isEmpty);
+    }
+
+    public Record toQifRecord(TransactionGroup parentGroup) {
+        Record qifRecord = new Record();
+        qifRecord.setAccount(new AccountRecordItem(parentGroup.getAccount().getValue()));
+        qifRecord.setBookingDate(new BookingDateRecordItem(this.getBookingDate().getValue()));
+        qifRecord.setValutaDate(new ValutaDateRecordItem(this.getValutaDate().getValue()));
+        qifRecord.setCurrency(new CurrencyRecordItem(this.getMarketCurrency().getValue()));
+        qifRecord.setSecurity(new SecurityRecordItem(this.getTitle().getValue()));
+        qifRecord.setWkn(new WknRecordItem(this.getWkn().getValue()));
+        qifRecord.setIsin(new IsinRecordItem(this.getIsin().getValue()));
+        qifRecord.setBookedAmount(new BookedAmountRecordItem(this.getTotalAmount().getValue()));
+        qifRecord.setTotalAmount(new TotalAmountRecordItem(this.getTotalAmount().getValue()));
+        qifRecord.setCommission(this.toQifCommissionRecordItem());
+        return qifRecord;
+    }
+
+    private CommissionRecordItem toQifCommissionRecordItem() {
+        CommissionRecordItem commission = new CommissionRecordItem();
+        commission.setKapitalertragsteuer(TransactionHelper.convert(this.getFinanceTaxAmount().getValue(), this.getFinanceTaxCurrency().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue()));
+        commission.setBankprovision(this.getChargesAmount().getValue() <= 0d ? null : TransactionHelper.convert(this.getChargesAmount().getValue(), this.getChargesCurrency().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue()));
+        commission.setSonstigekosten(this.getChargesAmount().getValue() > 0d ? null : TransactionHelper.convert(this.getChargesAmount().getValue(), this.getChargesCurrency().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue()));
+        commission.setSolidaritaetsuzschlag(TransactionHelper.convert(this.getSolidarityTaxAmount().getValue(), this.getSolidarityTaxCurrency().getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue()));
+        return commission;
     }
 
     public StringProperty getWkn() {

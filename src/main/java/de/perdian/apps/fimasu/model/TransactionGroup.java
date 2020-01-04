@@ -3,7 +3,9 @@ package de.perdian.apps.fimasu.model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
@@ -12,7 +14,7 @@ import org.w3c.dom.NodeList;
 
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
 import de.perdian.apps.fimasu.persistence.PersistenceHelper;
-import de.perdian.apps.fimasu.support.quicken.QIFWriter;
+import de.perdian.apps.fimasu.support.quicken.RecordList;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -115,10 +117,10 @@ public class TransactionGroup {
 
     }
 
-    public void appendToQIF(QIFWriter qifWriter) {
-        for (Transaction transaction : this.getTransactions()) {
-            transaction.appendToQIF(qifWriter, this);
-        }
+    public RecordList toQifRecordList() {
+        RecordList recordList = new RecordList();
+        recordList.setRecords(this.getTransactions().stream().map(transaction -> transaction.toQifRecord(this)).filter(Objects::nonNull).collect(Collectors.toList()));
+        return recordList;
     }
 
     public StringProperty getTitle() {

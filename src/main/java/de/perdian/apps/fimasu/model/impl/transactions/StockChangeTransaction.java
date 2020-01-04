@@ -1,10 +1,9 @@
 package de.perdian.apps.fimasu.model.impl.transactions;
 
-import java.time.LocalDate;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Objects;
-import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -12,12 +11,15 @@ import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.TransactionGroup;
 import de.perdian.apps.fimasu.model.TransactionHelper;
 import de.perdian.apps.fimasu.persistence.PersistenceHelper;
-import de.perdian.apps.fimasu.support.quicken.QIFWriter;
+import de.perdian.apps.fimasu.support.quicken.Record;
+import de.perdian.apps.fimasu.support.quicken.model.ConversionFactorRecordItem;
+import de.perdian.apps.fimasu.support.quicken.model.MarketPriceRecordItem;
+import de.perdian.apps.fimasu.support.quicken.model.MemoRecordItem;
+import de.perdian.apps.fimasu.support.quicken.model.NumberOfSharesRecordItem;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -71,65 +73,29 @@ public class StockChangeTransaction extends Transaction {
     }
 
     @Override
-    public void appendToQIF(QIFWriter qifWriter, TransactionGroup parentGroup) {
+    public Record toQifRecord(TransactionGroup parentGroup) {
         if (this.getTotalAmount().getValue() != null && this.getTotalAmount().getValue().doubleValue() > 0d && this.getNumberOfShares().getValue() != null && this.getNumberOfShares().getValue().doubleValue() > 0d) {
 
-            Number conversionFactorInput = this.getMarketExchangeRate().getValue();
-            double conversionFactor = conversionFactorInput == null || conversionFactorInput.doubleValue() == 0d ? 1d : conversionFactorInput.doubleValue();
-
+            NumberFormat shortNumberFormat = new DecimalFormat("#,##0.00");
+            NumberFormat longNumberFormat = new DecimalFormat("#,##0.00000");
             StringBuilder memo = new StringBuilder();
-            memo.append(QIFWriter.SHORT_NUMBER_FORMAT.format(this.getNumberOfShares().getValue())).append(" a ");
-            memo.append(QIFWriter.LONG_NUMBER_FORMAT.format(this.getMarketPrice().getValue())).append(" ").append(this.getMarketCurrency().getValue()).append(" = ");
-            memo.append(QIFWriter.SHORT_NUMBER_FORMAT.format(this.getMarketAmount().getValue())).append(" ").append(this.getMarketCurrency().getValue());
+            memo.append(shortNumberFormat.format(this.getNumberOfShares().getValue())).append(" a ");
+            memo.append(longNumberFormat.format(this.getMarketPrice().getValue())).append(" ").append(this.getMarketCurrency().getValue()).append(" = ");
+            memo.append(shortNumberFormat.format(this.getMarketAmount().getValue())).append(" ").append(this.getMarketCurrency().getValue());
             if (!Objects.equals(this.getMarketCurrency().getValue(), this.getBookingCurrency().getValue())) {
-                memo.append(" (= ");
-                memo.append(QIFWriter.SHORT_NUMBER_FORMAT.format(this.getBookingAmount().getValue())).append(" ").append(this.getBookingCurrency().getValue());
-                memo.append(")");
+                memo.append(" (= ").append(shortNumberFormat.format(this.getBookingAmount().getValue())).append(" ").append(this.getBookingCurrency().getValue()).append(")");
             }
 
-            String charges = this.computeQifCommision(this.getChargesAmount(), this.getChargesCurrency());
-            StringBuilder commission = new StringBuilder();
-            commission.append(""); // maklercourtage
-            commission.append("|").append(this.computeQifCommision(this.getFinanceTaxAmount(), this.getFinanceTaxCurrency())); // kapitalertragsteuer
-            commission.append("|"); // spesen
-            commission.append("|").append(this.getChargesAmount().getValue() != null && this.getChargesAmount().getValue() > 0d ? charges : ""); // bankprovision
-            commission.append("|"); // spesenausland
-            commission.append("|"); // auslaendischequellensteuer
-            commission.append("|"); // zinsabschlagsteuer
-            commission.append("|").append(this.getChargesAmount().getValue() != null && this.getChargesAmount().getValue() < 0d ? charges : ""); // sonstigekosten
-            commission.append("|").append(this.computeQifCommision(this.getSolidarityTaxAmount(), this.getSolidarityTaxCurrency())); // solidaritaetsuzschlag
-            commission.append("|"); // boersenplatzentgelt
-            commission.append("|"); // abgeltungssteuer
-            commission.append("|"); // kirchensteuer
+            Record qifRecord = super.toQifRecord(parentGroup);
+            qifRecord.setConversionFactor(new ConversionFactorRecordItem(this.getMarketExchangeRate().getValue()));
+            qifRecord.setMarketPrice(new MarketPriceRecordItem(this.getMarketPrice().getValue()));
+            qifRecord.setNumberOfShares(new NumberOfSharesRecordItem(this.getNumberOfShares().getValue()));
+            qifRecord.setMemo(new MemoRecordItem(memo.toString()));
+            qifRecord.setTransactionType(this.getType().getValue().getTransactionTypeRecordItem());
+            return qifRecord;
 
-            qifWriter.appendLine('D', QIFWriter.DATE_FORMATTER.format(Optional.ofNullable(this.getBookingDate().getValue()).orElseGet(LocalDate::now)));
-            qifWriter.appendLine('V', QIFWriter.DATE_FORMATTER.format(Optional.ofNullable(this.getValutaDate().getValue()).orElseGet(LocalDate::now)));
-            qifWriter.appendLine('N', this.getType().getValue().getQifType());
-            qifWriter.appendLine('F', StringUtils.defaultIfEmpty(this.getMarketCurrency().getValue(), "EUR"));
-            qifWriter.appendLine('G', QIFWriter.LONG_NUMBER_FORMAT.format(conversionFactor));
-            qifWriter.appendLine('Y', this.getTitle().getValue());
-            qifWriter.appendLine('~', this.getWkn().getValue());
-            qifWriter.appendLine('@', this.getIsin().getValue());
-            qifWriter.appendLine('&', "2");
-            qifWriter.appendLine('I', QIFWriter.LONG_NUMBER_FORMAT.format(this.getMarketPrice().getValue()));
-            qifWriter.appendLine('Q', QIFWriter.LONG_NUMBER_FORMAT.format(this.getNumberOfShares().getValue()));
-            qifWriter.appendLine('U', QIFWriter.SHORT_NUMBER_FORMAT.format(this.getTotalAmount().getValue()));
-            qifWriter.appendLine('O', commission.toString());
-            qifWriter.appendLine('L', "|[" + parentGroup.getAccount().getValue() + "]");
-            qifWriter.appendLine('$', QIFWriter.SHORT_NUMBER_FORMAT.format(this.getTotalAmount().getValue()));
-            qifWriter.appendLine('B', "0.00|0.00|0.00");
-            qifWriter.appendLine('M', memo.toString());
-            qifWriter.appendLine('^');
-
-        }
-    }
-
-    private String computeQifCommision(Property<Number> doubleProperty, Property<String> currencyProperty) {
-        if (doubleProperty.getValue() == null || doubleProperty.getValue().doubleValue() == 0d) {
-            return "";
         } else {
-            double convertedValue = TransactionHelper.convert(doubleProperty.getValue(), currencyProperty.getValue(), this.getMarketExchangeRate().getValue(), this.getBookingCurrency().getValue());
-            return convertedValue == 0d ? "" : QIFWriter.SHORT_NUMBER_FORMAT.format(convertedValue);
+            return null;
         }
     }
 

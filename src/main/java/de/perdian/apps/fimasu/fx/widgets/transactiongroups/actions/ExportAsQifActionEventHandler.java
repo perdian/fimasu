@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.fimasu.model.TransactionGroup;
-import de.perdian.apps.fimasu.support.quicken.QIFWriter;
+import de.perdian.apps.fimasu.support.quicken.RecordList;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -31,9 +31,8 @@ public class ExportAsQifActionEventHandler implements EventHandler<ActionEvent> 
     @Override
     public void handle(ActionEvent event) {
         this.getGuiExecutor().execute(progressController -> {
-            QIFWriter qifWriter = new QIFWriter();
-            this.getTransactionGroup().appendToQIF(qifWriter);
-            String qifContent = qifWriter.toOutput();
+            RecordList qifRecordList = this.getTransactionGroup().toQifRecordList();
+            String qifString = qifRecordList.toQifString();
             String qifFileLocation = this.getTransactionGroup().getTargetFilePath().getValue();
             if (StringUtils.isEmpty(qifFileLocation)) {
                 this.showAlert(AlertType.ERROR, "Export failed", "No target file specified!");
@@ -41,7 +40,7 @@ public class ExportAsQifActionEventHandler implements EventHandler<ActionEvent> 
                 try {
                     File qifFile = new File(qifFileLocation);
                     log.info("Exporting transaction group into file at '{}': {}", qifFile.getAbsolutePath(), this.getTransactionGroup());
-                    FileUtils.write(qifFile, qifContent, "UTF-8");
+                    FileUtils.write(qifFile, qifString, "UTF-8");
                     this.showAlert(AlertType.INFORMATION, "Export completed", "Exported transactions into file: " + qifFile.getName());
                 } catch (Exception e) {
                     this.showAlert(AlertType.ERROR, "Export failed", "Export failed: " + e.toString());

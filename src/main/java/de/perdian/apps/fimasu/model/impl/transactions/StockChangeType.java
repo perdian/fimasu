@@ -1,18 +1,20 @@
 package de.perdian.apps.fimasu.model.impl.transactions;
 
+import de.perdian.apps.fimasu.support.quicken.model.TransactionTypeRecordItem;
+
 public enum StockChangeType {
 
-    BUY(1, "Buy", "Kauf"),
-    SELL(-1, "Sell", "Verkauf");
+    BUY(1, "Buy", TransactionTypeRecordItem.BUY),
+    SELL(-1, "Sell", TransactionTypeRecordItem.SELL);
 
     private double factor = 0;
     private String title = null;
-    private String qifType = null;
+    private TransactionTypeRecordItem transactionTypeRecordItem = null;
 
-    private StockChangeType(double factor, String title, String qifType) {
+    private StockChangeType(double factor, String title, TransactionTypeRecordItem transactionTypeRecordItem) {
         this.setFactor(factor);
         this.setTitle(title);
-        this.setQifType(qifType);
+        this.setTransactionTypeRecordItem(transactionTypeRecordItem);
     }
 
     double getFactor() {
@@ -29,11 +31,11 @@ public enum StockChangeType {
         this.title = title;
     }
 
-    String getQifType() {
-        return this.qifType;
+    TransactionTypeRecordItem getTransactionTypeRecordItem() {
+        return this.transactionTypeRecordItem;
     }
-    private void setQifType(String qifType) {
-        this.qifType = qifType;
+    private void setTransactionTypeRecordItem(TransactionTypeRecordItem transactionTypeRecordItem) {
+        this.transactionTypeRecordItem = transactionTypeRecordItem;
     }
 
 }
