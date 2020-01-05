@@ -1,6 +1,7 @@
 # FimaSu (Finanzmanager Support)
 
 [![License](http://img.shields.io/:license-apache-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Build](https://img.shields.io/circleci/build/github/perdian/fimasu/master)](https://circleci.com/gh/perdian/fimasu)
 
 Quick solution to allow the generation of a QIF file ([Quicken Interchange Format](https://de.wikipedia.org/wiki/Quicken_Interchange_Format)).
 
