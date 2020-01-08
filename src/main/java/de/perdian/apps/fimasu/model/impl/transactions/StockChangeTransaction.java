@@ -87,7 +87,7 @@ public class StockChangeTransaction extends Transaction {
             }
 
             Record qifRecord = super.toQifRecord(parentGroup);
-            qifRecord.setConversionFactor(new ConversionFactorRecordItem(this.getMarketExchangeRate().getValue()));
+            qifRecord.setConversionFactor(new ConversionFactorRecordItem(this.getMarketExchangeRate().getValue() == null || this.getMarketExchangeRate().getValue().doubleValue() == 0d ? 1d : this.getMarketExchangeRate().getValue()));
             qifRecord.setMarketPrice(new MarketPriceRecordItem(this.getMarketPrice().getValue()));
             qifRecord.setNumberOfShares(new NumberOfSharesRecordItem(this.getNumberOfShares().getValue()));
             qifRecord.setMemo(new MemoRecordItem(memo.toString()));

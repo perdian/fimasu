@@ -16,7 +16,7 @@ public abstract class AbstractLongDoubleRecordItem implements RecordItem {
 
     public AbstractLongDoubleRecordItem(char code, Number value) {
         this.setCode(code);
-        this.setValue(code);
+        this.setValue(value == null ? 0d : value.doubleValue());
     }
 
     @Override
