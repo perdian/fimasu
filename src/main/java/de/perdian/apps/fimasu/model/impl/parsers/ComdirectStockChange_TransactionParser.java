@@ -56,7 +56,7 @@ public class ComdirectStockChange_TransactionParser extends AbstractPdfTransacti
         TransactionParserHelper.regexSet(line, "Stk\\..*?\\d+.*?\\s+.*?\\,.*?WKN.*?\\:\\s+(.*?)\\s+\\/\\s+.*?", transaction.getWkn());
         TransactionParserHelper.regexSet(line, "Stk\\..*?\\d+.*?\\s+.*?\\,.*?WKN.*?\\:\\s+.*?\\s+\\/\\s+(.*?)", transaction.getIsin());
         TransactionParserHelper.regexSet(line, ".*?Umrechnung zum Devisenkurs\\s+(.*?)\\s+[A-Z]{3}\\s+.*?", transaction.getMarketExchangeRate(), string -> NUMBER_FORMAT.parse(string));
-        TransactionParserHelper.regexSetAmountWithCurrency(line, ".*?Reduktion Kaufaufschlag.*?(?<currency>[A-Z]{3})\\s+(?<amount>.*?)\\-", transaction.getChargesAmount(), NUMBER_FORMAT, transaction.getChargesCurrency());
+        TransactionParserHelper.regexSetAmountWithCurrency(line, ".*?Reduktion Kaufaufschlag.*?(?<currency>[A-Z]{3})\\s+(?<amount>.*?)\\-", transaction.getChargesAmount(), -1d, NUMBER_FORMAT, transaction.getChargesCurrency());
         TransactionParserHelper.regexAddAmountWithCurrency(line, "Abwickl.entgelt Clearstream\\s+\\:\\s+(?<currency>[A-Z]{3})\\s+(?<amount>.*?)", transaction.getChargesAmount(), NUMBER_FORMAT, transaction.getChargesCurrency());
         TransactionParserHelper.regexAddAmountWithCurrency(line, "Provision\\s+\\:\\s+(?<currency>[A-Z]{3})\\s+(?<amount>.*?)", transaction.getChargesAmount(), NUMBER_FORMAT, transaction.getChargesCurrency());
         TransactionParserHelper.regexAddAmountWithCurrency(line, "Börsenplatzabhäng. Entgelt.\\s+\\:\\s+(?<currency>[A-Z]{3})\\s+(?<amount>.*?)", transaction.getChargesAmount(), NUMBER_FORMAT, transaction.getChargesCurrency());

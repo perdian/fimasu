@@ -24,11 +24,11 @@ public class TransactionParserHelper {
         }
     }
 
-    public static void regexSetAmountWithCurrency(String input, String regexExpression, Property<Number> amountProperty, NumberFormat amountFormat, Property<String> currencyProperty) {
+    public static void regexSetAmountWithCurrency(String input, String regexExpression, Property<Number> amountProperty, double factor, NumberFormat amountFormat, Property<String> currencyProperty) {
         try {
             Matcher regexMatcher = Pattern.compile(regexExpression).matcher(input);
             if (regexMatcher.matches()) {
-                amountProperty.setValue(amountFormat.parse(regexMatcher.group("amount")));
+                amountProperty.setValue(amountFormat.parse(regexMatcher.group("amount")).doubleValue() * factor);
                 currencyProperty.setValue(regexMatcher.group("currency"));
             }
         } catch (ParseException e) {
