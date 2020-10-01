@@ -24,18 +24,18 @@
     </developers>
 
     <properties>
-        <commons-io.version>2.6</commons-io.version>
+        <commons-io.version>2.8.0</commons-io.version>
         <commons-fx.version>1.4.0</commons-fx.version>
-        <commons-lang3.version>3.9</commons-lang3.version>
+        <commons-lang3.version>3.11</commons-lang3.version>
         <fontawesomefx.version>4.7.0-9.1.2</fontawesomefx.version>
         <icepdf.version>6.2.2</icepdf.version>
         <jai.version>1.1.3</jai.version>
-        <java.version>11</java.version>
-        <javafx.version>11.0.2</javafx.version>
-        <jsoup.version>1.12.1</jsoup.version>
+        <java.version>15</java.version>
+        <javafx.version>15</javafx.version>
+        <jsoup.version>1.13.1</jsoup.version>
         <logback.version>1.2.3</logback.version>
-        <okhttp.version>4.3.0</okhttp.version>
-        <pdfbox.version>2.0.17</pdfbox.version>
+        <okhttp.version>4.9.0</okhttp.version>
+        <pdfbox.version>2.0.21</pdfbox.version>
         <slf4j.version>1.7.28</slf4j.version>
     </properties>
 
@@ -134,7 +134,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
@@ -162,7 +162,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-shade-plugin</artifactId>
-                        <version>3.2.1</version>
+                        <version>3.2.4</version>
                         <configuration>
                             <finalName>fimasu</finalName>
                             <filters>
@@ -195,12 +195,12 @@
                     <plugin>
                         <groupId>de.perdian.maven.plugins</groupId>
                         <artifactId>macosappbundler-maven-plugin</artifactId>
-                        <version>1.4.0</version>
+                        <version>1.9.0</version>
                         <configuration>
                             <plist>
                                 <CFBundleIconFile>src/bundle/macos/resources/fimasu.icns</CFBundleIconFile>
                                 <JVMMainClassName>de.perdian.apps.fimasu.fx.FimaSuLauncher</JVMMainClassName>
-                                <JVMVersion>${java.version}</JVMVersion>
+                                <JVMVersion>${java.version}+</JVMVersion>
                                 <JVMOptions>
                                     <string>-Dapple.laf.useScreenMenuBar=true</string>
                                     <string>-Xdock:name=${project.name}</string>
