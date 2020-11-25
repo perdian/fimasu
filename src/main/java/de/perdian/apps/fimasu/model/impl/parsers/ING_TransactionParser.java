@@ -8,57 +8,38 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.fimasu.model.Transaction;
-import de.perdian.apps.fimasu.model.TransactionParser;
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 
-public class ING_TransactionParser implements TransactionParser {
-
-    private static final Logger log = LoggerFactory.getLogger(ING_TransactionParser.class);
+public class ING_TransactionParser extends AbstractPdfTransactionParser<StockChangeTransaction> {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy").withLocale(Locale.GERMANY);
 
     @Override
-    public List<Transaction> parseTransactionsFromFile(File documentFile) {
-        if (documentFile.getName().indexOf("Direkt_Depot") > -1 && documentFile.getName().indexOf("Abrechnung") > -1 && documentFile.getName().endsWith(".pdf")) {
-            try {
+    public boolean canHandleFile(File documentFile) {
+        return (documentFile.getName().indexOf("Direkt_Depot") > -1 && documentFile.getName().indexOf("Abrechnung") > -1 && documentFile.getName().endsWith(".pdf"));
+    }
 
-                log.debug("Analyzing ING file at: {}", documentFile.getAbsolutePath());
-                try (PDDocument pdfDocument = PDDocument.load(documentFile)) {
-                    PDFTextStripper pdfStripper = new PDFTextStripper();
-                    String pdfText = pdfStripper.getText(pdfDocument);
-                    StockChangeTransaction transaction = new StockChangeTransaction();
-                    try (BufferedReader lineReader = new BufferedReader(new StringReader(pdfText))) {
-                        for (String line = lineReader.readLine(); line != null; line = lineReader.readLine()) {
-                            if (StringUtils.isNotBlank(line)) {
-                                this.analyzeLine(line, transaction);
-                            }
-                        }
-                    }
-                    return List.of(transaction);
+    @Override
+    protected StockChangeTransaction createTransaction(String pdfText, File pdfFile) throws Exception {
+        StockChangeTransaction transaction = new StockChangeTransaction();
+        try (BufferedReader lineReader = new BufferedReader(new StringReader(pdfText))) {
+            for (String line = lineReader.readLine(); line != null; line = lineReader.readLine()) {
+                if (StringUtils.isNotBlank(line)) {
+                    this.analyzeLine(line, transaction);
                 }
-
-            } catch (Exception e) {
-                log.warn("Cannot analyze ING file at: {}", documentFile.getAbsolutePath(), e);
             }
         }
-        return Collections.emptyList();
+        return transaction;
     }
 
     private void analyzeLine(String line, StockChangeTransaction transaction) throws Exception {

@@ -1,7 +1,11 @@
 package de.perdian.apps.fimasu.model;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,6 +52,17 @@ public class TransactionParserHelper {
         }
     }
 
+    public static void regexSetNumber(String input, String regexExpression, DecimalFormat numberFormat, Property<Number> numberProperty) {
+        try {
+            Matcher regexMatcher = Pattern.compile(regexExpression).matcher(input);
+            if (regexMatcher.matches()) {
+                numberProperty.setValue(numberFormat.parse(regexMatcher.group(1)).doubleValue());
+            }
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Invalid numeric value found in: " + input, e);
+        }
+    }
+
     public static void regexSetNumberOfSharesPlusAmountWithCurrency(String input, String regexExpression, Property<Number> numberOfSharesProperty, Property<Number> amountProperty, NumberFormat amountFormat, Property<String> currencyProperty) {
         try {
             Matcher regexMatcher = Pattern.compile(regexExpression).matcher(input);
@@ -61,7 +76,20 @@ public class TransactionParserHelper {
         }
     }
 
-    public static interface StringConverter<T> {
+    public static void regexSetLocalDate(String input, String regexExpression, String dateFormat, Property<LocalDate> dateProperty) {
+        try {
+             Matcher regexMatcher = Pattern.compile(regexExpression).matcher(input);
+             if (regexMatcher.matches()) {
+                 String dateString = regexMatcher.group(1);
+                 LocalDate localDate = LocalDate.parse(dateString, DateTimeFormatter.ofPattern(dateFormat));
+                 dateProperty.setValue(localDate);
+             }
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid date value found in: " + input, e);
+        }
+    }
+
+    public interface StringConverter<T> {
 
         T convert(String input) throws Exception;
 

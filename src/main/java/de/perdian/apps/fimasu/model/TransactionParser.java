@@ -7,13 +7,18 @@ import java.util.ServiceLoader;
 
 public interface TransactionParser {
 
-    public static List<Transaction> parseTransactions(File file) {
+    static List<Transaction> parseTransactions(File file) {
         List<Transaction> transactions = new ArrayList<>();
         ServiceLoader<TransactionParser> transactionParserLoader = ServiceLoader.load(TransactionParser.class);
-        transactionParserLoader.forEach(transactionParser -> transactions.addAll(transactionParser.parseTransactionsFromFile(file)));
+        transactionParserLoader
+            .stream()
+            .map(transactionParserProvider -> transactionParserProvider.get())
+            .filter(transactionParser -> transactionParser.canHandleFile(file))
+            .forEach(transactionParser -> transactions.addAll(transactionParser.parseTransactionsFromFile(file)));
         return transactions;
     }
 
+    boolean canHandleFile(File documentFile);
     List<Transaction> parseTransactionsFromFile(File documentFile);
 
 }
