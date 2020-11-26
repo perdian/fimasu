@@ -9,20 +9,39 @@ import javafx.beans.value.WritableValue;
 
 public class RegexAmountWithCurrencyLineProcessor extends RegexLineProcessor {
 
+    public enum Mode {
+
+        SET {
+            @Override protected Number computeNewAmount(Number oldValue, Number newValue) {
+                return newValue;
+            }
+        },
+
+        ADD {
+            @Override protected Number computeNewAmount(Number oldValue, Number newValue) {
+                return (oldValue == null ? 0d : oldValue.doubleValue()) + (newValue == null ? 0d : newValue.doubleValue());
+            }
+        };
+
+        protected abstract Number computeNewAmount(Number oldValue, Number newValue);
+    }
+
     private NumberFormat amountFormat = null;
     private WritableValue<Number> amountProperty = null;
     private WritableValue<String> currencyProperty = null;
+    private Mode mode = null;
     private Supplier<Double> signComputer = null;
 
-    public RegexAmountWithCurrencyLineProcessor(String pattern, WritableValue<Number> amountProperty, NumberFormat amountFormat, WritableValue<String> currencyProperty) {
-        this(pattern, amountProperty, amountFormat, currencyProperty, () -> 1d);
+    public RegexAmountWithCurrencyLineProcessor(String pattern, WritableValue<Number> amountProperty, NumberFormat amountFormat, WritableValue<String> currencyProperty, RegexAmountWithCurrencyLineProcessor.Mode mode) {
+        this(pattern, amountProperty, amountFormat, currencyProperty, mode, () -> 1d);
     }
 
-    public RegexAmountWithCurrencyLineProcessor(String pattern, WritableValue<Number> amountProperty, NumberFormat amountFormat, WritableValue<String> currencyProperty, Supplier<Double> signComputer) {
+    public RegexAmountWithCurrencyLineProcessor(String pattern, WritableValue<Number> amountProperty, NumberFormat amountFormat, WritableValue<String> currencyProperty, RegexAmountWithCurrencyLineProcessor.Mode mode, Supplier<Double> signComputer) {
         super(pattern);
         this.setAmountProperty(amountProperty);
         this.setAmountFormat(amountFormat);
         this.setCurrencyProperty(currencyProperty);
+        this.setMode(mode);
         this.setSignComputer(signComputer);
     }
 
@@ -32,10 +51,15 @@ public class RegexAmountWithCurrencyLineProcessor extends RegexLineProcessor {
         String signString = RegexHelper.extractGroupForName(lineMatcher, "sign");
         String currencyString = lineMatcher.group("currency");
         try {
-            Number amountValue = this.getAmountFormat().parse(amountString);
-            Number amountValueSigned = amountValue.doubleValue() * ("-".equalsIgnoreCase(signString) ? -1d : 1d) * this.getSignComputer().get().doubleValue();
-            this.getAmountProperty().setValue(amountValueSigned);
-            this.getCurrencyProperty().setValue(currencyString);
+            if (this.getAmountProperty() != null) {
+                Number amountValue = this.getAmountFormat().parse(amountString);
+                Number amountValueSigned = amountValue.doubleValue() * ("-".equalsIgnoreCase(signString) ? -1d : 1d) * this.getSignComputer().get().doubleValue();
+                Number newAmount = this.getMode().computeNewAmount(this.getAmountProperty().getValue(), amountValueSigned);
+                this.getAmountProperty().setValue(newAmount);
+            }
+            if (this.getCurrencyProperty() != null) {
+                this.getCurrencyProperty().setValue(currencyString);
+            }
         } catch (ParseException e) {
             throw new IllegalArgumentException("Invalid amount value: " + amountString, e);
         }
@@ -60,6 +84,13 @@ public class RegexAmountWithCurrencyLineProcessor extends RegexLineProcessor {
     }
     private void setCurrencyProperty(WritableValue<String> currencyProperty) {
         this.currencyProperty = currencyProperty;
+    }
+
+    private Mode getMode() {
+        return this.mode;
+    }
+    private void setMode(Mode mode) {
+        this.mode = mode;
     }
 
     private Supplier<Double> getSignComputer() {
