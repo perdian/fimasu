@@ -1,4 +1,4 @@
-package de.perdian.apps.fimasu.model.impl.parsers;
+package de.perdian.apps.fimasu.model.impl.parsers_OLD;
 
 import java.io.File;
 import java.util.Collections;
@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.TransactionParser;
-import de.perdian.apps.fimasu.model.support.LineProcessorList;
 
 public abstract class AbstractPdfTransactionParser<T extends Transaction> implements TransactionParser {
 
@@ -23,22 +22,20 @@ public abstract class AbstractPdfTransactionParser<T extends Transaction> implem
     }
 
     @Override
-    public List<Transaction> parseTransactionsFromFile(File pdfFile) {
+    public List<Transaction> parseTransactionsFromFile(File documentFile) {
         try {
-            log.debug("Analyzing PDF file at: {}", pdfFile.getAbsolutePath());
-            try (PDDocument pdfDocument = PDDocument.load(pdfFile)) {
+            log.debug("Analyzing PDF file at: {}", documentFile.getAbsolutePath());
+            try (PDDocument pdfDocument = PDDocument.load(documentFile)) {
                 PDFTextStripper pdfStripper = new PDFTextStripper();
                 String pdfText = pdfStripper.getText(pdfDocument);
-                T transaction = this.createTransaction(pdfText, pdfFile);
-                this.createLineProcessorList(transaction, pdfFile).process(pdfText);
+                T transaction = this.createTransaction(pdfText, documentFile);
                 return transaction == null ? Collections.emptyList() : List.of(transaction);
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("Cannot analyze file: " + pdfFile.getAbsolutePath(), e);
+            throw new IllegalArgumentException("Cannot analyze file: " + documentFile.getAbsolutePath(), e);
         }
     }
 
-    protected abstract LineProcessorList createLineProcessorList(T transaction, File pdfFile);
     protected abstract T createTransaction(String pdfText, File pdfFile) throws Exception;
 
 }
