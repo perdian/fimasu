@@ -4,4 +4,5 @@
 /target
 /dependency-reduced-pom.xml
 /hs_err_*
+/src/development
 .DS_Store

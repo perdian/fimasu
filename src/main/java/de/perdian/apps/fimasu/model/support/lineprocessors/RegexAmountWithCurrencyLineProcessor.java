@@ -49,7 +49,7 @@ public class RegexAmountWithCurrencyLineProcessor extends RegexLineProcessor {
     protected void processLineWithMatcher(String line, Matcher lineMatcher) {
         String amountString = lineMatcher.group("amount");
         String signString = RegexHelper.extractGroupForName(lineMatcher, "sign");
-        String currencyString = lineMatcher.group("currency");
+        String currencyString = RegexHelper.extractGroupForName(lineMatcher, "currency");
         try {
             if (this.getAmountProperty() != null) {
                 Number amountValue = this.getAmountFormat().parse(amountString);
@@ -57,7 +57,7 @@ public class RegexAmountWithCurrencyLineProcessor extends RegexLineProcessor {
                 Number newAmount = this.getMode().computeNewAmount(this.getAmountProperty().getValue(), amountValueSigned);
                 this.getAmountProperty().setValue(newAmount);
             }
-            if (this.getCurrencyProperty() != null) {
+            if (this.getCurrencyProperty() != null && currencyString != null) {
                 this.getCurrencyProperty().setValue(currencyString);
             }
         } catch (ParseException e) {
