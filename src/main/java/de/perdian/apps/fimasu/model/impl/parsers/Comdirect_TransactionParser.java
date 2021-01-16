@@ -56,6 +56,7 @@ public class Comdirect_TransactionParser extends AbstractPdfTransactionParser<St
         lineProcessorList.add(
             new RegexGroupsLineProcessor(".*?Reduktion Kaufaufschlag.*?(?<currency>[A-Z]{3})\\s+(?<amount>.*?)\\-")
                 .addNumber(RegexGroupsLookup.byName("amount"), transaction.getChargesAmount(), Comdirect.AMOUNT_FORMAT, -1)
+                .setString(RegexGroupsLookup.byName("currency"), transaction.getChargesCurrency())
         );
         lineProcessorList.add(
             new RegexGroupsLineProcessor("Abwickl.entgelt Clearstream\\s+\\:\\s+(?<currency>[A-Z]{3})\\s+(?<amount>.*?)")
