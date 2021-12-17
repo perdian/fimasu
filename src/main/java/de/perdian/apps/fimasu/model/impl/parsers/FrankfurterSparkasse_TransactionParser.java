@@ -70,6 +70,9 @@ public class FrankfurterSparkasse_TransactionParser extends AbstractPdfTransacti
             new RegexAmountWithCurrencyLineProcessor("Kundenbonifikation .*? vom Kurswert (?<amount>[0-9,\\.]+)(?<sign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getChargesAmount(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getChargesCurrency(), Mode.ADD, () -> StockChangeType.SELL.equals(transaction.getType().getValue()) ? 1d : -1)
         );
         stringExtractor.add(
+            new RegexAmountWithCurrencyLineProcessor("Kundenbonifikation .*? vom Ausgabeaufschlag (?<amount>[0-9,\\.]+)(?<sign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getChargesAmount(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getChargesCurrency(), Mode.ADD, () -> StockChangeType.SELL.equals(transaction.getType().getValue()) ? 1d : -1)
+        );
+        stringExtractor.add(
             new RegexAmountWithCurrencyLineProcessor("Ausmachender Betrag (?<amount>[0-9,\\.]+)(?<IGNOREsign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getTotalAmount(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getBookingCurrency(), Mode.SET)
         );
         return stringExtractor;
