@@ -33,7 +33,7 @@ For building it simply checkout the repository from GitHub and call the Maven pa
 
 ### macOS build
 
-On macOS a simplified build that directly genrates a macOS application from which the application can be installed or distributed.
+On macOS a simplified build that directly generates a macOS application from which the application can be installed and distributed.
 
 Then build the application activate the profile `macos-bundle`:
 
