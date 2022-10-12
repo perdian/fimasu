@@ -3,6 +3,7 @@ package de.perdian.apps.fimasu4.fx;
 import de.perdian.apps.fimasu4.fx.modules.files.FilesContentPane;
 import de.perdian.apps.fimasu4.fx.modules.files.FilesListPane;
 import de.perdian.apps.fimasu4.fx.modules.transactiongroups.TransactionGroupsPane;
+import de.perdian.apps.fimasu4.model.TransactionGroupModel;
 import javafx.geometry.Insets;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
@@ -16,9 +17,9 @@ import javafx.scene.layout.Priority;
 
 class FimasuApplicationPane extends GridPane {
 
-    FimasuApplicationPane() {
+    FimasuApplicationPane(TransactionGroupModel transactionGroupModel) {
 
-        TransactionGroupsPane transactionGroupsPane = new TransactionGroupsPane();
+        TransactionGroupsPane transactionGroupsPane = new TransactionGroupsPane(transactionGroupModel);
         TitledPane transactionGroupsTitledPane = new TitledPane("Transaction groups", transactionGroupsPane);
         transactionGroupsTitledPane.setCollapsible(false);
         transactionGroupsTitledPane.setMaxHeight(Double.MAX_VALUE);
