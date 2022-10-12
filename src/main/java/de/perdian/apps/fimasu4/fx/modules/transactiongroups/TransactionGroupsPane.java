@@ -43,8 +43,6 @@ public class TransactionGroupsPane extends BorderPane {
         transactionGroupModel.getTransactionGroups().addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> this.onTransactionGroupsChange(change, tabPane));
         transactionGroupModel.getSelectedTransactionGroup().addListener((o, oldValue, newValue) -> this.onSelectedTransactionGroupChanged(newValue, tabPane));
 
-        this.setCenter(tabPane);
-
     }
 
     private void addTransactionGroupTab(TransactionGroup transactionGroup, TabPane targetPane) {
@@ -71,20 +69,20 @@ public class TransactionGroupsPane extends BorderPane {
     }
 
     private void onChangedTransactionGroupRemoved(TransactionGroup removedTransactionGroup, TabPane targetPane) {
-        Tab tab = this.findSelectedTabForTransactionGroup(removedTransactionGroup, targetPane);
+        Tab tab = this.findTabForTransactionGroup(removedTransactionGroup, targetPane);
         if (tab != null) {
             targetPane.getTabs().remove(tab);
         }
     }
 
     private void onSelectedTransactionGroupChanged(TransactionGroup transactionGroup, TabPane tabPane) {
-        Tab tab = this.findSelectedTabForTransactionGroup(transactionGroup, tabPane);
+        Tab tab = this.findTabForTransactionGroup(transactionGroup, tabPane);
         if (tab != null) {
             tabPane.getSelectionModel().select(tab);
         }
     }
 
-    private Tab findSelectedTabForTransactionGroup(TransactionGroup transactionGroup, TabPane tabPane) {
+    private Tab findTabForTransactionGroup(TransactionGroup transactionGroup, TabPane tabPane) {
         for (Tab tab : tabPane.getTabs()) {
             TransactionGroup tabTransactionGroup = ((TransactionGroupPane)tab.getContent()).getTransactionGroup();
             if (tabTransactionGroup.equals(transactionGroup)) {
