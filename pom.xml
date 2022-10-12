@@ -34,6 +34,7 @@
         <java.version>18</java.version>
         <javafx.version>18</javafx.version>
         <jsoup.version>1.15.3</jsoup.version>
+        <junit-jupiter.version>5.9.0</junit-jupiter.version>
         <logback.version>1.2.11</logback.version>
         <okhttp.version>4.9.3</okhttp.version>
         <pdfbox.version>2.0.25</pdfbox.version>
@@ -121,6 +122,13 @@
                     <artifactId>jai_core</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
