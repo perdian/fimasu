@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.fimasu4.model.persistence.Values;
 import javafx.beans.property.BooleanProperty;
@@ -20,6 +22,8 @@ import javafx.collections.ObservableList;
 public class TransactionGroup implements Serializable {
 
     static final long serialVersionUID = 1L;
+
+    private static final Logger log = LoggerFactory.getLogger(TransactionGroup.class);
 
     private StringProperty title = new SimpleStringProperty("New transaction group");
     private StringProperty bankAccountName = new SimpleStringProperty();
@@ -78,10 +82,40 @@ public class TransactionGroup implements Serializable {
         return toStringBuilder.toString();
     }
 
-    public void exportValues(Values targetValues) {
+    public Values writeValues() {
+        Values values = new Values();
+        values.setAttribute("title", this.getTitle().getValue());
+        values.setAttribute("exportFileName", this.getExportFileName().getValue());
+        values.setAttribute("bankAccountName", this.getBankAccountName().getValue());
+        values.addChildren("transaction", this.getTransactions().stream().filter(tg -> tg.getPersistent().getValue()).map(Transaction::writeValues).toList());
+        return values;
     }
 
-    public void importValues(Values sourceValues) {
+    public void readValues(Values sourceValues) {
+
+        this.getTitle().setValue(sourceValues.getAttribute("title", "New transaction group"));
+        this.getExportFileName().setValue(sourceValues.getAttribute("exportFileName", null));
+        this.getBankAccountName().setValue(sourceValues.getAttribute("bankAccountName", null));
+        this.getPersistent().setValue(true);
+
+        List<Values> transactionValuesList = sourceValues.getChildren("transaction");
+        if (transactionValuesList != null) {
+            List<Transaction> transactions = new ArrayList<>();
+            for (Values transactionValues : transactionValuesList) {
+                String transactionClassName = transactionValues.getAttribute("class", StockChangeTransaction.class.getName());
+                try {
+                    Class<?> transactionClass = this.getClass().getClassLoader().loadClass(transactionClassName);
+                    Transaction transaction = (Transaction)transactionClass.getConstructor().newInstance();
+                    transaction.readValues(transactionValues);
+                    transaction.getPersistent().setValue(true);
+                    transactions.add(transaction);
+                } catch (ReflectiveOperationException e) {
+                    log.error("Cannot instantiate transaction of class: {}", transactionClassName, e);
+                }
+            }
+            this.getTransactions().setAll(transactions);
+        }
+
     }
 
     public StringProperty getTitle() {

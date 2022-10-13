@@ -12,6 +12,7 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -23,6 +24,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.perdian.apps.fimasu4.model.persistence.Values;
+import de.perdian.apps.fimasu4.model.persistence.ValuesStore;
 import de.perdian.apps.fimasu4.model.persistence.impl.XmlBackedValuesStore;
 
 public class TransactionGroupRepository {
@@ -30,31 +32,35 @@ public class TransactionGroupRepository {
     private static final Logger log = LoggerFactory.getLogger(TransactionGroupRepository.class);
 
     public static TransactionGroupModel loadTransactionGroupModel() {
+        TransactionGroupModel model = TransactionGroupRepository.loadTransactionGroupModelOrCreateNewModel();
+        model.addChangeListener((o, oldValue, newValue) -> TransactionGroupRepository.writeTransactionGroupModel(model));
+        if (model.getTransactionGroups().isEmpty()) {
+            model.getTransactionGroups().add(new TransactionGroup());
+        }
+        return model;
+    }
 
+    private static TransactionGroupModel loadTransactionGroupModelOrCreateNewModel() {
         File repositoryFile = TransactionGroupRepository.resolveRepositoryFile();
         if (repositoryFile.exists()) {
             try (InputStream inputStream = new GZIPInputStream(new BufferedInputStream(new FileInputStream(repositoryFile)))) {
-                return TransactionGroupRepository.loadTransactionGroupModel(inputStream);
+                return TransactionGroupRepository.loadTransactionGroupModelFromStream(inputStream);
             } catch (Exception e) {
                 log.error("Cannot load transaction groups from repository file at: {}", repositoryFile.getAbsolutePath(), e);
             }
         }
 
         // We couldn't load the model from an existing file, so we'll create one from scratch
-        TransactionGroupModel newModel = new TransactionGroupModel();
-        newModel.addChangeListener((o, oldValue, newValue) -> TransactionGroupRepository.writeTransactionGroupModel(newModel));
-        newModel.getTransactionGroups().add(new TransactionGroup());
-        return newModel;
-
+        return new TransactionGroupModel();
     }
 
-    private static TransactionGroupModel loadTransactionGroupModel(InputStream inputStream) throws Exception {
+    private static TransactionGroupModel loadTransactionGroupModelFromStream(InputStream inputStream) throws Exception {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(inputStream);
 
-        XmlBackedValuesStore documentValuesStore = new XmlBackedValuesStore(document.getDocumentElement());
+        XmlBackedValuesStore documentValuesStore = new XmlBackedValuesStore(document);
         TransactionGroupModel newModel = new TransactionGroupModel();
         newModel.readValues(documentValuesStore.createValues());
         return newModel;
@@ -70,27 +76,29 @@ public class TransactionGroupRepository {
             }
             log.info("Writing transaction groups into repository file at: {}", repositoryFile.getAbsolutePath());
             try (OutputStream outputStream = new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(repositoryFile)))) {
-                TransactionGroupRepository.writeTransactionGroupModel(model, outputStream);
+                TransactionGroupRepository.writeTransactionGroupModelToStream(model, outputStream);
             }
         } catch (Exception e) {
             log.error("Cannot write transaction groups into repository file at: {}", repositoryFile.getAbsolutePath(), e);
         }
     }
 
-    private static void writeTransactionGroupModel(TransactionGroupModel model, OutputStream outputStream) throws Exception {
-
-        Values values = model.writeValues();
+    private static void writeTransactionGroupModelToStream(TransactionGroupModel model, OutputStream outputStream) throws Exception {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.newDocument();
         Element documentElement = document.createElement("transactionGroupModel");
-        XmlBackedValuesStore documentValuesStore = new XmlBackedValuesStore(documentElement);
+        document.appendChild(documentElement);
+
+        Values values = model.writeValues();
+        ValuesStore documentValuesStore = new XmlBackedValuesStore(document);
         documentValuesStore.storeValues(values);
 
-        document.appendChild(documentElement);
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         transformer.transform(new DOMSource(document), new StreamResult(outputStream));
 
     }

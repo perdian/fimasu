@@ -9,6 +9,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
@@ -40,13 +41,20 @@ public class TransactionGroupsPane extends BorderPane {
         tabPane.setContextMenu(tabPaneContextMenu);
         this.setCenter(tabPane);
 
-        transactionGroupModel.getTransactionGroups().forEach(transactionGroup -> this.addTransactionGroupTab(transactionGroup, tabPane));
+        transactionGroupModel.getTransactionGroups().forEach(transactionGroup -> this.addTransactionGroupTab(transactionGroup, transactionGroupModel.getSelectedTransactionGroup().getValue(), tabPane));
         transactionGroupModel.getTransactionGroups().addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> this.onTransactionGroupsChange(change, tabPane));
         transactionGroupModel.getSelectedTransactionGroup().addListener((o, oldValue, newValue) -> this.onSelectedTransactionGroupChanged(newValue, tabPane));
 
+        tabPane.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> {
+            Node selectedContentNode = newValue == null ? null : newValue.getContent();
+            if (selectedContentNode instanceof TransactionGroupPane) {
+                transactionGroupModel.getSelectedTransactionGroup().setValue(((TransactionGroupPane)selectedContentNode).getTransactionGroup());
+            }
+        });
+
     }
 
-    private void addTransactionGroupTab(TransactionGroup transactionGroup, TabPane targetPane) {
+    private void addTransactionGroupTab(TransactionGroup transactionGroup, TransactionGroup selectedTransactionGroup, TabPane targetPane) {
         TransactionGroupPane newGroupPane = new TransactionGroupPane(transactionGroup);
         newGroupPane.setPadding(new Insets(10, 10, 10, 10));
         Tab newTab = new Tab();
@@ -54,6 +62,9 @@ public class TransactionGroupsPane extends BorderPane {
         newTab.textProperty().bind(transactionGroup.getTitle());
         newTab.closableProperty().bind(Bindings.greaterThan(Bindings.size(targetPane.getTabs()), 1));
         targetPane.getTabs().add(newTab);
+        if (transactionGroup.equals(selectedTransactionGroup)) {
+            targetPane.getSelectionModel().select(newTab);
+        }
     }
 
     private void onTransactionGroupsChange(Change<? extends TransactionGroup> change, TabPane targetPane) {
@@ -68,7 +79,7 @@ public class TransactionGroupsPane extends BorderPane {
     }
 
     private void onChangedTransactionGroupAdded(TransactionGroup addedTransactionGroup, TabPane targetPane) {
-        this.addTransactionGroupTab(addedTransactionGroup, targetPane);
+        this.addTransactionGroupTab(addedTransactionGroup, null, targetPane);
     }
 
     private void onChangedTransactionGroupRemoved(TransactionGroup removedTransactionGroup, TabPane targetPane) {

@@ -1,10 +1,11 @@
 package de.perdian.apps.fimasu4.model.persistence;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -25,8 +26,16 @@ public class Values {
         return toStringBuilder.toString();
     }
 
+    public String getAttribute(String name, String defaultValue) {
+        return StringUtils.defaultIfEmpty(this.getAttributes().get(name), defaultValue);
+    }
+
     public void setAttribute(String name, String value) {
-        this.getAttributes().put(name, value);
+        if (StringUtils.isEmpty(value)) {
+            this.getAttributes().remove(name);
+        } else {
+            this.getAttributes().put(name, value);
+        }
     }
 
     public Values getFirstChild(String key) {
@@ -38,22 +47,22 @@ public class Values {
         return this.getChildren().get(key);
     }
 
-    public void setChildren(String key, Values children) {
-        this.getChildren().put(key, Collections.singletonList(children));
+    public void addChildren(String key, List<Values> children) {
+        this.getChildren().computeIfAbsent(key, k -> new ArrayList<>()).addAll(children);
     }
 
-    public void setChildren(String key, List<Values> children) {
-        this.getChildren().put(key, children);
+    public void addChildren(String key, Values children) {
+        this.getChildren().computeIfAbsent(key, k -> new ArrayList<>()).add(children);
     }
 
-    private Map<String, String> getAttributes() {
+    public Map<String, String> getAttributes() {
         return this.attributes;
     }
     private void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
     }
 
-    private Map<String, List<Values>> getChildren() {
+    public Map<String, List<Values>> getChildren() {
         return this.children;
     }
     private void setChildren(Map<String, List<Values>> children) {

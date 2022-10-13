@@ -3,6 +3,8 @@ package de.perdian.apps.fimasu4.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.perdian.apps.fimasu4.model.persistence.Values;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -45,11 +47,39 @@ public class TransactionGroupModel {
     }
 
     public void readValues(Values sourceValues) {
+
+        List<Values> transactionGroupValuesList = sourceValues.getChildren("transactionGroup");
+        if (transactionGroupValuesList != null) {
+            List<TransactionGroup> transactionGroups = new ArrayList<>();
+            for (Values transactionGroupValues : transactionGroupValuesList) {
+                TransactionGroup transactionGroup = new TransactionGroup();
+                transactionGroup.readValues(transactionGroupValues);
+                transactionGroups.add(transactionGroup);
+            }
+            this.getTransactionGroups().setAll(transactionGroups);
+        }
+
+        String selectedTransactionGroupTitle = sourceValues.getAttribute("selectedTransactionGroupTitle", null);
+        if (StringUtils.isNotEmpty(selectedTransactionGroupTitle)) {
+            for (TransactionGroup transactionGroup : this.getTransactionGroups()) {
+                if (selectedTransactionGroupTitle.equals(transactionGroup.getTitle().getValue())) {
+                    this.getSelectedTransactionGroup().setValue(transactionGroup);
+                }
+            }
+        }
+
     }
 
     public Values writeValues() {
+
+        TransactionGroup selectedTransactionGroup = this.getSelectedTransactionGroup().getValue();
+        String selectedTransactionGroupTitle = selectedTransactionGroup == null ? null : selectedTransactionGroup.getTitle().getValue();
+
         Values values = new Values();
+        values.setAttribute("selectedTransactionGroupTitle", selectedTransactionGroupTitle);
+        values.addChildren("transactionGroup", this.getTransactionGroups().stream().filter(tg -> tg.getPersistent().getValue()).map(TransactionGroup::writeValues).toList());
         return values;
+
     }
 
     public ObservableList<TransactionGroup> getTransactionGroups() {
