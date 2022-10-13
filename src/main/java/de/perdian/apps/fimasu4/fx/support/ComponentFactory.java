@@ -38,7 +38,9 @@ public class ComponentFactory {
     }
 
     public Label createLabel(String text) {
-        return new Label(text);
+        Label label = new Label(text);
+        label.setMnemonicParsing(true);
+        return label;
     }
 
     public ToggleButton createToggleButton(BooleanProperty property, String text, Ikon icon) {

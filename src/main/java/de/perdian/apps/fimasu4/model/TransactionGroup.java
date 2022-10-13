@@ -3,6 +3,8 @@ package de.perdian.apps.fimasu4.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -25,6 +27,7 @@ public class TransactionGroup implements Serializable {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionGroup.class);
 
+    private String id = UUID.randomUUID().toString();
     private StringProperty title = new SimpleStringProperty("New transaction group");
     private StringProperty bankAccountName = new SimpleStringProperty();
     private StringProperty exportFileName = new SimpleStringProperty();
@@ -72,6 +75,22 @@ public class TransactionGroup implements Serializable {
     }
 
     @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof TransactionGroup thatGroup) {
+            return Objects.equals(this.getId(), thatGroup.getId());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getId() == null ? 0 : this.getId().hashCode();
+    }
+
+    @Override
     public String toString() {
         ToStringBuilder toStringBuilder = new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE);
         toStringBuilder.append("title", this.getTitle().getValue());
@@ -84,6 +103,7 @@ public class TransactionGroup implements Serializable {
 
     public Values writeValues() {
         Values values = new Values();
+        values.setAttribute("id", this.getId());
         values.setAttribute("title", this.getTitle().getValue());
         values.setAttribute("exportFileName", this.getExportFileName().getValue());
         values.setAttribute("bankAccountName", this.getBankAccountName().getValue());
@@ -93,6 +113,7 @@ public class TransactionGroup implements Serializable {
 
     public void readValues(Values sourceValues) {
 
+        this.setId(sourceValues.getAttribute("id", UUID.randomUUID().toString()));
         this.getTitle().setValue(sourceValues.getAttribute("title", "New transaction group"));
         this.getExportFileName().setValue(sourceValues.getAttribute("exportFileName", null));
         this.getBankAccountName().setValue(sourceValues.getAttribute("bankAccountName", null));
@@ -116,6 +137,13 @@ public class TransactionGroup implements Serializable {
             this.getTransactions().setAll(transactions);
         }
 
+    }
+
+    public String getId() {
+        return this.id;
+    }
+    private void setId(String id) {
+        this.id = id;
     }
 
     public StringProperty getTitle() {

@@ -59,10 +59,10 @@ public class TransactionGroupModel {
             this.getTransactionGroups().setAll(transactionGroups);
         }
 
-        String selectedTransactionGroupTitle = sourceValues.getAttribute("selectedTransactionGroupTitle", null);
-        if (StringUtils.isNotEmpty(selectedTransactionGroupTitle)) {
+        String selectedTransactionGroupId = sourceValues.getAttribute("selectedTransactionGroupId", null);
+        if (StringUtils.isNotEmpty(selectedTransactionGroupId)) {
             for (TransactionGroup transactionGroup : this.getTransactionGroups()) {
-                if (selectedTransactionGroupTitle.equals(transactionGroup.getTitle().getValue())) {
+                if (selectedTransactionGroupId.equals(transactionGroup.getId())) {
                     this.getSelectedTransactionGroup().setValue(transactionGroup);
                 }
             }
@@ -73,10 +73,9 @@ public class TransactionGroupModel {
     public Values writeValues() {
 
         TransactionGroup selectedTransactionGroup = this.getSelectedTransactionGroup().getValue();
-        String selectedTransactionGroupTitle = selectedTransactionGroup == null ? null : selectedTransactionGroup.getTitle().getValue();
 
         Values values = new Values();
-        values.setAttribute("selectedTransactionGroupTitle", selectedTransactionGroupTitle);
+        values.setAttribute("selectedTransactionGroupId", selectedTransactionGroup == null ? null : selectedTransactionGroup.getId());
         values.addChildren("transactionGroup", this.getTransactionGroups().stream().filter(tg -> tg.getPersistent().getValue()).map(TransactionGroup::writeValues).toList());
         return values;
 
