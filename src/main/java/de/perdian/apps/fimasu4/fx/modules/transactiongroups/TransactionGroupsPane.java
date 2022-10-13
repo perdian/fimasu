@@ -8,6 +8,7 @@ import de.perdian.apps.fimasu4.model.TransactionGroupModel;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
+import javafx.geometry.Insets;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
@@ -46,8 +47,10 @@ public class TransactionGroupsPane extends BorderPane {
     }
 
     private void addTransactionGroupTab(TransactionGroup transactionGroup, TabPane targetPane) {
+        TransactionGroupPane newGroupPane = new TransactionGroupPane(transactionGroup);
+        newGroupPane.setPadding(new Insets(10, 10, 10, 10));
         Tab newTab = new Tab();
-        newTab.setContent(new TransactionGroupPane(transactionGroup));
+        newTab.setContent(newGroupPane);
         newTab.textProperty().bind(transactionGroup.getTitle());
         newTab.closableProperty().bind(Bindings.greaterThan(Bindings.size(targetPane.getTabs()), 1));
         targetPane.getTabs().add(newTab);
