@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import de.perdian.apps.fimasu4.model.persistence.Values;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,7 +23,7 @@ public class TransactionGroup implements Serializable {
 
     private StringProperty title = new SimpleStringProperty("New transaction group");
     private StringProperty bankAccountName = new SimpleStringProperty();
-    private StringProperty targetFileName = new SimpleStringProperty();
+    private StringProperty exportFileName = new SimpleStringProperty();
     private BooleanProperty persistent = new SimpleBooleanProperty(false);
     private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
     private List<ChangeListener<Object>> changeListeners = null;
@@ -45,9 +46,9 @@ public class TransactionGroup implements Serializable {
         bankAccountName.addListener(delegatingChangeListener);
         this.setBankAccountName(bankAccountName);
 
-        StringProperty targetFileName = new SimpleStringProperty();
-        targetFileName.addListener(delegatingChangeListener);
-        this.setTargetFileName(targetFileName);
+        StringProperty exportFileName = new SimpleStringProperty();
+        exportFileName.addListener(delegatingChangeListener);
+        this.setExportFileName(exportFileName);
 
         BooleanProperty persistent = new SimpleBooleanProperty(false);
         persistent.addListener(delegatingChangeListener);
@@ -71,10 +72,16 @@ public class TransactionGroup implements Serializable {
         ToStringBuilder toStringBuilder = new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE);
         toStringBuilder.append("title", this.getTitle().getValue());
         toStringBuilder.append("bankAccountName", this.getBankAccountName().getValue());
-        toStringBuilder.append("targetFileName", this.getTargetFileName().getValue());
+        toStringBuilder.append("exportFileName", this.getExportFileName().getValue());
         toStringBuilder.append("persistent", this.getPersistent().getValue());
         toStringBuilder.append("transactions", this.getTransactions());
         return toStringBuilder.toString();
+    }
+
+    public void exportValues(Values targetValues) {
+    }
+
+    public void importValues(Values sourceValues) {
     }
 
     public StringProperty getTitle() {
@@ -91,11 +98,11 @@ public class TransactionGroup implements Serializable {
         this.bankAccountName = bankAccountName;
     }
 
-    public StringProperty getTargetFileName() {
-        return this.targetFileName;
+    public StringProperty getExportFileName() {
+        return this.exportFileName;
     }
-    private void setTargetFileName(StringProperty targetFileName) {
-        this.targetFileName = targetFileName;
+    private void setExportFileName(StringProperty exportFileName) {
+        this.exportFileName = exportFileName;
     }
 
     public BooleanProperty getPersistent() {

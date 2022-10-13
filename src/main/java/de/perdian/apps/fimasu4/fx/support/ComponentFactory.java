@@ -5,6 +5,9 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -39,9 +42,15 @@ public class ComponentFactory {
     }
 
     public ToggleButton createToggleButton(BooleanProperty property, String text, Ikon icon) {
-        ToggleButton toggleButton = new ToggleButton(text, new FontIcon(icon));
+        ToggleButton toggleButton = new ToggleButton(text,icon == null ? null :  new FontIcon(icon));
         toggleButton.selectedProperty().bindBidirectional(property);
         return toggleButton;
+    }
+
+    public Button createButton(EventHandler<ActionEvent> eventHandler, String title, Ikon icon) {
+        Button button = new Button(title, icon == null ? null : new FontIcon(icon));
+        button.setOnAction(eventHandler);
+        return button;
     }
 
 }

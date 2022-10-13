@@ -3,6 +3,7 @@ package de.perdian.apps.fimasu4.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.perdian.apps.fimasu4.model.persistence.Values;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -26,7 +27,7 @@ public class TransactionGroupModel {
         };
         this.setChangeListeners(changeListeners);
 
-        ObservableList<TransactionGroup> transactionGroups = FXCollections.observableArrayList(new TransactionGroup());
+        ObservableList<TransactionGroup> transactionGroups = FXCollections.observableArrayList();
         transactionGroups.addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> {
             while (change.next()) {
                 for (TransactionGroup addedTransactionGroup : change.getAddedSubList()) {
@@ -41,6 +42,14 @@ public class TransactionGroupModel {
         selectedTransactionGroup.addListener(delegatingChangeListener);
         this.setSelectedTransactionGroup(selectedTransactionGroup);
 
+    }
+
+    public void readValues(Values sourceValues) {
+    }
+
+    public Values writeValues() {
+        Values values = new Values();
+        return values;
     }
 
     public ObservableList<TransactionGroup> getTransactionGroups() {

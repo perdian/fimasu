@@ -1,16 +1,20 @@
 package de.perdian.apps.fimasu4.fx.modules.transactiongroups;
 
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignF;
 
 import de.perdian.apps.fimasu4.fx.support.ComponentFactory;
 import de.perdian.apps.fimasu4.model.TransactionGroup;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
-class TransactionGroupPane extends GridPane {
+class TransactionGroupPane extends VBox {
 
     private TransactionGroup transactionGroup = null;
 
@@ -19,6 +23,7 @@ class TransactionGroupPane extends GridPane {
         ComponentFactory componentFactory = new ComponentFactory();
 
         ToggleButton persistentButton = componentFactory.createToggleButton(transactionGroup.getPersistent(), null, MaterialDesignC.CONTENT_SAVE);
+        persistentButton.setTooltip(new Tooltip("Persist transaction group"));
 
         Label titleLabel = componentFactory.createLabel("Title");
         TextField titleField = componentFactory.createTextField(transactionGroup.getTitle());
@@ -26,15 +31,29 @@ class TransactionGroupPane extends GridPane {
 
         Label bankAccountNameLabel = componentFactory.createLabel("Bank accout name");
         TextField bankAccountNameField = componentFactory.createTextField(transactionGroup.getBankAccountName());
-        GridPane.setHgrow(bankAccountNameField, Priority.SOMETIMES);
+        GridPane.setHgrow(bankAccountNameField, Priority.ALWAYS);
 
-        this.add(titleLabel, 0, 0, 2, 1);
-        this.add(bankAccountNameLabel, 2, 0, 1, 1);
-        this.add(persistentButton, 0, 1, 1, 1);
-        this.add(titleField, 1, 1, 1, 1);
-        this.add(bankAccountNameField, 2, 1, 1, 1);
-        this.setHgap(5);
+        Label exportFileNameLabel = componentFactory.createLabel("Export file name");
+        TextField exportFileNameField = componentFactory.createTextField(transactionGroup.getExportFileName());
+        Button exportFileNameButton = componentFactory.createButton(action -> {}, null, MaterialDesignF.FILE);
+        GridPane.setHgrow(exportFileNameField, Priority.ALWAYS);
 
+        GridPane firstLine = new GridPane();
+        firstLine.setHgap(5);
+        firstLine.add(persistentButton, 0, 1, 1, 1);
+        firstLine.add(titleLabel, 1, 0, 1, 1);
+        firstLine.add(titleField, 1, 1, 1, 1);
+        firstLine.add(bankAccountNameLabel, 2, 0, 1, 1);
+        firstLine.add(bankAccountNameField, 2, 1, 1, 1);
+
+        GridPane secondLine = new GridPane();
+        secondLine.setHgap(5);
+        secondLine.add(exportFileNameLabel, 0, 0, 2, 1);
+        secondLine.add(exportFileNameField, 0, 1, 1, 1);
+        secondLine.add(exportFileNameButton, 1, 1, 1, 1);
+
+        this.setSpacing(10);
+        this.getChildren().addAll(firstLine, secondLine);
         this.setTransactionGroup(transactionGroup);
 
     }
