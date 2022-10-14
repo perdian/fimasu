@@ -49,7 +49,11 @@ public class ComponentFactory {
         return toggleButton;
     }
 
-    public Button createButton(EventHandler<ActionEvent> eventHandler, String title, Ikon icon) {
+    public Button createButton(Ikon icon, EventHandler<ActionEvent> eventHandler) {
+        return this.createButton(null, icon, eventHandler);
+    }
+
+    public Button createButton(String title, Ikon icon, EventHandler<ActionEvent> eventHandler) {
         Button button = new Button(title, icon == null ? null : new FontIcon(icon));
         button.setOnAction(eventHandler);
         return button;

@@ -19,7 +19,7 @@ public class FimasuApplication extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         FimasuApplicationPane applicationPane = new FimasuApplicationPane(this.getTransactionGroupModel());
-        Scene applicationScene = new Scene(applicationPane, 1600, 1200);
+        Scene applicationScene = new Scene(applicationPane, 1400, 1100);
 
         applicationScene.focusOwnerProperty().addListener((o, oldValue, newValue) -> {
             System.err.println("Focus: " + newValue);

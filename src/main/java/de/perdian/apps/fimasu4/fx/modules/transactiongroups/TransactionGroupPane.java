@@ -26,7 +26,7 @@ class TransactionGroupPane extends VBox {
         persistentButton.setTooltip(new Tooltip("Persist transaction group"));
 
         TextField titleField = componentFactory.createTextField(transactionGroup.getTitle());
-        titleField.setPrefWidth(300);
+        titleField.setPrefWidth(400);
         Label titleLabel = componentFactory.createLabel("_Title");
         titleLabel.setLabelFor(titleField);
 
@@ -36,7 +36,9 @@ class TransactionGroupPane extends VBox {
         bankAccountNameLabel.setLabelFor(bankAccountNameField);
 
         TextField exportFileNameField = componentFactory.createTextField(transactionGroup.getExportFileName());
-        Button exportFileNameButton = componentFactory.createButton(action -> {}, null, MaterialDesignF.FILE);
+        Button exportFileNameButton = componentFactory.createButton(MaterialDesignF.FILE, action -> {
+            throw new UnsupportedOperationException();
+        });
         GridPane.setHgrow(exportFileNameField, Priority.ALWAYS);
         Label exportFileNameLabel = componentFactory.createLabel("Export _file name");
         exportFileNameLabel.setLabelFor(exportFileNameField);

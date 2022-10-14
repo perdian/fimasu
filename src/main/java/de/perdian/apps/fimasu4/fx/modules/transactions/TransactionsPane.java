@@ -7,6 +7,9 @@ import javafx.scene.layout.BorderPane;
 public class TransactionsPane extends BorderPane {
 
     public TransactionsPane(ObjectProperty<TransactionGroup> selectedTransactionGroup) {
+
+        this.setTop(new TransactionsToolBar(selectedTransactionGroup));
+
     }
 
 }
