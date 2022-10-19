@@ -37,6 +37,9 @@ public class TransactionGroupRepository {
         if (model.getTransactionGroups().isEmpty()) {
             model.getTransactionGroups().add(new TransactionGroup());
         }
+        if (model.getSelectedTransactionGroup().getValue() == null) {
+            model.getSelectedTransactionGroup().setValue(model.getTransactionGroups().get(0));
+        }
         return model;
     }
 
