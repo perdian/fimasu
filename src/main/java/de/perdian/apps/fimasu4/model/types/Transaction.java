@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.perdian.apps.fimasu4.model.persistence.Values;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -30,15 +29,6 @@ public class Transaction implements Serializable {
         BooleanProperty persistent = new SimpleBooleanProperty();
         this.setPersistent(persistent);
 
-    }
-
-    public void readValues(Values sourcrValues) {
-    }
-
-    public Values writeValues() {
-        Values values = new Values();
-        values.setAttribute("class", this.getClass().getName());
-        return values;
     }
 
     public ObjectProperty<TransactionType> getType() {

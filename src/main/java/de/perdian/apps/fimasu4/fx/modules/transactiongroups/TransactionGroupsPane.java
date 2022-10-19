@@ -29,7 +29,7 @@ public class TransactionGroupsPane extends BorderPane {
         MenuItem addTransactionGroupMenuItem = new MenuItem("Add transaction group");
         addTransactionGroupMenuItem.setGraphic(new FontIcon(MaterialDesignP.PLUS));
         addTransactionGroupMenuItem.setOnAction(event -> {
-            TransactionGroup newTransactionGroup = new TransactionGroup();
+            TransactionGroup newTransactionGroup = new TransactionGroup(null);
             fimasuModel.getTransactionGroups().add(newTransactionGroup);
             fimasuModel.getSelectedTransactionGroup().setValue(newTransactionGroup);
         });

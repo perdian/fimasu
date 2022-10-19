@@ -3,9 +3,6 @@ package de.perdian.apps.fimasu4.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
-import de.perdian.apps.fimasu4.model.persistence.Values;
 import de.perdian.apps.fimasu4.model.types.TransactionGroup;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -20,7 +17,7 @@ public class FimasuModel {
     private ObjectProperty<TransactionGroup> selectedTransactionGroup = null;
     private List<ChangeListener<Object>> changeListeners = null;
 
-    FimasuModel() {
+    public FimasuModel() {
 
         List<ChangeListener<Object>> changeListeners = new ArrayList<>();
         ChangeListener<Object> delegatingChangeListener = (o, oldValue, newValue) -> {
@@ -44,41 +41,6 @@ public class FimasuModel {
         ObjectProperty<TransactionGroup> selectedTransactionGroup = new SimpleObjectProperty<>();
         selectedTransactionGroup.addListener(delegatingChangeListener);
         this.setSelectedTransactionGroup(selectedTransactionGroup);
-
-    }
-
-    public void readValues(Values sourceValues) {
-
-        List<Values> transactionGroupValuesList = sourceValues.getChildren("transactionGroup");
-        if (transactionGroupValuesList != null) {
-            List<TransactionGroup> transactionGroups = new ArrayList<>();
-            for (Values transactionGroupValues : transactionGroupValuesList) {
-                TransactionGroup transactionGroup = new TransactionGroup();
-                transactionGroup.readValues(transactionGroupValues);
-                transactionGroups.add(transactionGroup);
-            }
-            this.getTransactionGroups().setAll(transactionGroups);
-        }
-
-        String selectedTransactionGroupId = sourceValues.getAttribute("selectedTransactionGroupId", null);
-        if (StringUtils.isNotEmpty(selectedTransactionGroupId)) {
-            for (TransactionGroup transactionGroup : this.getTransactionGroups()) {
-                if (selectedTransactionGroupId.equals(transactionGroup.getId())) {
-                    this.getSelectedTransactionGroup().setValue(transactionGroup);
-                }
-            }
-        }
-
-    }
-
-    public Values writeValues() {
-
-        TransactionGroup selectedTransactionGroup = this.getSelectedTransactionGroup().getValue();
-
-        Values values = new Values();
-        values.setAttribute("selectedTransactionGroupId", selectedTransactionGroup == null ? null : selectedTransactionGroup.getId());
-        values.addChildren("transactionGroup", this.getTransactionGroups().stream().filter(tg -> tg.getPersistent().getValue()).map(TransactionGroup::writeValues).toList());
-        return values;
 
     }
 

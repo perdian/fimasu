@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import de.perdian.apps.fimasu4.model.persistence.Values;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,7 +31,7 @@ public class TransactionGroup implements Serializable {
     private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
     private List<ChangeListener<Object>> changeListeners = null;
 
-    public TransactionGroup() {
+    public TransactionGroup(String id) {
 
         List<ChangeListener<Object>> changeListeners = new ArrayList<>();
         ChangeListener<Object> delegatingChangeListener = (o, oldValue, newValue) -> {
@@ -68,6 +68,8 @@ public class TransactionGroup implements Serializable {
         });
         this.setTransactions(transactions);
 
+        this.setId(StringUtils.isEmpty(id) ? UUID.randomUUID().toString() : id);
+
     }
 
     @Override
@@ -95,38 +97,6 @@ public class TransactionGroup implements Serializable {
         toStringBuilder.append("persistent", this.getPersistent().getValue());
         toStringBuilder.append("transactions", this.getTransactions());
         return toStringBuilder.toString();
-    }
-
-    public Values writeValues() {
-        Values values = new Values();
-        values.setAttribute("id", this.getId());
-        values.setAttribute("title", this.getTitle().getValue());
-        values.setAttribute("exportFileName", this.getExportFileName().getValue());
-        values.setAttribute("bankAccountName", this.getBankAccountName().getValue());
-        values.addChildren("transaction", this.getTransactions().stream().filter(tg -> tg.getPersistent().getValue()).map(Transaction::writeValues).toList());
-        return values;
-    }
-
-    public void readValues(Values sourceValues) {
-
-        this.setId(sourceValues.getAttribute("id", UUID.randomUUID().toString()));
-        this.getTitle().setValue(sourceValues.getAttribute("title", "New transaction group"));
-        this.getExportFileName().setValue(sourceValues.getAttribute("exportFileName", null));
-        this.getBankAccountName().setValue(sourceValues.getAttribute("bankAccountName", null));
-        this.getPersistent().setValue(true);
-
-        List<Values> transactionValuesList = sourceValues.getChildren("transaction");
-        if (transactionValuesList != null) {
-            List<Transaction> transactions = new ArrayList<>();
-            for (Values transactionValues : transactionValuesList) {
-                Transaction transaction = new Transaction();
-                transaction.readValues(transactionValues);
-                transaction.getPersistent().setValue(true);
-                transactions.add(transaction);
-            }
-            this.getTransactions().setAll(transactions);
-        }
-
     }
 
     public String getId() {
