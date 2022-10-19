@@ -3,7 +3,7 @@ package de.perdian.apps.fimasu4.fx;
 import de.perdian.apps.fimasu4.fx.modules.files.FilesListPane;
 import de.perdian.apps.fimasu4.fx.modules.transactiongroups.TransactionGroupsPane;
 import de.perdian.apps.fimasu4.fx.modules.transactions.TransactionsPane;
-import de.perdian.apps.fimasu4.model.TransactionGroupModel;
+import de.perdian.apps.fimasu4.model.FimasuModel;
 import javafx.geometry.Insets;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
@@ -17,9 +17,9 @@ import javafx.scene.layout.Priority;
 
 class FimasuApplicationPane extends GridPane {
 
-    FimasuApplicationPane(TransactionGroupModel transactionGroupModel) {
+    FimasuApplicationPane(FimasuModel fimasuModel) {
 
-        TransactionGroupsPane transactionGroupsPane = new TransactionGroupsPane(transactionGroupModel);
+        TransactionGroupsPane transactionGroupsPane = new TransactionGroupsPane(fimasuModel);
         TitledPane transactionGroupsTitledPane = new TitledPane("Transaction groups", transactionGroupsPane);
         transactionGroupsTitledPane.setFocusTraversable(false);
         transactionGroupsTitledPane.setCollapsible(false);
@@ -33,7 +33,7 @@ class FimasuApplicationPane extends GridPane {
         filesListTitledPane.setMaxHeight(Double.MAX_VALUE);
         filesListTitledPane.setPrefWidth(400);
 
-        TransactionsPane transactionsPane = new TransactionsPane(transactionGroupModel.getSelectedTransactionGroup());
+        TransactionsPane transactionsPane = new TransactionsPane(fimasuModel.getSelectedTransactionGroup());
         TitledPane transactionsTitledPane = new TitledPane("Transactions", transactionsPane);
         transactionsTitledPane.setFocusTraversable(false);
         transactionsTitledPane.setCollapsible(false);

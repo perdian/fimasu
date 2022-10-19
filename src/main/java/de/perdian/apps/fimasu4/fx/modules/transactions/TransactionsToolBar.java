@@ -4,9 +4,8 @@ import org.kordamp.ikonli.materialdesign2.MaterialDesignA;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignP;
 
 import de.perdian.apps.fimasu4.fx.support.ComponentFactory;
-import de.perdian.apps.fimasu4.model.PayoutTransaction;
-import de.perdian.apps.fimasu4.model.StockChangeTransaction;
-import de.perdian.apps.fimasu4.model.TransactionGroup;
+import de.perdian.apps.fimasu4.model.types.TransactionGroup;
+import de.perdian.apps.fimasu4.model.types.TransactionType;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
@@ -19,9 +18,9 @@ class TransactionsToolBar extends ToolBar {
 
         ComponentFactory componentFactory = new ComponentFactory();
 
-        Button addBuySellTransactionButton = componentFactory.createButton("Buy/Sell", MaterialDesignP.PLUS, new AddTransactionEventHandler(selectedTransactionGroup, StockChangeTransaction::new));
+        Button addBuySellTransactionButton = componentFactory.createButton("Buy/Sell", MaterialDesignP.PLUS, new AddTransactionEventHandler(selectedTransactionGroup, TransactionType.BUY));
         addBuySellTransactionButton.disableProperty().bind(selectedTransactionGroup.isNull());
-        Button addPayoutTransactionButton = componentFactory.createButton("Payout", MaterialDesignP.PLUS, new AddTransactionEventHandler(selectedTransactionGroup, PayoutTransaction::new));
+        Button addPayoutTransactionButton = componentFactory.createButton("Payout", MaterialDesignP.PLUS, new AddTransactionEventHandler(selectedTransactionGroup, TransactionType.PAYOUT));
         addPayoutTransactionButton.disableProperty().bind(selectedTransactionGroup.isNull());
         this.getItems().addAll(addBuySellTransactionButton, addPayoutTransactionButton);
 

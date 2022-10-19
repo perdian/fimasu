@@ -1,4 +1,4 @@
-package de.perdian.apps.fimasu4.model;
+package de.perdian.apps.fimasu4.model.types;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -6,13 +6,16 @@ import java.util.List;
 
 import de.perdian.apps.fimasu4.model.persistence.Values;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 
-public abstract class Transaction implements Serializable {
+public class Transaction implements Serializable {
 
     static final long serialVersionUID = 1L;
 
+    private ObjectProperty<TransactionType> type = null;
     private BooleanProperty persistent = null;
     private List<ChangeListener<Object>> changeListeners = null;
 
@@ -20,6 +23,9 @@ public abstract class Transaction implements Serializable {
 
         List<ChangeListener<Object>> changeListeners = new ArrayList<>();
         this.setChangeListeners(changeListeners);
+
+        ObjectProperty<TransactionType> type = new SimpleObjectProperty<>();
+        this.setType(type);
 
         BooleanProperty persistent = new SimpleBooleanProperty();
         this.setPersistent(persistent);
@@ -33,6 +39,13 @@ public abstract class Transaction implements Serializable {
         Values values = new Values();
         values.setAttribute("class", this.getClass().getName());
         return values;
+    }
+
+    public ObjectProperty<TransactionType> getType() {
+        return this.type;
+    }
+    private void setType(ObjectProperty<TransactionType> type) {
+        this.type = type;
     }
 
     public BooleanProperty getPersistent() {

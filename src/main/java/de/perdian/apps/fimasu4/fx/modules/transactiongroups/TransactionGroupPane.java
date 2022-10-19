@@ -4,7 +4,7 @@ import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignF;
 
 import de.perdian.apps.fimasu4.fx.support.ComponentFactory;
-import de.perdian.apps.fimasu4.model.TransactionGroup;
+import de.perdian.apps.fimasu4.model.types.TransactionGroup;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;

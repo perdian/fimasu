@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import de.perdian.apps.fimasu4.model.persistence.Values;
+import de.perdian.apps.fimasu4.model.types.TransactionGroup;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -13,13 +14,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class TransactionGroupModel {
+public class FimasuModel {
 
     private ObservableList<TransactionGroup> transactionGroups = null;
     private ObjectProperty<TransactionGroup> selectedTransactionGroup = null;
     private List<ChangeListener<Object>> changeListeners = null;
 
-    TransactionGroupModel() {
+    FimasuModel() {
 
         List<ChangeListener<Object>> changeListeners = new ArrayList<>();
         ChangeListener<Object> delegatingChangeListener = (o, oldValue, newValue) -> {

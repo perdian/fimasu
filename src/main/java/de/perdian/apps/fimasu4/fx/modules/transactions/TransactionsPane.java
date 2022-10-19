@@ -1,6 +1,6 @@
 package de.perdian.apps.fimasu4.fx.modules.transactions;
 
-import de.perdian.apps.fimasu4.model.TransactionGroup;
+import de.perdian.apps.fimasu4.model.types.TransactionGroup;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.layout.BorderPane;
 

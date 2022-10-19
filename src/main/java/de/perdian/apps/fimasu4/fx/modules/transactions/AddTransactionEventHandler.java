@@ -1,9 +1,8 @@
 package de.perdian.apps.fimasu4.fx.modules.transactions;
 
-import java.util.function.Supplier;
-
-import de.perdian.apps.fimasu4.model.Transaction;
-import de.perdian.apps.fimasu4.model.TransactionGroup;
+import de.perdian.apps.fimasu4.model.types.Transaction;
+import de.perdian.apps.fimasu4.model.types.TransactionGroup;
+import de.perdian.apps.fimasu4.model.types.TransactionType;
 import javafx.beans.property.ObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,18 +10,20 @@ import javafx.event.EventHandler;
 public class AddTransactionEventHandler implements EventHandler<ActionEvent> {
 
     private ObjectProperty<TransactionGroup> selectedTransactionGroup = null;
-    private Supplier<Transaction> transactionSupplier = null;
+    private TransactionType transactionType = null;
 
-    public AddTransactionEventHandler(ObjectProperty<TransactionGroup> selectedTransactionGroup, Supplier<Transaction> transactionSupplier) {
+    public AddTransactionEventHandler(ObjectProperty<TransactionGroup> selectedTransactionGroup, TransactionType transactionType) {
         this.setSelectedTransactionGroup(selectedTransactionGroup);
-        this.setTransactionSupplier(transactionSupplier);
+        this.setTransactionType(transactionType);
     }
 
     @Override
     public void handle(ActionEvent event) {
         TransactionGroup transactionGroup = this.getSelectedTransactionGroup().getValue();
         if (transactionGroup != null) {
-            transactionGroup.getTransactions().add(this.getTransactionSupplier().get());
+            Transaction transaction = new Transaction();
+            transaction.getType().setValue(this.getTransactionType());
+            transactionGroup.getTransactions().add(transaction);
         }
     }
 
@@ -33,11 +34,11 @@ public class AddTransactionEventHandler implements EventHandler<ActionEvent> {
         this.selectedTransactionGroup = selectedTransactionGroup;
     }
 
-    private Supplier<Transaction> getTransactionSupplier() {
-        return this.transactionSupplier;
+    private TransactionType getTransactionType() {
+        return this.transactionType;
     }
-    private void setTransactionSupplier(Supplier<Transaction> transactionSupplier) {
-        this.transactionSupplier = transactionSupplier;
+    private void setTransactionType(TransactionType transactionType) {
+        this.transactionType = transactionType;
     }
 
 }

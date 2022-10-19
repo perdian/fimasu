@@ -1,4 +1,4 @@
-package de.perdian.apps.fimasu4.model;
+package de.perdian.apps.fimasu4.model.persistence.impl;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -23,17 +23,19 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import de.perdian.apps.fimasu4.model.FimasuModel;
+import de.perdian.apps.fimasu4.model.FimasuModelRepository;
 import de.perdian.apps.fimasu4.model.persistence.Values;
 import de.perdian.apps.fimasu4.model.persistence.ValuesStore;
-import de.perdian.apps.fimasu4.model.persistence.impl.XmlBackedValuesStore;
+import de.perdian.apps.fimasu4.model.types.TransactionGroup;
 
-public class TransactionGroupRepository {
+public class DocumentModelRepository implements FimasuModelRepository {
 
-    private static final Logger log = LoggerFactory.getLogger(TransactionGroupRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(FimasuModelRepository.class);
 
-    public static TransactionGroupModel loadTransactionGroupModel() {
-        TransactionGroupModel model = TransactionGroupRepository.loadTransactionGroupModelOrCreateNewModel();
-        model.addChangeListener((o, oldValue, newValue) -> TransactionGroupRepository.writeTransactionGroupModel(model));
+    public static FimasuModel loadModel() {
+        FimasuModel model = FimasuModelRepository.loadModelOrCreate();
+        model.addChangeListener((o, oldValue, newValue) -> FimasuModelRepository.writeModel(model));
         if (model.getTransactionGroups().isEmpty()) {
             model.getTransactionGroups().add(new TransactionGroup());
         }
@@ -43,35 +45,35 @@ public class TransactionGroupRepository {
         return model;
     }
 
-    private static TransactionGroupModel loadTransactionGroupModelOrCreateNewModel() {
-        File repositoryFile = TransactionGroupRepository.resolveRepositoryFile();
+    private static FimasuModel loadModelOrCreate() {
+        File repositoryFile = FimasuModelRepository.resolveRepositoryFile();
         if (repositoryFile.exists()) {
             try (InputStream inputStream = new GZIPInputStream(new BufferedInputStream(new FileInputStream(repositoryFile)))) {
-                return TransactionGroupRepository.loadTransactionGroupModelFromStream(inputStream);
+                return FimasuModelRepository.loadModelFromStream(inputStream);
             } catch (Exception e) {
                 log.error("Cannot load transaction groups from repository file at: {}", repositoryFile.getAbsolutePath(), e);
             }
         }
 
         // We couldn't load the model from an existing file, so we'll create one from scratch
-        return new TransactionGroupModel();
+        return new FimasuModel();
     }
 
-    private static TransactionGroupModel loadTransactionGroupModelFromStream(InputStream inputStream) throws Exception {
+    private static FimasuModel loadModelFromStream(InputStream inputStream) throws Exception {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(inputStream);
 
         XmlBackedValuesStore documentValuesStore = new XmlBackedValuesStore(document);
-        TransactionGroupModel newModel = new TransactionGroupModel();
+        FimasuModel newModel = new FimasuModel();
         newModel.readValues(documentValuesStore.createValues());
         return newModel;
 
     }
 
-    public static void writeTransactionGroupModel(TransactionGroupModel model) {
-        File repositoryFile = TransactionGroupRepository.resolveRepositoryFile();
+    public static void writeModel(FimasuModel model) {
+        File repositoryFile = FimasuModelRepository.resolveRepositoryFile();
         try {
             if (!repositoryFile.getParentFile().exists()) {
                 log.trace("Creating transaction groups repository directory at: {}", repositoryFile.getParentFile().getAbsolutePath());
@@ -79,14 +81,14 @@ public class TransactionGroupRepository {
             }
             log.info("Writing transaction groups into repository file at: {}", repositoryFile.getAbsolutePath());
             try (OutputStream outputStream = new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(repositoryFile)))) {
-                TransactionGroupRepository.writeTransactionGroupModelToStream(model, outputStream);
+                FimasuModelRepository.writeModelToStream(model, outputStream);
             }
         } catch (Exception e) {
             log.error("Cannot write transaction groups into repository file at: {}", repositoryFile.getAbsolutePath(), e);
         }
     }
 
-    private static void writeTransactionGroupModelToStream(TransactionGroupModel model, OutputStream outputStream) throws Exception {
+    private static void writeModelToStream(FimasuModel model, OutputStream outputStream) throws Exception {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();

@@ -3,8 +3,8 @@ package de.perdian.apps.fimasu4.fx.modules.transactiongroups;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignP;
 
-import de.perdian.apps.fimasu4.model.TransactionGroup;
-import de.perdian.apps.fimasu4.model.TransactionGroupModel;
+import de.perdian.apps.fimasu4.model.FimasuModel;
+import de.perdian.apps.fimasu4.model.types.TransactionGroup;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
@@ -24,14 +24,14 @@ import javafx.scene.layout.BorderPane;
 
 public class TransactionGroupsPane extends BorderPane {
 
-    public TransactionGroupsPane(TransactionGroupModel transactionGroupModel) {
+    public TransactionGroupsPane(FimasuModel fimasuModel) {
 
         MenuItem addTransactionGroupMenuItem = new MenuItem("Add transaction group");
         addTransactionGroupMenuItem.setGraphic(new FontIcon(MaterialDesignP.PLUS));
         addTransactionGroupMenuItem.setOnAction(event -> {
             TransactionGroup newTransactionGroup = new TransactionGroup();
-            transactionGroupModel.getTransactionGroups().add(newTransactionGroup);
-            transactionGroupModel.getSelectedTransactionGroup().setValue(newTransactionGroup);
+            fimasuModel.getTransactionGroups().add(newTransactionGroup);
+            fimasuModel.getSelectedTransactionGroup().setValue(newTransactionGroup);
         });
         ContextMenu tabPaneContextMenu = new ContextMenu();
         tabPaneContextMenu.getItems().add(addTransactionGroupMenuItem);
@@ -41,15 +41,15 @@ public class TransactionGroupsPane extends BorderPane {
         tabPane.setContextMenu(tabPaneContextMenu);
         this.setCenter(tabPane);
 
-        transactionGroupModel.getTransactionGroups().forEach(transactionGroup -> this.addTransactionGroupTab(transactionGroup, transactionGroupModel.getSelectedTransactionGroup().getValue(), tabPane));
-        transactionGroupModel.getTransactionGroups().addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> this.onTransactionGroupsChange(change, tabPane));
-        transactionGroupModel.getSelectedTransactionGroup().addListener((o, oldValue, newValue) -> this.onSelectedTransactionGroupChanged(newValue, tabPane));
+        fimasuModel.getTransactionGroups().forEach(transactionGroup -> this.addTransactionGroupTab(transactionGroup, fimasuModel.getSelectedTransactionGroup().getValue(), tabPane));
+        fimasuModel.getTransactionGroups().addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> this.onTransactionGroupsChange(change, tabPane));
+        fimasuModel.getSelectedTransactionGroup().addListener((o, oldValue, newValue) -> this.onSelectedTransactionGroupChanged(newValue, tabPane));
 
         tabPane.getTabs().addListener((ListChangeListener.Change<? extends Tab> change) -> {
             while (change.next()) {
                 for (Tab removedTab : change.getRemoved()) {
                     if (removedTab.getContent() instanceof TransactionGroupPane) {
-                        transactionGroupModel.getTransactionGroups().remove(((TransactionGroupPane)removedTab.getContent()).getTransactionGroup());
+                        fimasuModel.getTransactionGroups().remove(((TransactionGroupPane)removedTab.getContent()).getTransactionGroup());
                     }
                 }
             }
@@ -57,7 +57,7 @@ public class TransactionGroupsPane extends BorderPane {
         tabPane.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> {
             Node selectedContentNode = newValue == null ? null : newValue.getContent();
             if (selectedContentNode instanceof TransactionGroupPane) {
-                transactionGroupModel.getSelectedTransactionGroup().setValue(((TransactionGroupPane)selectedContentNode).getTransactionGroup());
+                fimasuModel.getSelectedTransactionGroup().setValue(((TransactionGroupPane)selectedContentNode).getTransactionGroup());
             }
         });
 

@@ -1,4 +1,4 @@
-package de.perdian.apps.fimasu4.model;
+package de.perdian.apps.fimasu4.model.types;
 
 import java.io.Serializable;
 

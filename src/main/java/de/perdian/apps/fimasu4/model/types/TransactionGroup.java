@@ -1,4 +1,4 @@
-package de.perdian.apps.fimasu4.model;
+package de.perdian.apps.fimasu4.model.types;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,8 +8,6 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.fimasu4.model.persistence.Values;
 import javafx.beans.property.BooleanProperty;
@@ -24,8 +22,6 @@ import javafx.collections.ObservableList;
 public class TransactionGroup implements Serializable {
 
     static final long serialVersionUID = 1L;
-
-    private static final Logger log = LoggerFactory.getLogger(TransactionGroup.class);
 
     private String id = UUID.randomUUID().toString();
     private StringProperty title = new SimpleStringProperty("New transaction group");
@@ -123,16 +119,10 @@ public class TransactionGroup implements Serializable {
         if (transactionValuesList != null) {
             List<Transaction> transactions = new ArrayList<>();
             for (Values transactionValues : transactionValuesList) {
-                String transactionClassName = transactionValues.getAttribute("class", StockChangeTransaction.class.getName());
-                try {
-                    Class<?> transactionClass = this.getClass().getClassLoader().loadClass(transactionClassName);
-                    Transaction transaction = (Transaction)transactionClass.getConstructor().newInstance();
-                    transaction.readValues(transactionValues);
-                    transaction.getPersistent().setValue(true);
-                    transactions.add(transaction);
-                } catch (ReflectiveOperationException e) {
-                    log.error("Cannot instantiate transaction of class: {}", transactionClassName, e);
-                }
+                Transaction transaction = new Transaction();
+                transaction.readValues(transactionValues);
+                transaction.getPersistent().setValue(true);
+                transactions.add(transaction);
             }
             this.getTransactions().setAll(transactions);
         }
