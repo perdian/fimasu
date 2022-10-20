@@ -3,6 +3,7 @@ package de.perdian.apps.fimasu4.fx.modules.transactions;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignA;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignP;
 
+import de.perdian.apps.fimasu4.fx.modules.transactions.actions.AddTransactionEventHandler;
 import de.perdian.apps.fimasu4.fx.support.ComponentFactory;
 import de.perdian.apps.fimasu4.model.types.TransactionGroup;
 import de.perdian.apps.fimasu4.model.types.TransactionType;

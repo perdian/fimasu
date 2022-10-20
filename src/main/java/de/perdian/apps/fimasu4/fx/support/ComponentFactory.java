@@ -3,7 +3,9 @@ package de.perdian.apps.fimasu4.fx.support;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import de.perdian.apps.fimasu4.fx.support.converters.ToStringStringConverter;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -41,6 +43,20 @@ public class ComponentFactory {
         Label label = new Label(text);
         label.setMnemonicParsing(true);
         return label;
+    }
+
+    public <T> Label createLabel(ObjectProperty<T> property) {
+        return this.createLabel(property, new ToStringStringConverter<>());
+    }
+
+    public <T> Label createLabel(ObjectProperty<T> property, StringConverter<T> converter) {
+        Label label = this.createLabel(converter.toString(property.getValue()));
+        property.addListener((o, oldValue, newValue) -> label.setText(converter.toString(newValue)));
+        return label;
+    }
+
+    public ToggleButton createToggleButton(BooleanProperty property, Ikon icon) {
+        return this.createToggleButton(property, null, icon);
     }
 
     public ToggleButton createToggleButton(BooleanProperty property, String text, Ikon icon) {

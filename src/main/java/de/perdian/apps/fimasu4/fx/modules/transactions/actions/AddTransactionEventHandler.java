@@ -1,4 +1,4 @@
-package de.perdian.apps.fimasu4.fx.modules.transactions;
+package de.perdian.apps.fimasu4.fx.modules.transactions.actions;
 
 import de.perdian.apps.fimasu4.model.types.Transaction;
 import de.perdian.apps.fimasu4.model.types.TransactionGroup;

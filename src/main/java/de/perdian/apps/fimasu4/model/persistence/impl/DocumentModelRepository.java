@@ -33,6 +33,7 @@ import de.perdian.apps.fimasu4.model.FimasuModelRepository;
 import de.perdian.apps.fimasu4.model.persistence.AbstractFileBasedModelRepository;
 import de.perdian.apps.fimasu4.model.types.Transaction;
 import de.perdian.apps.fimasu4.model.types.TransactionGroup;
+import de.perdian.apps.fimasu4.model.types.TransactionType;
 
 public class DocumentModelRepository extends AbstractFileBasedModelRepository {
 
@@ -94,6 +95,8 @@ public class DocumentModelRepository extends AbstractFileBasedModelRepository {
 
     private Transaction loadTransactionFromElement(Element transactionElement) {
         Transaction transaction = new Transaction();
+        transaction.getPersistent().setValue(true);
+        transaction.getType().setValue(DocumentModelHelper.resolveEnumValue(TransactionType.class, transactionElement.getAttribute("type"), TransactionType.BUY));
         return transaction;
     }
 
@@ -131,9 +134,11 @@ public class DocumentModelRepository extends AbstractFileBasedModelRepository {
             element.setAttribute("selectedTransactionGroupId", model.getSelectedTransactionGroup().getValue().getId());
         }
         for (TransactionGroup transactionGroup : model.getTransactionGroups()) {
-            Element transactionGroupElement = document.createElement("transactionGroup");
-            this.appendTransactionGroupToElement(transactionGroup, transactionGroupElement, document);
-            element.appendChild(transactionGroupElement);
+            if (transactionGroup.getPersistent().getValue()) {
+                Element transactionGroupElement = document.createElement("transactionGroup");
+                this.appendTransactionGroupToElement(transactionGroup, transactionGroupElement, document);
+                element.appendChild(transactionGroupElement);
+            }
         }
     }
 
@@ -143,13 +148,16 @@ public class DocumentModelRepository extends AbstractFileBasedModelRepository {
         transactionGroupElement.setAttribute("exportFileName", transactionGroup.getExportFileName().getValue());
         transactionGroupElement.setAttribute("bankAccountName", transactionGroup.getBankAccountName().getValue());
         for (Transaction transaction : transactionGroup.getTransactions()) {
-            Element transactionElement = document.createElement("transaction");
-            this.appendTransactionToElement(transaction, transactionElement, document);
-            transactionGroupElement.appendChild(transactionElement);
+            if (transaction.getPersistent().getValue()) {
+                Element transactionElement = document.createElement("transaction");
+                this.appendTransactionToElement(transaction, transactionElement, document);
+                transactionGroupElement.appendChild(transactionElement);
+            }
         }
     }
 
     private void appendTransactionToElement(Transaction transaction, Element transactionElement, Document document) {
+        transactionElement.setAttribute("type", transaction.getType().getValue() == null ? "" : transaction.getType().getValue().name());
     }
 
 }

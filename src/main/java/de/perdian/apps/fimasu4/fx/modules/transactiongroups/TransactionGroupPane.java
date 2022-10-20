@@ -22,7 +22,7 @@ class TransactionGroupPane extends VBox {
 
         ComponentFactory componentFactory = new ComponentFactory();
 
-        ToggleButton persistentButton = componentFactory.createToggleButton(transactionGroup.getPersistent(), null, MaterialDesignC.CONTENT_SAVE);
+        ToggleButton persistentButton = componentFactory.createToggleButton(transactionGroup.getPersistent(), MaterialDesignC.CONTENT_SAVE);
         persistentButton.setTooltip(new Tooltip("Persist transaction group"));
 
         TextField titleField = componentFactory.createTextField(transactionGroup.getTitle());

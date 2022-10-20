@@ -22,11 +22,18 @@ public class Transaction implements Serializable {
 
         List<ChangeListener<Object>> changeListeners = new ArrayList<>();
         this.setChangeListeners(changeListeners);
+        ChangeListener<Object> changeListener = (o, oldValue, newValue) -> {
+            for (ChangeListener<Object> delegeeChangeListener : changeListeners) {
+                delegeeChangeListener.changed(o, oldValue, newValue);
+            }
+        };
 
         ObjectProperty<TransactionType> type = new SimpleObjectProperty<>();
+        type.addListener(changeListener);
         this.setType(type);
 
         BooleanProperty persistent = new SimpleBooleanProperty();
+        persistent.addListener(changeListener);
         this.setPersistent(persistent);
 
     }
