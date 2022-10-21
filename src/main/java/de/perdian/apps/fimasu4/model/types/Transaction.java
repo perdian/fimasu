@@ -170,9 +170,6 @@ public class Transaction implements Serializable {
     private void recomputeTotalValue() {
         String bookingCurrency = this.getBookingValue().getCurrency().getValue();
         BigDecimal targetAmount = this.getBookingValue().getAmount().getValue();
-        if (targetAmount == null) {
-            targetAmount = BigDecimal.ZERO;
-        }
         List<MonetaryValue> additionalValues = List.of(this.getAdditionalCharges(), this.getAdditionalFinanceTax(), this.getAdditionalSolidarityTax());
         for (MonetaryValue additionalValue : additionalValues) {
             BigDecimal additionalValueAmountInSourceCurrency = additionalValue.getAmount().getValue();
@@ -189,7 +186,7 @@ public class Transaction implements Serializable {
                 TransactionType type = this.getType().getValue();
                 BigDecimal targetAmountChangeFactor = type == null ? BigDecimal.ONE : BigDecimal.valueOf(type.getChargesFactor());
                 BigDecimal targetAmountChange = additionalValueAmountInBookingCurrency.multiply(targetAmountChangeFactor);
-                targetAmount = targetAmount.add(targetAmountChange);
+                targetAmount = targetAmount == null ? targetAmountChange : targetAmount.add(targetAmountChange);
             }
         }
         this.getTotalValue().getCurrency().setValue(bookingCurrency);
