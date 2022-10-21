@@ -14,8 +14,8 @@ import javafx.collections.ObservableList;
 public class FimasuModel {
 
     private ObservableList<TransactionGroup> transactionGroups = null;
-    private ObjectProperty<TransactionGroup> selectedTransactionGroup = null;
     private List<ChangeListener<Object>> changeListeners = null;
+    private ObjectProperty<TransactionGroup> selectedTransactionGroup = null;
 
     public FimasuModel() {
 
@@ -26,6 +26,17 @@ public class FimasuModel {
             }
         };
         this.setChangeListeners(changeListeners);
+
+        ObjectProperty<TransactionGroup> selectedTransactionGroup = new SimpleObjectProperty<>();
+        selectedTransactionGroup.addListener((o, oldValue, newValue) -> {
+            if (oldValue != null) {
+                oldValue.getSelected().setValue(false);
+            }
+            if (newValue != null) {
+                newValue.getSelected().setValue(true);
+            }
+        });
+        this.setSelectedTransactionGroup(selectedTransactionGroup);
 
         ObservableList<TransactionGroup> transactionGroups = FXCollections.observableArrayList();
         transactionGroups.addListener((ListChangeListener.Change<? extends TransactionGroup> change) -> {
@@ -38,10 +49,6 @@ public class FimasuModel {
         });
         this.setTransactionGroups(transactionGroups);
 
-        ObjectProperty<TransactionGroup> selectedTransactionGroup = new SimpleObjectProperty<>();
-        selectedTransactionGroup.addListener(delegatingChangeListener);
-        this.setSelectedTransactionGroup(selectedTransactionGroup);
-
     }
 
     public ObservableList<TransactionGroup> getTransactionGroups() {
@@ -49,13 +56,6 @@ public class FimasuModel {
     }
     private void setTransactionGroups(ObservableList<TransactionGroup> transactionGroups) {
         this.transactionGroups = transactionGroups;
-    }
-
-    public ObjectProperty<TransactionGroup> getSelectedTransactionGroup() {
-        return this.selectedTransactionGroup;
-    }
-    private void setSelectedTransactionGroup(ObjectProperty<TransactionGroup> selectedTransactionGroup) {
-        this.selectedTransactionGroup = selectedTransactionGroup;
     }
 
     public void addChangeListener(ChangeListener<Object> changeListener) {
@@ -66,6 +66,13 @@ public class FimasuModel {
     }
     private void setChangeListeners(List<ChangeListener<Object>> changeListeners) {
         this.changeListeners = changeListeners;
+    }
+
+    public ObjectProperty<TransactionGroup> getSelectedTransactionGroup() {
+        return this.selectedTransactionGroup;
+    }
+    private void setSelectedTransactionGroup(ObjectProperty<TransactionGroup> selectedTransactionGroup) {
+        this.selectedTransactionGroup = selectedTransactionGroup;
     }
 
 }

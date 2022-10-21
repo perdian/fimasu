@@ -16,6 +16,7 @@ public class Transaction implements Serializable {
 
     private ObjectProperty<TransactionType> type = null;
     private BooleanProperty persistent = null;
+    private StockIdentfier stockIdentifier = null;
     private List<ChangeListener<Object>> changeListeners = null;
 
     public Transaction() {
@@ -31,6 +32,12 @@ public class Transaction implements Serializable {
         ObjectProperty<TransactionType> type = new SimpleObjectProperty<>();
         type.addListener(changeListener);
         this.setType(type);
+
+        StockIdentfier stockIdentifier = new StockIdentfier();
+        stockIdentifier.getWkn().addListener(changeListener);
+        stockIdentifier.getIsin().addListener(changeListener);
+        stockIdentifier.getTitle().addListener(changeListener);
+        this.setStockIdentifier(stockIdentifier);
 
         BooleanProperty persistent = new SimpleBooleanProperty();
         persistent.addListener(changeListener);
@@ -50,6 +57,13 @@ public class Transaction implements Serializable {
     }
     private void setPersistent(BooleanProperty persistent) {
         this.persistent = persistent;
+    }
+
+    public StockIdentfier getStockIdentifier() {
+        return this.stockIdentifier;
+    }
+    private void setStockIdentifier(StockIdentfier stockIdentifier) {
+        this.stockIdentifier = stockIdentifier;
     }
 
     public void addChangeListener(ChangeListener<Object> changeListener) {

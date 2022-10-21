@@ -1,7 +1,9 @@
 package de.perdian.apps.fimasu4.fx;
 
 import de.perdian.apps.fimasu4.model.FimasuModel;
-import de.perdian.apps.fimasu4.model.FimasuModelRepository;
+import de.perdian.apps.fimasu4.model.persistence.FimasuModelRepository;
+import de.perdian.apps.fimasu4.model.persistence.xml.XmlModelRepository;
+import de.perdian.apps.fimasu4.model.types.TransactionGroup;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -12,7 +14,21 @@ public class FimasuApplication extends Application {
 
     @Override
     public void init() throws Exception {
-        this.setModel(FimasuModelRepository.getRepository().loadModel());
+        FimasuModelRepository modelRepository = new XmlModelRepository();
+        FimasuModel model = modelRepository.loadModel();
+        if (model.getTransactionGroups().isEmpty()) {
+            TransactionGroup transactionGroup = new TransactionGroup();
+            transactionGroup.getSelected().setValue(true);
+            model.getTransactionGroups().add(transactionGroup);
+        }
+        if (model.getSelectedTransactionGroup().getValue() == null) {
+            TransactionGroup selectedTransactionGroup = model.getTransactionGroups().stream()
+                .filter(t -> t.getSelected().getValue())
+                .findFirst()
+                .orElseGet(() -> model.getTransactionGroups().get(0));
+            model.getSelectedTransactionGroup().setValue(selectedTransactionGroup);
+        }
+        this.setModel(model);
     }
 
     @Override

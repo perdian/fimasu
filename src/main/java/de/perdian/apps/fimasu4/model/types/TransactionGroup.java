@@ -3,10 +3,7 @@ package de.perdian.apps.fimasu4.model.types;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -23,15 +20,15 @@ public class TransactionGroup implements Serializable {
 
     static final long serialVersionUID = 1L;
 
-    private String id = UUID.randomUUID().toString();
-    private StringProperty title = new SimpleStringProperty("New transaction group");
-    private StringProperty bankAccountName = new SimpleStringProperty();
-    private StringProperty exportFileName = new SimpleStringProperty();
-    private BooleanProperty persistent = new SimpleBooleanProperty(false);
-    private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
+    private StringProperty title = null;
+    private StringProperty bankAccountName = null;
+    private StringProperty exportFileName = null;
+    private BooleanProperty persistent = null;
+    private BooleanProperty selected = null;
+    private ObservableList<Transaction> transactions = null;
     private List<ChangeListener<Object>> changeListeners = null;
 
-    public TransactionGroup(String id) {
+    public TransactionGroup() {
 
         List<ChangeListener<Object>> changeListeners = new ArrayList<>();
         ChangeListener<Object> delegatingChangeListener = (o, oldValue, newValue) -> {
@@ -57,6 +54,10 @@ public class TransactionGroup implements Serializable {
         persistent.addListener(delegatingChangeListener);
         this.setPersistent(persistent);
 
+        BooleanProperty selected = new SimpleBooleanProperty(false);
+        selected.addListener(delegatingChangeListener);
+        this.setSelected(selected);
+
         ObservableList<Transaction> transactions = FXCollections.observableArrayList();
         transactions.addListener((ListChangeListener.Change<? extends Transaction> change) -> {
             while (change.next()) {
@@ -68,24 +69,6 @@ public class TransactionGroup implements Serializable {
         });
         this.setTransactions(transactions);
 
-        this.setId(StringUtils.isEmpty(id) ? UUID.randomUUID().toString() : id);
-
-    }
-
-    @Override
-    public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        } else if (that instanceof TransactionGroup thatGroup) {
-            return Objects.equals(this.getId(), thatGroup.getId());
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return this.getId() == null ? 0 : this.getId().hashCode();
     }
 
     @Override
@@ -97,13 +80,6 @@ public class TransactionGroup implements Serializable {
         toStringBuilder.append("persistent", this.getPersistent().getValue());
         toStringBuilder.append("transactions", this.getTransactions());
         return toStringBuilder.toString();
-    }
-
-    public String getId() {
-        return this.id;
-    }
-    private void setId(String id) {
-        this.id = id;
     }
 
     public StringProperty getTitle() {
@@ -132,6 +108,13 @@ public class TransactionGroup implements Serializable {
     }
     private void setPersistent(BooleanProperty persistent) {
         this.persistent = persistent;
+    }
+
+    public BooleanProperty getSelected() {
+        return this.selected;
+    }
+    private void setSelected(BooleanProperty selected) {
+        this.selected = selected;
     }
 
     public ObservableList<Transaction> getTransactions() {

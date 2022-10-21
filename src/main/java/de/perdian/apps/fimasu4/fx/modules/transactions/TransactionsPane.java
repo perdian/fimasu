@@ -37,8 +37,10 @@ public class TransactionsPane extends BorderPane {
                 newValue.getTransactions().addListener(transactionChangeListener);
             }
         });
-        selectedTransactionGroup.getValue().getTransactions().addListener(transactionChangeListener);
-        this.reloadTransactions(selectedTransactionGroup.getValue().getTransactions(), transactionsPane);
+        if (selectedTransactionGroup.getValue() != null) {
+            selectedTransactionGroup.getValue().getTransactions().addListener(transactionChangeListener);
+            this.reloadTransactions(selectedTransactionGroup.getValue().getTransactions(), transactionsPane);
+        }
 
         ScrollPane transactionsScrollPane  = new ScrollPane(transactionsPane);
         transactionsScrollPane.setStyle("-fx-background-color: transparent");
