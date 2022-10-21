@@ -48,7 +48,7 @@ interface XmlElementTranslator<B> {
         }
 
         <P> void registerListProperty(String propertyName, Function<B, ObservableList<P>> listFunction, Supplier<P> listItemSupplier, XmlElementTranslator<P> listItemTranslator, Predicate<P> listItemPredicate) {
-            this.getProperties().add(new ListPropertyTranslator<>(propertyName, listFunction, listItemSupplier, listItemTranslator, item -> true));
+            this.getProperties().add(new ListPropertyTranslator<>(propertyName, listFunction, listItemSupplier, listItemTranslator, listItemPredicate));
         }
 
         <P> void registerEmbeddedProperty(String propertyName, Function<B, P> propertyFunction, XmlElementTranslator<P> propertyTranslator) {

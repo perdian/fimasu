@@ -1,5 +1,7 @@
 package de.perdian.apps.fimasu4.fx;
 
+import java.io.File;
+
 import de.perdian.apps.fimasu4.model.FimasuModel;
 import de.perdian.apps.fimasu4.model.persistence.FimasuModelRepository;
 import de.perdian.apps.fimasu4.model.persistence.xml.XmlModelRepository;
@@ -11,10 +13,16 @@ import javafx.stage.Stage;
 public class FimasuApplication extends Application {
 
     private FimasuModel model = null;
+    private FimasuPreferences preferences = null;
 
     @Override
     public void init() throws Exception {
-        FimasuModelRepository modelRepository = new XmlModelRepository();
+
+        File preferencesDirectory = new File(System.getProperty("user.home"), ".fimasu/");
+        FimasuPreferences preferences = new FimasuPreferences(preferencesDirectory);
+        this.setPreferences(preferences);
+
+        FimasuModelRepository modelRepository = new XmlModelRepository(preferences);
         FimasuModel model = modelRepository.loadModel();
         if (model.getTransactionGroups().isEmpty()) {
             TransactionGroup transactionGroup = new TransactionGroup();
@@ -29,12 +37,13 @@ public class FimasuApplication extends Application {
             model.getSelectedTransactionGroup().setValue(selectedTransactionGroup);
         }
         this.setModel(model);
+
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        FimasuApplicationPane applicationPane = new FimasuApplicationPane(this.getModel());
+        FimasuApplicationPane applicationPane = new FimasuApplicationPane(this.getModel(), this.getPreferences());
         Scene applicationScene = new Scene(applicationPane, 1400, 1100);
 
         applicationScene.focusOwnerProperty().addListener((o, oldValue, newValue) -> {
@@ -55,6 +64,13 @@ public class FimasuApplication extends Application {
     }
     private void setModel(FimasuModel model) {
         this.model = model;
+    }
+
+    private FimasuPreferences getPreferences() {
+        return this.preferences;
+    }
+    private void setPreferences(FimasuPreferences preferences) {
+        this.preferences = preferences;
     }
 
 }

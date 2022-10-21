@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import de.perdian.apps.fimasu4.fx.FimasuPreferences;
 import de.perdian.apps.fimasu4.model.FimasuModel;
 import de.perdian.apps.fimasu4.model.persistence.FimasuModelRepository;
 import de.perdian.apps.fimasu4.model.persistence.xml.XmlElementTranslator.ParentTranslator;
@@ -37,8 +38,9 @@ public class XmlModelRepository implements FimasuModelRepository {
     private static final Logger log = LoggerFactory.getLogger(XmlModelRepository.class);
 
     private XmlElementTranslator<FimasuModel> modelTranslator = null;
+    private File modelFile = null;
 
-    public XmlModelRepository() {
+    public XmlModelRepository(FimasuPreferences preferences) {
 
         ParentTranslator<MonetaryValue> monetaryValueTranslator = new ParentTranslator<>();
         monetaryValueTranslator.registerStringProperty("currency", MonetaryValue::getCurrency);
@@ -67,15 +69,15 @@ public class XmlModelRepository implements FimasuModelRepository {
         ParentTranslator<FimasuModel> modelTranslator = new ParentTranslator<>();
         modelTranslator.registerListProperty("transactionGroup", FimasuModel::getTransactionGroups, TransactionGroup::new, transactionGroupTranslator, transaction -> transaction.getPersistent().getValue());
         this.setModelTranslator(modelTranslator);
+        this.setModelFile(preferences.resolveFile("model.gz"));
 
     }
 
     @Override
     public FimasuModel loadModel() {
-        File modelFile = new File(System.getProperty("user.home"), ".fimasu/model.gz");
-        FimasuModel modelFromFile = this.loadModelFromFile(modelFile);
+        FimasuModel modelFromFile = this.loadModelFromFile(this.getModelFile());
         FimasuModel model = modelFromFile == null ? new FimasuModel() : modelFromFile;
-        model.addChangeListener((o, oldValue, newValue) -> this.writeModelToFile(model, modelFile));
+        model.addChangeListener((o, oldValue, newValue) -> this.writeModelToFile(model, this.getModelFile()));
         return model;
     }
 
@@ -125,11 +127,18 @@ public class XmlModelRepository implements FimasuModelRepository {
         }
     }
 
-    public XmlElementTranslator<FimasuModel> getModelTranslator() {
+    private XmlElementTranslator<FimasuModel> getModelTranslator() {
         return this.modelTranslator;
     }
-    public void setModelTranslator(XmlElementTranslator<FimasuModel> modelTranslator) {
+    private void setModelTranslator(XmlElementTranslator<FimasuModel> modelTranslator) {
         this.modelTranslator = modelTranslator;
+    }
+
+    private File getModelFile() {
+        return this.modelFile;
+    }
+    private void setModelFile(File modelFile) {
+        this.modelFile = modelFile;
     }
 
 }

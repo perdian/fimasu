@@ -17,23 +17,23 @@ import javafx.scene.layout.Priority;
 
 class FimasuApplicationPane extends GridPane {
 
-    FimasuApplicationPane(FimasuModel fimasuModel) {
+    FimasuApplicationPane(FimasuModel model, FimasuPreferences preferences) {
 
-        TransactionGroupsPane transactionGroupsPane = new TransactionGroupsPane(fimasuModel);
+        TransactionGroupsPane transactionGroupsPane = new TransactionGroupsPane(model);
         TitledPane transactionGroupsTitledPane = new TitledPane("Transaction groups", transactionGroupsPane);
         transactionGroupsTitledPane.setFocusTraversable(false);
         transactionGroupsTitledPane.setCollapsible(false);
         transactionGroupsTitledPane.setMaxHeight(Double.MAX_VALUE);
         GridPane.setHgrow(transactionGroupsTitledPane, Priority.ALWAYS);
 
-        FilesListPane filesListPane = new FilesListPane();
+        FilesListPane filesListPane = new FilesListPane(preferences);
         TitledPane filesListTitledPane = new TitledPane("Files", filesListPane);
         filesListTitledPane.setFocusTraversable(false);
         filesListTitledPane.setCollapsible(false);
         filesListTitledPane.setMaxHeight(Double.MAX_VALUE);
         filesListTitledPane.setPrefWidth(400);
 
-        TransactionsPane transactionsPane = new TransactionsPane(fimasuModel.getSelectedTransactionGroup());
+        TransactionsPane transactionsPane = new TransactionsPane(model.getSelectedTransactionGroup());
         TitledPane transactionsTitledPane = new TitledPane("Transactions", transactionsPane);
         transactionsTitledPane.setFocusTraversable(false);
         transactionsTitledPane.setCollapsible(false);
