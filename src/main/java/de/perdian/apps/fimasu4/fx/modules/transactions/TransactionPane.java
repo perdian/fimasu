@@ -1,7 +1,5 @@
 package de.perdian.apps.fimasu4.fx.modules.transactions;
 
-import java.util.List;
-
 import org.kordamp.ikonli.materialdesign2.MaterialDesignA;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignT;
@@ -16,6 +14,7 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -39,7 +38,8 @@ class TransactionPane extends VBox {
 
         Pane topPane = this.createTopPane(transaction, allTransactions, componentFactory);
         Pane middlePane = this.createMiddlePane(transaction, allTransactions, componentFactory);
-        this.getChildren().addAll(topPane, middlePane);
+        Pane bottomPane = this.createBottomPane(transaction, allTransactions, componentFactory);
+        this.getChildren().addAll(topPane, middlePane, bottomPane);
 
         this.setSpacing(5);
         this.setPadding(new Insets(5, 5, 5, 5));
@@ -68,7 +68,7 @@ class TransactionPane extends VBox {
         Label titleLabel = componentFactory.createLabel("Title");
         titleLabel.setLabelFor(titleField);
 
-        ComboBox<TransactionType> typeBox = componentFactory.createComboBox(transaction.getType(), new EnumStringConverter<>(TransactionType.class), List.of(TransactionType.values()));
+        ComboBox<TransactionType> typeBox = componentFactory.createComboBox(transaction.getType(), new EnumStringConverter<>(TransactionType.class), FXCollections.observableArrayList(TransactionType.values()));
         Label typeLabel = componentFactory.createLabel("Type");
         typeLabel.setLabelFor(typeBox);
 
@@ -165,7 +165,7 @@ class TransactionPane extends VBox {
         payoutLabel.setLabelFor(payoutAmountField);
 
         TextField bookingValueCurrencyField = componentFactory.createCurrencyField(transaction.getBookingValue().getCurrency());
-        TextField bookingValueConversionRateField = componentFactory.createDecimalField(transaction.getBookingValue().getConversionRate(), 5);
+        TextField bookingValueConversionRateField = componentFactory.createDecimalField(transaction.getBookingConversionRate(), 5);
         bookingValueConversionRateField.setPrefWidth(100);
         Label bookingValueCurrencyLabel = componentFactory.createLabel("Booking currency / rate");
         bookingValueCurrencyLabel.setLabelFor(bookingValueCurrencyField);
@@ -204,6 +204,54 @@ class TransactionPane extends VBox {
         middlePane.setHgap(5);
         middlePane.setVgap(2);
         return middlePane;
+
+    }
+
+    private Pane createBottomPane(Transaction transaction, ObservableList<Transaction> allTransactions, ComponentFactory componentFactory) {
+
+        TextField additionalChargesValueField = componentFactory.createDecimalField(transaction.getAdditionalCharges().getAmount(), 2);
+        additionalChargesValueField.setPrefWidth(85);
+        ComboBox<String> additionalChargesCurrencyBox = componentFactory.createCurrencyComboBox(transaction.getAdditionalCharges().getCurrency(), transaction.getAvailableCurrencies());
+        Label additionalChargesLabel = componentFactory.createLabel("Charges");
+        additionalChargesLabel.setLabelFor(additionalChargesValueField);
+
+        TextField additionalFinanceTaxValueField = componentFactory.createDecimalField(transaction.getAdditionalFinanceTax().getAmount(), 2);
+        additionalFinanceTaxValueField.setPrefWidth(85);
+        ComboBox<String> additionalFinanceTaxCurrencyBox = componentFactory.createCurrencyComboBox(transaction.getAdditionalFinanceTax().getCurrency(), transaction.getAvailableCurrencies());
+        Label additionalFinanceTaxLabel = componentFactory.createLabel("Finance tax");
+        additionalFinanceTaxLabel.setLabelFor(additionalFinanceTaxValueField);
+
+        TextField additionalSolidarityTaxValueField = componentFactory.createDecimalField(transaction.getAdditionalSolidarityTax().getAmount(), 2);
+        additionalSolidarityTaxValueField.setPrefWidth(85);
+        ComboBox<String> additionalSolidarityTaxCurrencyBox = componentFactory.createCurrencyComboBox(transaction.getAdditionalSolidarityTax().getCurrency(), transaction.getAvailableCurrencies());
+        Label additionalSolidarityTaxLabel = componentFactory.createLabel("Solidarity tax");
+        additionalSolidarityTaxLabel.setLabelFor(additionalSolidarityTaxValueField);
+
+        TextField totalValueField = componentFactory.createDecimalField(transaction.getTotalValue().getAmount(), 2);
+        totalValueField.setPrefWidth(85);
+        totalValueField.setDisable(true);
+        GridPane.setHgrow(totalValueField, Priority.ALWAYS);
+        TextField totalCurrencyField = componentFactory.createCurrencyField(transaction.getTotalValue().getCurrency());
+        totalCurrencyField.setDisable(true);
+        Label totalLabel = componentFactory.createLabel("Total");
+        totalLabel.setLabelFor(totalValueField);
+
+        GridPane bottomPane = new GridPane();
+        bottomPane.add(additionalChargesLabel, 0, 0, 2, 1);
+        bottomPane.add(additionalChargesValueField, 0, 1, 1, 1);
+        bottomPane.add(additionalChargesCurrencyBox, 1, 1, 1, 1);
+        bottomPane.add(additionalFinanceTaxLabel, 2, 0, 2, 1);
+        bottomPane.add(additionalFinanceTaxValueField, 2, 1, 1, 1);
+        bottomPane.add(additionalFinanceTaxCurrencyBox, 3, 1, 1, 1);
+        bottomPane.add(additionalSolidarityTaxLabel, 4, 0, 2, 1);
+        bottomPane.add(additionalSolidarityTaxValueField, 4, 1, 1, 1);
+        bottomPane.add(additionalSolidarityTaxCurrencyBox, 5, 1, 1, 1);
+        bottomPane.add(totalLabel, 6, 0, 2, 1);
+        bottomPane.add(totalValueField, 6, 1, 1, 1);
+        bottomPane.add(totalCurrencyField, 7, 1, 1, 1);
+        bottomPane.setHgap(5);
+        bottomPane.setVgap(2);
+        return bottomPane;
 
     }
 

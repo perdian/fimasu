@@ -1,19 +1,20 @@
 package de.perdian.apps.fimasu4.fx.support;
 
 import java.math.BigDecimal;
-import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import de.perdian.apps.fimasu4.fx.support.converters.BigDecimalStringConverter;
 import de.perdian.apps.fimasu4.fx.support.converters.ToStringStringConverter;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -107,10 +108,31 @@ public class ComponentFactory {
         return button;
     }
 
-    public <T> ComboBox<T> createComboBox(Property<T> property, StringConverter<T> stringConverter, List<T> availableValues) {
-        ComboBox<T> comboBox = new ComboBox<>(FXCollections.observableArrayList(availableValues));
+    public ComboBox<String> createCurrencyComboBox(Property<String> property, ObservableList<String> availableValues) {
+        ComboBox<String> comboBox = new ComboBox<>(availableValues);
+        comboBox.disableProperty().bind(Bindings.size(availableValues).lessThanOrEqualTo(1));
+        comboBox.setValue(property.getValue());
+        comboBox.valueProperty().addListener((o, oldValue, newValue) -> {
+            if (newValue == null) {
+                comboBox.setValue(availableValues.get(0));
+            } else {
+                property.setValue(newValue);
+            }
+        });
+        property.addListener((o, oldValue, newValue) -> {
+            if (StringUtils.isNotEmpty(newValue)) {
+                comboBox.setValue(newValue);
+            }
+        });
+        comboBox.setPrefWidth(75);
+        return comboBox;
+    }
+
+    public <T> ComboBox<T> createComboBox(Property<T> property, StringConverter<T> stringConverter, ObservableList<T> availableValues) {
+        ComboBox<T> comboBox = new ComboBox<>(availableValues);
         comboBox.setConverter(new ToStringStringConverter<>());
         comboBox.valueProperty().bindBidirectional(property);
+        comboBox.disableProperty().bind(Bindings.size(availableValues).lessThanOrEqualTo(1));
         return comboBox;
     }
 

@@ -18,18 +18,15 @@ public class MonetaryValue implements Serializable {
 
     private ObjectProperty<BigDecimal> amount = null;
     private StringProperty currency = null;
-    private ObjectProperty<BigDecimal> conversionRate = null;
 
     MonetaryValue() {
         this.setAmount(new SimpleObjectProperty<>());
         this.setCurrency(new SimpleStringProperty("EUR"));
-        this.setConversionRate(new SimpleObjectProperty<>());
     }
 
     public void addListener(ChangeListener<Object> changeListener) {
         this.getAmount().addListener(changeListener);
         this.getCurrency().addListener(changeListener);
-        this.getConversionRate().addListener(changeListener);
     }
 
     @Override
@@ -37,7 +34,6 @@ public class MonetaryValue implements Serializable {
         ToStringBuilder toStringBuilder = new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE);
         toStringBuilder.append("amount", this.getAmount().getValue());
         toStringBuilder.append("currency", this.getCurrency().getValue());
-        toStringBuilder.append("conversionRate", this.getConversionRate().getValue());
         return toStringBuilder.toString();
     }
 
@@ -53,13 +49,6 @@ public class MonetaryValue implements Serializable {
     }
     private void setCurrency(StringProperty currency) {
         this.currency = currency;
-    }
-
-    public ObjectProperty<BigDecimal> getConversionRate() {
-        return this.conversionRate;
-    }
-    private void setConversionRate(ObjectProperty<BigDecimal> conversionRate) {
-        this.conversionRate = conversionRate;
     }
 
 }

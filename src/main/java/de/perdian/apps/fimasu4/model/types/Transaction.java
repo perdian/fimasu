@@ -4,14 +4,20 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class Transaction implements Serializable {
 
@@ -19,15 +25,20 @@ public class Transaction implements Serializable {
 
     private ObjectProperty<TransactionType> type = null;
     private BooleanProperty persistent = null;
+    private ObjectProperty<LocalDate> bookingDate = null;
+    private ObjectProperty<LocalDate> valutaDate = null;
     private StockIdentfier stockIdentifier = null;
     private ObjectProperty<BigDecimal> stockCount = null;
     private MonetaryValue stockPrice = null;
     private MonetaryValue stockValue = null;
     private MonetaryValue payoutValue = null;
-    private ObjectProperty<MonetaryValue> bookingValueSource = null;
     private MonetaryValue bookingValue = null;
-    private ObjectProperty<LocalDate> bookingDate = null;
-    private ObjectProperty<LocalDate> valutaDate = null;
+    private ObjectProperty<BigDecimal> bookingConversionRate = null;
+    private MonetaryValue additionalCharges = null;
+    private MonetaryValue additionalFinanceTax = null;
+    private MonetaryValue additionalSolidarityTax = null;
+    private MonetaryValue totalValue = null;
+    private ObservableList<String> availableCurrencies = null;
     private List<ChangeListener<Object>> changeListeners = null;
 
     public Transaction() {
@@ -42,17 +53,21 @@ public class Transaction implements Serializable {
 
         ObjectProperty<MonetaryValue> bookingValueSource = new SimpleObjectProperty<>();
         bookingValueSource.addListener((o, oldValue, newValue) -> this.recomputeBookingValue(newValue));
-        this.setBookingValueSource(bookingValueSource);
 
         ObjectProperty<TransactionType> type = new SimpleObjectProperty<>();
         type.addListener((o, oldValue, newValue) -> {
             if (List.of(TransactionType.BUY, TransactionType.SELL).contains(newValue)) {
-                this.getBookingValueSource().setValue(this.getStockValue());
+                this.getPayoutValue().getAmount().setValue(null);
+                bookingValueSource.setValue(this.getStockValue());
             } else if (List.of(TransactionType.PAYOUT).contains(newValue)) {
-                this.getBookingValueSource().setValue(this.getPayoutValue());
+                this.getStockPrice().getAmount().setValue(null);
+                this.getStockCount().setValue(null);
+                bookingValueSource.setValue(this.getPayoutValue());
             } else {
-                this.setBookingValueSource(null);
+                bookingValueSource.setValue(null);
             }
+            this.recomputeAvailableCurrencies(null, bookingValueSource.getValue());
+            this.recomputeTotalValue();
         });
         type.addListener(changeListener);
         this.setType(type);
@@ -79,19 +94,50 @@ public class Transaction implements Serializable {
         this.setStockPrice(stockPrice);
 
         MonetaryValue stockValue = MonetaryValueBindings.multiply(stockPrice, stockCount);
-        stockValue.addListener((o, oldValue, newValue) -> this.recomputeBookingValue(this.getBookingValueSource().getValue()));
+        stockValue.addListener((o, oldValue, newValue) -> this.recomputeBookingValue(bookingValueSource.getValue()));
+        stockValue.getCurrency().addListener((o, oldValue, newValue) -> this.recomputeAvailableCurrencies(oldValue, bookingValueSource.getValue()));
         this.setStockValue(stockValue);
 
         MonetaryValue payoutValue = new MonetaryValue();
         payoutValue.addListener(changeListener);
-        payoutValue.addListener((o, oldValue, newValue) -> this.recomputeBookingValue(this.getBookingValueSource().getValue()));
+        payoutValue.addListener((o, oldValue, newValue) -> this.recomputeBookingValue(bookingValueSource.getValue()));
+        payoutValue.getCurrency().addListener((o, oldValue, newValue) -> this.recomputeAvailableCurrencies(oldValue, bookingValueSource.getValue()));
         this.setPayoutValue(payoutValue);
 
         MonetaryValue bookingValue = new MonetaryValue();
         bookingValue.addListener(changeListener);
-        bookingValue.getCurrency().addListener((o, oldValue, newValue) -> this.recomputeBookingValue(this.getBookingValueSource().getValue()));
-        bookingValue.getConversionRate().addListener((o, oldValue, newValue) -> this.recomputeBookingValue(this.getBookingValueSource().getValue()));
+        bookingValue.addListener((o, oldValue, newValue) -> this.recomputeTotalValue());
+        bookingValue.getCurrency().addListener((o, oldValue, newValue) -> this.recomputeBookingValue(bookingValueSource.getValue()));
+        bookingValue.getCurrency().addListener((o, oldValue, newValue) -> this.recomputeAvailableCurrencies(oldValue, bookingValueSource.getValue()));
         this.setBookingValue(bookingValue);
+
+        ObjectProperty<BigDecimal> bookingConversionRate = new SimpleObjectProperty<>();
+        bookingConversionRate.addListener((o, oldValue, newValue) -> this.recomputeBookingValue(bookingValueSource.getValue()));
+        this.setBookingConversionRate(bookingConversionRate);
+
+        MonetaryValue additionalCharges = new MonetaryValue();
+        additionalCharges.addListener(changeListener);
+        additionalCharges.addListener((o, oldValue, newValue) -> this.recomputeTotalValue());
+        this.setAdditionalCharges(additionalCharges);
+
+        MonetaryValue additionalFinanceTax = new MonetaryValue();
+        additionalFinanceTax.addListener(changeListener);
+        additionalFinanceTax.addListener((o, oldValue, newValue) -> this.recomputeTotalValue());
+        this.setAdditionalFinanceTax(additionalFinanceTax);
+
+        MonetaryValue additionalSolidarityTax = new MonetaryValue();
+        additionalSolidarityTax.addListener(changeListener);
+        additionalSolidarityTax.addListener((o, oldValue, newValue) -> this.recomputeTotalValue());
+        this.setAdditionalSolidarityTax(additionalSolidarityTax);
+
+        MonetaryValue totalValue = new MonetaryValue();
+        this.setTotalValue(totalValue);
+
+        ObservableList<String> availableCurrencies = FXCollections.observableArrayList();
+        if (StringUtils.isNotEmpty(bookingValue.getCurrency().getValue())) {
+            availableCurrencies.add(bookingValue.getCurrency().getValue());
+        }
+        this.setAvailableCurrencies(availableCurrencies);
 
         BooleanProperty persistent = new SimpleBooleanProperty();
         persistent.addListener(changeListener);
@@ -109,14 +155,67 @@ public class Transaction implements Serializable {
             String bookingCurrency = targetValue.getCurrency().getValue();
             if (Objects.equals(inputCurrency, bookingCurrency)) {
                 targetValue.getAmount().setValue(inputValue.getAmount().getValue());
-                targetValue.getConversionRate().setValue(null);
+                this.getBookingConversionRate().setValue(null);
             } else {
-                BigDecimal currencyConversionRate = this.getBookingValue().getConversionRate().getValue();
+                BigDecimal currencyConversionRate = this.getBookingConversionRate().getValue();
                 if (currencyConversionRate == null) {
                     targetValue.getAmount().setValue(null);
                 } else {
                     targetValue.getAmount().setValue(currencyConversionRate.multiply(inputValue.getAmount().getValue()));
                 }
+            }
+        }
+    }
+
+    private void recomputeTotalValue() {
+        String bookingCurrency = this.getBookingValue().getCurrency().getValue();
+        BigDecimal targetAmount = this.getBookingValue().getAmount().getValue();
+        if (targetAmount == null) {
+            targetAmount = BigDecimal.ZERO;
+        }
+        List<MonetaryValue> additionalValues = List.of(this.getAdditionalCharges(), this.getAdditionalFinanceTax(), this.getAdditionalSolidarityTax());
+        for (MonetaryValue additionalValue : additionalValues) {
+            BigDecimal additionalValueAmountInSourceCurrency = additionalValue.getAmount().getValue();
+            BigDecimal additionalValueAmountInBookingCurrency = null;
+            if (Objects.equals(additionalValue.getCurrency().getValue(), bookingCurrency)) {
+                additionalValueAmountInBookingCurrency = additionalValueAmountInSourceCurrency;
+            } else {
+                BigDecimal conversionRate = this.getBookingConversionRate().getValue();
+                if (conversionRate != null) {
+                    additionalValueAmountInBookingCurrency = additionalValueAmountInSourceCurrency.multiply(conversionRate);
+                }
+            }
+            if (additionalValueAmountInBookingCurrency != null) {
+                TransactionType type = this.getType().getValue();
+                BigDecimal targetAmountChangeFactor = type == null ? BigDecimal.ONE : BigDecimal.valueOf(type.getChargesFactor());
+                BigDecimal targetAmountChange = additionalValueAmountInBookingCurrency.multiply(targetAmountChangeFactor);
+                targetAmount = targetAmount.add(targetAmountChange);
+            }
+        }
+        this.getTotalValue().getCurrency().setValue(bookingCurrency);
+        this.getTotalValue().getAmount().setValue(targetAmount);
+    }
+
+    private void recomputeAvailableCurrencies(String oldCurrencyValue, MonetaryValue inputValue) {
+        Set<String> availableCurrencies = new LinkedHashSet<>();
+        if (StringUtils.isNotEmpty(this.getBookingValue().getCurrency().getValue())) {
+            availableCurrencies.add(this.getBookingValue().getCurrency().getValue());
+        }
+        if (StringUtils.isNotEmpty(inputValue.getCurrency().getValue())) {
+            availableCurrencies.add(inputValue.getCurrency().getValue());
+        }
+        if (availableCurrencies.isEmpty()) {
+            availableCurrencies.add("EUR");
+        }
+        if (!this.getAvailableCurrencies().containsAll(availableCurrencies) || this.getAvailableCurrencies().size() != availableCurrencies.size()) {
+            this.getAvailableCurrencies().setAll(availableCurrencies);
+        }
+        for (MonetaryValue additionalValue : List.of(this.getAdditionalCharges(), this.getAdditionalFinanceTax(), this.getAdditionalSolidarityTax())) {
+            if (oldCurrencyValue != null && Objects.equals(oldCurrencyValue, additionalValue.getCurrency().getValue())) {
+                additionalValue.getCurrency().setValue(inputValue.getCurrency().getValue());
+            }
+            if (!availableCurrencies.contains(additionalValue.getCurrency().getValue())) {
+                additionalValue.getCurrency().setValue(availableCurrencies.iterator().next());
             }
         }
     }
@@ -133,6 +232,20 @@ public class Transaction implements Serializable {
     }
     private void setPersistent(BooleanProperty persistent) {
         this.persistent = persistent;
+    }
+
+    public ObjectProperty<LocalDate> getBookingDate() {
+        return this.bookingDate;
+    }
+    private void setBookingDate(ObjectProperty<LocalDate> bookingDate) {
+        this.bookingDate = bookingDate;
+    }
+
+    public ObjectProperty<LocalDate> getValutaDate() {
+        return this.valutaDate;
+    }
+    private void setValutaDate(ObjectProperty<LocalDate> valutaDate) {
+        this.valutaDate = valutaDate;
     }
 
     public StockIdentfier getStockIdentifier() {
@@ -170,13 +283,6 @@ public class Transaction implements Serializable {
         this.payoutValue = payoutValue;
     }
 
-    private ObjectProperty<MonetaryValue> getBookingValueSource() {
-        return this.bookingValueSource;
-    }
-    private void setBookingValueSource(ObjectProperty<MonetaryValue> bookingValueSource) {
-        this.bookingValueSource = bookingValueSource;
-    }
-
     public MonetaryValue getBookingValue() {
         return this.bookingValue;
     }
@@ -184,18 +290,46 @@ public class Transaction implements Serializable {
         this.bookingValue = bookingValue;
     }
 
-    public ObjectProperty<LocalDate> getBookingDate() {
-        return this.bookingDate;
+    public ObjectProperty<BigDecimal> getBookingConversionRate() {
+        return this.bookingConversionRate;
     }
-    private void setBookingDate(ObjectProperty<LocalDate> bookingDate) {
-        this.bookingDate = bookingDate;
+    private void setBookingConversionRate(ObjectProperty<BigDecimal> bookingConversionRate) {
+        this.bookingConversionRate = bookingConversionRate;
     }
 
-    public ObjectProperty<LocalDate> getValutaDate() {
-        return this.valutaDate;
+    public MonetaryValue getAdditionalCharges() {
+        return this.additionalCharges;
     }
-    private void setValutaDate(ObjectProperty<LocalDate> valutaDate) {
-        this.valutaDate = valutaDate;
+    private void setAdditionalCharges(MonetaryValue additionalCharges) {
+        this.additionalCharges = additionalCharges;
+    }
+
+    public MonetaryValue getAdditionalFinanceTax() {
+        return this.additionalFinanceTax;
+    }
+    private void setAdditionalFinanceTax(MonetaryValue additionalFinanceTax) {
+        this.additionalFinanceTax = additionalFinanceTax;
+    }
+
+    public MonetaryValue getAdditionalSolidarityTax() {
+        return this.additionalSolidarityTax;
+    }
+    private void setAdditionalSolidarityTax(MonetaryValue additionalSolidarityTax) {
+        this.additionalSolidarityTax = additionalSolidarityTax;
+    }
+
+    public MonetaryValue getTotalValue() {
+        return this.totalValue;
+    }
+    private void setTotalValue(MonetaryValue totalValue) {
+        this.totalValue = totalValue;
+    }
+
+    public ObservableList<String> getAvailableCurrencies() {
+        return this.availableCurrencies;
+    }
+    private void setAvailableCurrencies(ObservableList<String> availableCurrencies) {
+        this.availableCurrencies = availableCurrencies;
     }
 
     public void addChangeListener(ChangeListener<Object> changeListener) {
