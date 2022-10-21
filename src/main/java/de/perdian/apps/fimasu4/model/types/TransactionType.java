@@ -2,8 +2,8 @@ package de.perdian.apps.fimasu4.model.types;
 
 public enum TransactionType {
 
-    BUY("Buy/Sell"),
-    SELL("Buy/Sell"),
+    BUY("Buy"),
+    SELL("Sell"),
     PAYOUT("Payout");
 
     private String title = null;

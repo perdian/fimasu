@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 import de.perdian.apps.fimasu4.model.FimasuModel;
 import de.perdian.apps.fimasu4.model.persistence.FimasuModelRepository;
 import de.perdian.apps.fimasu4.model.persistence.xml.XmlElementTranslator.ParentTranslator;
+import de.perdian.apps.fimasu4.model.types.MonetaryValue;
 import de.perdian.apps.fimasu4.model.types.StockIdentfier;
 import de.perdian.apps.fimasu4.model.types.Transaction;
 import de.perdian.apps.fimasu4.model.types.TransactionGroup;
@@ -39,6 +40,9 @@ public class XmlModelRepository implements FimasuModelRepository {
 
     public XmlModelRepository() {
 
+        ParentTranslator<MonetaryValue> monetaryValueTranslator = new ParentTranslator<>();
+        monetaryValueTranslator.registerStringProperty("currency", MonetaryValue::getCurrency);
+
         ParentTranslator<StockIdentfier> stockIdentifierTranslator = new ParentTranslator<>();
         stockIdentifierTranslator.registerStringProperty("wkn", StockIdentfier::getWkn);
         stockIdentifierTranslator.registerStringProperty("isin", StockIdentfier::getIsin);
@@ -48,6 +52,9 @@ public class XmlModelRepository implements FimasuModelRepository {
         transactionTranslator.registerBooleanProperty("persistent", Transaction::getPersistent);
         transactionTranslator.registerEnumProperty("type", Transaction::getType, TransactionType.class);
         transactionTranslator.registerEmbeddedProperty("stockIdentifier", Transaction::getStockIdentifier, stockIdentifierTranslator);
+        transactionTranslator.registerEmbeddedProperty("stockPrice", Transaction::getStockPrice, monetaryValueTranslator);
+        transactionTranslator.registerEmbeddedProperty("payoutValue", Transaction::getPayoutValue, monetaryValueTranslator);
+        transactionTranslator.registerEmbeddedProperty("bookingValue", Transaction::getBookingValue, monetaryValueTranslator);
 
         ParentTranslator<TransactionGroup> transactionGroupTranslator = new ParentTranslator<>();
         transactionGroupTranslator.registerListProperty("transaction", TransactionGroup::getTransactions, Transaction::new, transactionTranslator, transactionGroup -> transactionGroup.getPersistent().getValue());

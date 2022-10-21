@@ -27,7 +27,11 @@ interface XmlElementTranslator<B> {
 
         private List<XmlElementTranslator<B>> properties = new ArrayList<>();
 
-        <P> void registerStringProperty(String propertyName, Function<B, Property<String>> propertyFunction) {
+        <P> void registerObjectProperty(String propertyName, Function<B, Property<P>> propertyFunction, StringConverter<P> stringConverter) {
+            this.getProperties().add(new DirectPropertyTranslator<>(propertyName, propertyFunction, stringConverter));
+        }
+
+        void registerStringProperty(String propertyName, Function<B, Property<String>> propertyFunction) {
             this.getProperties().add(new DirectPropertyTranslator<>(propertyName, propertyFunction, new IdentityStringConverter()));
         }
 

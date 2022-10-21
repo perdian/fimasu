@@ -1,15 +1,23 @@
 package de.perdian.apps.fimasu4.fx.support;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import de.perdian.apps.fimasu4.fx.support.converters.BigDecimalStringConverter;
 import de.perdian.apps.fimasu4.fx.support.converters.ToStringStringConverter;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -37,6 +45,30 @@ public class ComponentFactory {
         });
         return textField;
 
+    }
+
+    public TextField createDecimalField(ReadOnlyProperty<BigDecimal> property, int precisionDigits) {
+        BigDecimalStringConverter bigDecimalStringConverter = new BigDecimalStringConverter(precisionDigits);
+        TextField textField = new TextField(bigDecimalStringConverter.toString(property.getValue()));
+        textField.setDisable(true);
+        property.addListener((o, oldValue, newValue) -> textField.setText(bigDecimalStringConverter.toString(newValue)));
+        return textField;
+    }
+
+    public TextField createDecimalField(Property<BigDecimal> property, int precisionDigits) {
+        return this.createTextField(property, new BigDecimalStringConverter(precisionDigits));
+    }
+
+    public TextField createCurrencyField(StringProperty currencyProperty) {
+        TextField textField = this.createTextField(currencyProperty);
+        textField.setPrefWidth(50);
+        textField.setOnKeyTyped(keyEvent -> {
+            String character = keyEvent.getCharacter();
+            if (!keyEvent.isMetaDown() && !keyEvent.isControlDown() && !keyEvent.isAltDown() && !character.isEmpty() && Character.isLetterOrDigit(character.charAt(0))) {
+                textField.commitValue();
+            }
+        });
+        return textField;
     }
 
     public Label createLabel(String text) {
@@ -73,6 +105,13 @@ public class ComponentFactory {
         Button button = new Button(title, icon == null ? null : new FontIcon(icon));
         button.setOnAction(eventHandler);
         return button;
+    }
+
+    public <T> ComboBox<T> createComboBox(Property<T> property, StringConverter<T> stringConverter, List<T> availableValues) {
+        ComboBox<T> comboBox = new ComboBox<>(FXCollections.observableArrayList(availableValues));
+        comboBox.setConverter(new ToStringStringConverter<>());
+        comboBox.valueProperty().bindBidirectional(property);
+        return comboBox;
     }
 
 }
