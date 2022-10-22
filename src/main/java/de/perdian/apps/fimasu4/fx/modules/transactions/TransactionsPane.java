@@ -1,5 +1,6 @@
 package de.perdian.apps.fimasu4.fx.modules.transactions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +18,9 @@ import javafx.scene.layout.VBox;
 
 public class TransactionsPane extends BorderPane {
 
-    public TransactionsPane(ObjectProperty<TransactionGroup> selectedTransactionGroup) {
+    public TransactionsPane(ObjectProperty<TransactionGroup> selectedTransactionGroup, ObservableList<File> importFiles) {
 
-        this.setTop(new TransactionsToolBar(selectedTransactionGroup));
+        this.setTop(new TransactionsToolBar(selectedTransactionGroup, importFiles));
 
         VBox transactionsPane = new VBox(10);
         ListChangeListener<Transaction> transactionChangeListener = (ListChangeListener.Change<? extends Transaction> change) -> {

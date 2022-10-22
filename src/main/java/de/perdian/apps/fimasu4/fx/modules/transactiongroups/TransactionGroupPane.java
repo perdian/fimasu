@@ -1,10 +1,14 @@
 package de.perdian.apps.fimasu4.fx.modules.transactiongroups;
 
+import java.io.File;
+
+import org.apache.commons.lang3.StringUtils;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignF;
 
 import de.perdian.apps.fimasu4.fx.support.ComponentFactory;
 import de.perdian.apps.fimasu4.model.types.TransactionGroup;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -13,6 +17,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 class TransactionGroupPane extends VBox {
 
@@ -36,9 +42,8 @@ class TransactionGroupPane extends VBox {
         bankAccountNameLabel.setLabelFor(bankAccountNameField);
 
         TextField exportFileNameField = componentFactory.createTextField(transactionGroup.getExportFileName());
-        Button exportFileNameButton = componentFactory.createButton(MaterialDesignF.FILE, action -> {
-            throw new UnsupportedOperationException();
-        });
+        Button exportFileNameButton = componentFactory.createButton(MaterialDesignF.FILE, action -> this.selectExportFile(exportFileNameField.textProperty()));
+        exportFileNameButton.setTooltip(new Tooltip("Select export file"));
         GridPane.setHgrow(exportFileNameField, Priority.ALWAYS);
         Label exportFileNameLabel = componentFactory.createLabel("Export _file name");
         exportFileNameLabel.setLabelFor(exportFileNameField);
@@ -60,6 +65,28 @@ class TransactionGroupPane extends VBox {
         this.setSpacing(10);
         this.getChildren().addAll(firstLine, secondLine);
         this.setTransactionGroup(transactionGroup);
+
+    }
+
+    private void selectExportFile(StringProperty targetProperty) {
+
+        String currentFileValue = targetProperty.getValue();
+        File currentFile = StringUtils.isEmpty(currentFileValue) ? null : new File(currentFileValue);
+        File currentDirectory = currentFile == null ? null : currentFile.getParentFile();
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select target file");
+        fileChooser.setSelectedExtensionFilter(new ExtensionFilter("QIF files", "*.qif"));
+        if (currentDirectory != null && currentDirectory.exists()) {
+            fileChooser.setInitialDirectory(currentDirectory);
+        }
+        if (currentFile != null) {
+            fileChooser.setInitialFileName(currentFile.getName());
+        }
+        File selectedFile = fileChooser.showSaveDialog(this.getScene().getWindow());
+        if (selectedFile != null) {
+            targetProperty.setValue(selectedFile.getAbsolutePath());
+        }
 
     }
 
