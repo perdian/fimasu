@@ -46,10 +46,6 @@ public class FimasuApplication extends Application {
         FimasuApplicationPane applicationPane = new FimasuApplicationPane(this.getModel(), this.getPreferences());
         Scene applicationScene = new Scene(applicationPane, 1400, 1100);
 
-        applicationScene.focusOwnerProperty().addListener((o, oldValue, newValue) -> {
-            System.err.println("Focus: " + newValue);
-        });
-
         primaryStage.setTitle("FinanzManager Support by perdian");
         primaryStage.setScene(applicationScene);
         primaryStage.setMinWidth(800);
