@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.fimasu.model.TransactionGroup;
-import de.perdian.apps.fimasu.support.quicken.RecordList;
+import de.perdian.apps.fimasu4.quicken.RecordList;
 import de.perdian.commons.fx.execution.GuiExecutor;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

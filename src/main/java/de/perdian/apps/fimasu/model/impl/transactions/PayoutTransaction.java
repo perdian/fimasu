@@ -2,8 +2,8 @@ package de.perdian.apps.fimasu.model.impl.transactions;
 
 import de.perdian.apps.fimasu.model.Transaction;
 import de.perdian.apps.fimasu.model.TransactionGroup;
-import de.perdian.apps.fimasu.support.quicken.Record;
-import de.perdian.apps.fimasu.support.quicken.model.TransactionTypeRecordItem;
+import de.perdian.apps.fimasu4.quicken.Record;
+import de.perdian.apps.fimasu4.quicken.model.TransactionTypeRecordItem;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 

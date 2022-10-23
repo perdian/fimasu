@@ -35,8 +35,8 @@ public class StockIdentfier {
             return true;
         } else if (that instanceof StockIdentfier thatIdentifier) {
             EqualsBuilder equalsBuilder = new EqualsBuilder();
-            equalsBuilder.append(this.getWkn(), thatIdentifier.getWkn());
-            equalsBuilder.append(this.getIsin(), thatIdentifier.getIsin());
+            equalsBuilder.append(this.getWkn().getValue(), thatIdentifier.getWkn().getValue());
+            equalsBuilder.append(this.getIsin().getValue(), thatIdentifier.getIsin().getValue());
             return equalsBuilder.isEquals();
         } else {
             return false;

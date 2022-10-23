@@ -13,7 +13,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import de.perdian.apps.fimasu.model.impl.transactions.StockChangeTransaction;
-import de.perdian.apps.fimasu.support.quicken.RecordList;
+import de.perdian.apps.fimasu4.quicken.RecordList;
 import de.perdian.commons.fx.persistence.PersistenceEnabled;
 import de.perdian.commons.fx.persistence.PersistenceHelper;
 import javafx.beans.property.BooleanProperty;

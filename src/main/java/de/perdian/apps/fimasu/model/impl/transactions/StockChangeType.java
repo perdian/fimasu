@@ -1,6 +1,6 @@
 package de.perdian.apps.fimasu.model.impl.transactions;
 
-import de.perdian.apps.fimasu.support.quicken.model.TransactionTypeRecordItem;
+import de.perdian.apps.fimasu4.quicken.model.TransactionTypeRecordItem;
 
 public enum StockChangeType {
 

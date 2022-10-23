@@ -30,8 +30,8 @@ class FimasuApplicationPane extends GridPane {
         TitledPane filesListTitledPane = new TitledPane("Files", filesListPane);
         filesListTitledPane.setFocusTraversable(false);
         filesListTitledPane.setCollapsible(false);
-        filesListTitledPane.setMaxHeight(Double.MAX_VALUE);
         filesListTitledPane.setPrefWidth(400);
+        filesListTitledPane.setPrefHeight(0);
 
         TransactionsPane transactionsPane = new TransactionsPane(model.getSelectedTransactionGroup(), filesListPane.getFiles());
         TitledPane transactionsTitledPane = new TitledPane("Transactions", transactionsPane);

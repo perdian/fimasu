@@ -7,6 +7,8 @@ import org.kordamp.ikonli.materialdesign2.MaterialDesignA;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignP;
 
 import de.perdian.apps.fimasu4.fx.modules.transactions.actions.AddTransactionEventHandler;
+import de.perdian.apps.fimasu4.fx.modules.transactions.actions.ExportTransactionsAsQifEventHandler;
+import de.perdian.apps.fimasu4.fx.modules.transactions.actions.ImportTransactionsFromFilesEventHandler;
 import de.perdian.apps.fimasu4.fx.support.ComponentFactory;
 import de.perdian.apps.fimasu4.model.types.TransactionGroup;
 import de.perdian.apps.fimasu4.model.types.TransactionType;
@@ -39,10 +41,10 @@ class TransactionsToolBar extends ToolBar {
         HBox.setHgrow(separatorBox, Priority.ALWAYS);
         this.getItems().add(separatorBox);
 
-        Button importFromFilesButton = componentFactory.createButton("Import from files", MaterialDesignA.APPLICATION_IMPORT, event -> this.doImportFromFiles(selectedTransactionGroup.getValue(), importFiles));
+        Button importFromFilesButton = componentFactory.createButton("Import from files", MaterialDesignA.APPLICATION_IMPORT, new ImportTransactionsFromFilesEventHandler(importFiles, selectedTransactionGroup));
         importFromFilesButton.disableProperty().bind(Bindings.isEmpty(importFiles));
 
-        Button exportAsQifButton = componentFactory.createButton("Export as QIF", MaterialDesignA.APPLICATION_EXPORT, event -> this.doExportAsQif(selectedTransactionGroup.getValue()));
+        Button exportAsQifButton = componentFactory.createButton("Export as QIF", MaterialDesignA.APPLICATION_EXPORT, new ExportTransactionsAsQifEventHandler(selectedTransactionGroup));
         TransactionGroup initialTransactionGroup = selectedTransactionGroup.getValue();
         BooleanProperty targetFileAvaiableProperty = new SimpleBooleanProperty(initialTransactionGroup == null ? false : StringUtils.isNotEmpty(initialTransactionGroup.getExportFileName().getValue()));
         BooleanProperty transactionsAvailableProperty = new SimpleBooleanProperty(initialTransactionGroup == null ? false : !initialTransactionGroup.getTransactions().isEmpty());
@@ -71,14 +73,6 @@ class TransactionsToolBar extends ToolBar {
             });
         }
 
-    }
-
-    private void doExportAsQif(TransactionGroup transactionGroup) {
-        throw new UnsupportedOperationException();
-    }
-
-    private void doImportFromFiles(TransactionGroup transactionGroup, ObservableList<File> importFiles) {
-        throw new UnsupportedOperationException();
     }
 
 }
