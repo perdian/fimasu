@@ -16,7 +16,7 @@ With PgUp ad PgDn I can then navigate through the PDF files easily without havin
 
 Yes, the whole application is basically a simplified way to get information from a PDF into the Finanzmanager but it works for me and makes my life a little bit easier.
 
-![Main Window](docs/screenshots/main-window-20191201.jpg)
+![Main Window](docs/screenshots/main-window-20221023.png)
 
 ## Building the application
 

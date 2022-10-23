@@ -1,0 +1,3 @@
+de.perdian.apps.fimasu.model.parsers.impl.Comdirect_TransactionParser
+de.perdian.apps.fimasu.model.parsers.impl.FrankfurterSparkasse_TransactionParser
+de.perdian.apps.fimasu.model.parsers.impl.ING_TransactionParser
