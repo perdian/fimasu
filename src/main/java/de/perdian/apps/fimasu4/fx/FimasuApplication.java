@@ -8,6 +8,7 @@ import de.perdian.apps.fimasu4.model.persistence.xml.XmlModelRepository;
 import de.perdian.apps.fimasu4.model.types.TransactionGroup;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class FimasuApplication extends Application {
@@ -47,6 +48,7 @@ public class FimasuApplication extends Application {
         Scene applicationScene = new Scene(applicationPane, 1400, 1100);
 
         primaryStage.setTitle("FinanzManager Support by perdian");
+        primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));
         primaryStage.setScene(applicationScene);
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
