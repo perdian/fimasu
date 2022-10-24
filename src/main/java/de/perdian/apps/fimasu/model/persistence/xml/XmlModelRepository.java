@@ -54,9 +54,6 @@ public class XmlModelRepository implements FimasuModelRepository {
         transactionTranslator.registerBooleanProperty("persistent", Transaction::getPersistent);
         transactionTranslator.registerEnumProperty("type", Transaction::getType, TransactionType.class);
         transactionTranslator.registerEmbeddedProperty("stockIdentifier", Transaction::getStockIdentifier, stockIdentifierTranslator);
-        transactionTranslator.registerEmbeddedProperty("stockPrice", Transaction::getStockPrice, monetaryValueTranslator);
-        transactionTranslator.registerEmbeddedProperty("payoutValue", Transaction::getPayoutValue, monetaryValueTranslator);
-        transactionTranslator.registerEmbeddedProperty("bookingValue", Transaction::getBookingValue, monetaryValueTranslator);
 
         ParentTranslator<TransactionGroup> transactionGroupTranslator = new ParentTranslator<>();
         transactionGroupTranslator.registerListProperty("transaction", TransactionGroup::getTransactions, Transaction::new, transactionTranslator, transactionGroup -> transactionGroup.getPersistent().getValue());

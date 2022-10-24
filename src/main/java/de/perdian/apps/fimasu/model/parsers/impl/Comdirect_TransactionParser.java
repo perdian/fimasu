@@ -36,8 +36,8 @@ public class Comdirect_TransactionParser extends AbstractPdfTransactionParser {
         lineProcessorList.add(
             new RegexGroupsLineProcessor("St\\.\\s+(?<numberOfShares>.*?)\\s+(?<currency>[A-Z]{3})\\s+(?<amount>.*?)")
                 .setNumber(RegexGroupsLookup.byName("numberOfShares"), transaction.getStockCount(), Comdirect.AMOUNT_FORMAT)
-                .setNumber(RegexGroupsLookup.byName("amount"), transaction.getStockPrice().getAmount(), Comdirect.AMOUNT_FORMAT)
-                .setString(RegexGroupsLookup.byName("currency"), transaction.getStockPrice().getCurrency())
+                .setNumber(RegexGroupsLookup.byName("amount"), transaction.getStockPricePerUnit(), Comdirect.AMOUNT_FORMAT)
+                .setString(RegexGroupsLookup.byName("currency"), transaction.getStockCurrency())
         );
         lineProcessorList.add(
             new RegexGroupsLineProcessor("Geschäftstag\\s+\\:\\s+(?<bookingDate>\\d+\\.\\d+\\.\\d+)\\s.*?")
@@ -55,20 +55,20 @@ public class Comdirect_TransactionParser extends AbstractPdfTransactionParser {
         );
         lineProcessorList.add(
             new RegexGroupsLineProcessor(".*?Reduktion Kaufaufschlag.*?(?<currency>[A-Z]{3})\\s+(?<amount>.*?)\\-")
-                .addNumber(RegexGroupsLookup.byName("amount"), transaction.getAdditionalCharges().getAmount(), Comdirect.AMOUNT_FORMAT, -1)
-                .setString(RegexGroupsLookup.byName("currency"), transaction.getAdditionalCharges().getCurrency())
+                .addNumber(RegexGroupsLookup.byName("amount"), transaction.getChargesValue(), Comdirect.AMOUNT_FORMAT, -1)
+                .setString(RegexGroupsLookup.byName("currency"), transaction.getChargesCurrency())
         );
         lineProcessorList.add(
             new RegexGroupsLineProcessor("Abwickl.entgelt Clearstream\\s+\\:\\s+(?<currency>[A-Z]{3})\\s+(?<amount>.*?)")
-                .addNumber(RegexGroupsLookup.byName("amount"), transaction.getAdditionalCharges().getAmount(), Comdirect.AMOUNT_FORMAT)
+                .addNumber(RegexGroupsLookup.byName("amount"), transaction.getChargesValue(), Comdirect.AMOUNT_FORMAT)
         );
         lineProcessorList.add(
             new RegexGroupsLineProcessor("Provision\\s+\\:\\s+(?<currency>[A-Z]{3})\\s+(?<amount>.*?)")
-                .addNumber(RegexGroupsLookup.byName("amount"), transaction.getAdditionalCharges().getAmount(), Comdirect.AMOUNT_FORMAT)
+                .addNumber(RegexGroupsLookup.byName("amount"), transaction.getChargesValue(), Comdirect.AMOUNT_FORMAT)
         );
         lineProcessorList.add(
             new RegexGroupsLineProcessor("Börsenplatzabhäng. Entgelt.\\s+\\:\\s+(?<currency>[A-Z]{3})\\s+(?<amount>.*?)")
-                .addNumber(RegexGroupsLookup.byName("amount"), transaction.getAdditionalCharges().getAmount(), Comdirect.AMOUNT_FORMAT)
+                .addNumber(RegexGroupsLookup.byName("amount"), transaction.getChargesValue(), Comdirect.AMOUNT_FORMAT)
         );
         return lineProcessorList;
     }

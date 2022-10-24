@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 
 public class StockIdentfier {
 
@@ -49,6 +50,12 @@ public class StockIdentfier {
         hashCodeBuilder.append(this.getWkn());
         hashCodeBuilder.append(this.getIsin());
         return hashCodeBuilder.toHashCode();
+    }
+
+    void addChangeListener(ChangeListener<Object> changeListener) {
+        this.getWkn().addListener(changeListener);
+        this.getIsin().addListener(changeListener);
+        this.getTitle().addListener(changeListener);
     }
 
     public StringProperty getWkn() {

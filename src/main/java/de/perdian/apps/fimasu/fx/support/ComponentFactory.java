@@ -13,6 +13,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -48,7 +49,7 @@ public class ComponentFactory {
 
     }
 
-    public TextField createDecimalField(ReadOnlyProperty<BigDecimal> property, int precisionDigits) {
+    public TextField createReadOnlyDecimalField(ReadOnlyProperty<BigDecimal> property, int precisionDigits) {
         BigDecimalStringConverter bigDecimalStringConverter = new BigDecimalStringConverter(precisionDigits);
         TextField textField = new TextField(bigDecimalStringConverter.toString(property.getValue()));
         textField.setDisable(true);
@@ -69,6 +70,13 @@ public class ComponentFactory {
                 textField.commitValue();
             }
         });
+        return textField;
+    }
+
+    public TextField createReadOnlyCurrencyField(ReadOnlyStringProperty currencyProperty) {
+        TextField textField = new TextField();
+        textField.textProperty().bind(currencyProperty);
+        textField.setPrefWidth(50);
         return textField;
     }
 

@@ -5,10 +5,10 @@ import java.text.DecimalFormat;
 
 import de.perdian.apps.fimasu.model.parsers.support.LineProcessorList;
 import de.perdian.apps.fimasu.model.parsers.support.lineprocessors.RegexAmountWithCurrencyLineProcessor;
+import de.perdian.apps.fimasu.model.parsers.support.lineprocessors.RegexAmountWithCurrencyLineProcessor.Mode;
 import de.perdian.apps.fimasu.model.parsers.support.lineprocessors.RegexGroupsLineProcessor;
 import de.perdian.apps.fimasu.model.parsers.support.lineprocessors.RegexGroupsLookup;
 import de.perdian.apps.fimasu.model.parsers.support.lineprocessors.RegexSimpleMatchLineProcessor;
-import de.perdian.apps.fimasu.model.parsers.support.lineprocessors.RegexAmountWithCurrencyLineProcessor.Mode;
 import de.perdian.apps.fimasu.model.types.Transaction;
 import de.perdian.apps.fimasu.model.types.TransactionType;
 
@@ -40,7 +40,7 @@ public class FrankfurterSparkasse_TransactionParser extends AbstractPdfTransacti
                 .setString(RegexGroupsLookup.byName("isin"), transaction.getStockIdentifier().getIsin()).setString(RegexGroupsLookup.byName("wkn"), transaction.getStockIdentifier().getWkn())
         );
         stringExtractor.add(
-            new RegexAmountWithCurrencyLineProcessor("Ausführungskurs (?<amount>[0-9,\\.]+)(?<IGNOREsign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getStockPrice().getAmount(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getStockPrice().getCurrency(), Mode.SET)
+            new RegexAmountWithCurrencyLineProcessor("Ausführungskurs (?<amount>[0-9,\\.]+)(?<IGNOREsign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getStockPricePerUnit(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getStockCurrency(), Mode.SET)
         );
         stringExtractor.add(
             new RegexGroupsLineProcessor("Schlusstag/-Zeit ([0-9]{2}\\.[0-9]{2}\\.[0-9]{4}).*?")
@@ -66,13 +66,13 @@ public class FrankfurterSparkasse_TransactionParser extends AbstractPdfTransacti
 //            new RegexAmountWithCurrencyLineProcessor("Kurswert (?<amount>[0-9,\\.]+)(?<IGNOREsign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getBookingAmount(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getBookingCurrency(), Mode.SET)
 //        );
         stringExtractor.add(
-            new RegexAmountWithCurrencyLineProcessor("Provision .*? vom Kurswert (?<amount>[0-9,\\.]+)(?<IGNOREsign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getAdditionalCharges().getAmount(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getAdditionalCharges().getCurrency(), Mode.ADD, () -> 1d)
+            new RegexAmountWithCurrencyLineProcessor("Provision .*? vom Kurswert (?<amount>[0-9,\\.]+)(?<IGNOREsign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getChargesValue(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getChargesCurrency(), Mode.ADD, () -> 1d)
         );
         stringExtractor.add(
-            new RegexAmountWithCurrencyLineProcessor("Kundenbonifikation .*? vom Kurswert (?<amount>[0-9,\\.]+)(?<sign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getAdditionalCharges().getAmount(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getAdditionalCharges().getCurrency(), Mode.ADD, () -> TransactionType.SELL.equals(transaction.getType().getValue()) ? 1d : -1)
+            new RegexAmountWithCurrencyLineProcessor("Kundenbonifikation .*? vom Kurswert (?<amount>[0-9,\\.]+)(?<sign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getChargesValue(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getChargesCurrency(), Mode.ADD, () -> TransactionType.SELL.equals(transaction.getType().getValue()) ? 1d : -1)
         );
         stringExtractor.add(
-            new RegexAmountWithCurrencyLineProcessor("Kundenbonifikation .*? vom Ausgabeaufschlag (?<amount>[0-9,\\.]+)(?<sign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getAdditionalCharges().getAmount(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getAdditionalCharges().getCurrency(), Mode.ADD, () -> TransactionType.SELL.equals(transaction.getType().getValue()) ? 1d : -1)
+            new RegexAmountWithCurrencyLineProcessor("Kundenbonifikation .*? vom Ausgabeaufschlag (?<amount>[0-9,\\.]+)(?<sign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getChargesValue(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getChargesCurrency(), Mode.ADD, () -> TransactionType.SELL.equals(transaction.getType().getValue()) ? 1d : -1)
         );
 //        stringExtractor.add(
 //            new RegexAmountWithCurrencyLineProcessor("Ausmachender Betrag (?<amount>[0-9,\\.]+)(?<IGNOREsign>[\\-\\+]?)\\s+(?<currency>[A-Z]{3})", transaction.getTotalAmount(), FrankfurterSparkasse.AMOUNT_FORMAT, transaction.getBookingCurrency(), Mode.SET)

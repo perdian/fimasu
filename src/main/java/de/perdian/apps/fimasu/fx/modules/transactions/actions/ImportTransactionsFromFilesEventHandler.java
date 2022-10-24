@@ -41,7 +41,7 @@ public class ImportTransactionsFromFilesEventHandler implements EventHandler<Act
                     .findFirst()
                     .orElse(null);
                 if (targetTransaction != null) {
-                    targetTransactions.set(targetTransactions.indexOf(targetTransaction), importedTransaction);
+                    importedTransaction.writeValuesInto(targetTransaction);
                 } else {
                     targetTransactions.add(importedTransaction);
                 }

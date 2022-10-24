@@ -4,9 +4,9 @@ import java.io.File;
 
 import de.perdian.apps.fimasu.model.parsers.support.LineProcessorList;
 import de.perdian.apps.fimasu.model.parsers.support.lineprocessors.RegexAmountWithCurrencyLineProcessor;
+import de.perdian.apps.fimasu.model.parsers.support.lineprocessors.RegexAmountWithCurrencyLineProcessor.Mode;
 import de.perdian.apps.fimasu.model.parsers.support.lineprocessors.RegexGroupsLineProcessor;
 import de.perdian.apps.fimasu.model.parsers.support.lineprocessors.RegexGroupsLookup;
-import de.perdian.apps.fimasu.model.parsers.support.lineprocessors.RegexAmountWithCurrencyLineProcessor.Mode;
 import de.perdian.apps.fimasu.model.types.Transaction;
 import de.perdian.apps.fimasu.model.types.TransactionType;
 
@@ -42,8 +42,8 @@ public class ING_TransactionParser extends AbstractPdfTransactionParser {
         );
         lineProcessorList.add(
             new RegexGroupsLineProcessor("Kurs (?<marketCurrency>[A-Z0-9]{3}) (?<marketPrice>.*?)")
-                .setNumber(RegexGroupsLookup.byName("marketPrice"), transaction.getStockPrice().getAmount(), ING.AMOUNT_FORMAT)
-                .setString(RegexGroupsLookup.byName("marketCurrency"), transaction.getStockPrice().getCurrency())
+                .setNumber(RegexGroupsLookup.byName("marketPrice"), transaction.getStockPricePerUnit(), ING.AMOUNT_FORMAT)
+                .setString(RegexGroupsLookup.byName("marketCurrency"), transaction.getStockCurrency())
         );
         lineProcessorList.add(
             new RegexGroupsLineProcessor("Ausführungstag \\/ \\-zeit\\s+(?<bookingDate>[0-9]+\\.[0-9]+\\.[0-9]+).*?")
@@ -54,17 +54,17 @@ public class ING_TransactionParser extends AbstractPdfTransactionParser {
                 .setDate(RegexGroupsLookup.byName("bookingDate"), transaction.getBookingDate(), ING.DATE_FORMAT)
         );
         lineProcessorList.add(
-            new RegexAmountWithCurrencyLineProcessor("Rabatt (?<currency>[A-Z0-9]{3}) (?<sign>\\-?)\\s?(?<amount>.*)", transaction.getAdditionalCharges().getAmount(), ING.AMOUNT_FORMAT, transaction.getAdditionalCharges().getCurrency(), Mode.ADD)
+            new RegexAmountWithCurrencyLineProcessor("Rabatt (?<currency>[A-Z0-9]{3}) (?<sign>\\-?)\\s?(?<amount>.*)", transaction.getChargesValue(), ING.AMOUNT_FORMAT, transaction.getChargesCurrency(), Mode.ADD)
         );
         lineProcessorList.add(
-            new RegexAmountWithCurrencyLineProcessor("Provision (?<currency>[A-Z0-9]{3}) (?<sign>\\-?)\\s?(?<amount>.*)", transaction.getAdditionalCharges().getAmount(), ING.AMOUNT_FORMAT, transaction.getAdditionalCharges().getCurrency(), Mode.ADD)
+            new RegexAmountWithCurrencyLineProcessor("Provision (?<currency>[A-Z0-9]{3}) (?<sign>\\-?)\\s?(?<amount>.*)", transaction.getChargesValue(), ING.AMOUNT_FORMAT, transaction.getChargesCurrency(), Mode.ADD)
         );
         lineProcessorList.add(
             new RegexGroupsLineProcessor("Valuta (?<valutaDate>.*?)")
                 .setDate(RegexGroupsLookup.byName("valutaDate"), transaction.getValutaDate(), ING.DATE_FORMAT)
         );
         lineProcessorList.add(
-            new RegexAmountWithCurrencyLineProcessor("Endbetrag zu Ihren Lasten (?<currency>[A-Z0-9]{3}) (?<sign>\\-?)\\s?(?<amount>.*)", null, ING.AMOUNT_FORMAT, transaction.getBookingValue().getCurrency(), Mode.SET)
+            new RegexAmountWithCurrencyLineProcessor("Endbetrag zu Ihren Lasten (?<currency>[A-Z0-9]{3}) (?<sign>\\-?)\\s?(?<amount>.*)", null, ING.AMOUNT_FORMAT, transaction.getBookingCurrency(), Mode.SET)
         );
         lineProcessorList.add(
             new RegexAmountWithCurrencyLineProcessor("umger\\. zum Devisenkurs \\((?<currency>[A-Z]{3}) \\= (?<amount>.*?)\\).*?", transaction.getBookingConversionRate(), ING.AMOUNT_FORMAT, null, Mode.SET)

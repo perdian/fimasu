@@ -119,20 +119,20 @@ class TransactionPane extends VBox {
         BooleanBinding payoutBinding = transaction.getType().isEqualTo(TransactionType.PAYOUT);
         StringProperty bookingInputCurrency = new SimpleStringProperty("EUR");
         if (buyOrSellBinding.getValue()) {
-            bookingInputCurrency.setValue(transaction.getStockValue().getCurrency().getValue());
+            bookingInputCurrency.setValue(transaction.getStockCurrency().getValue());
         } else if (payoutBinding.get()) {
-            bookingInputCurrency.setValue(transaction.getPayoutValue().getCurrency().getValue());
+            bookingInputCurrency.setValue(transaction.getPayoutCurrency().getValue());
         }
         ChangeListener<Object> refreshBookingInputCurrencyChangeListener = (o, oldValue, newValue) -> {
             if (TransactionType.BUY.equals(transaction.getType().getValue()) || TransactionType.SELL.equals(transaction.getType().getValue())) {
-                bookingInputCurrency.setValue(transaction.getStockValue().getCurrency().getValue());
+                bookingInputCurrency.setValue(transaction.getStockCurrency().getValue());
             } else if (TransactionType.PAYOUT.equals(transaction.getType().getValue())) {
-                bookingInputCurrency.setValue(transaction.getPayoutValue().getCurrency().getValue());
+                bookingInputCurrency.setValue(transaction.getPayoutCurrency().getValue());
             }
         };
         transaction.getType().addListener(refreshBookingInputCurrencyChangeListener);
-        transaction.getPayoutValue().getCurrency().addListener(refreshBookingInputCurrencyChangeListener);
-        transaction.getStockValue().getCurrency().addListener(refreshBookingInputCurrencyChangeListener);
+        transaction.getPayoutCurrency().addListener(refreshBookingInputCurrencyChangeListener);
+        transaction.getStockCurrency().addListener(refreshBookingInputCurrencyChangeListener);
 
         TextField stockCountField = componentFactory.createDecimalField(transaction.getStockCount(), 5);
         stockCountField.setPrefWidth(100);
@@ -140,43 +140,43 @@ class TransactionPane extends VBox {
         Label stockCountLabel = componentFactory.createLabel("# of stocks");
         stockCountLabel.setLabelFor(stockCountField);
 
-        TextField stockPriceAmountField = componentFactory.createDecimalField(transaction.getStockPrice().getAmount(), 5);
+        TextField stockPriceAmountField = componentFactory.createDecimalField(transaction.getStockPricePerUnit(), 5);
         stockPriceAmountField.setPrefWidth(100);
         stockPriceAmountField.disableProperty().bind(buyOrSellBinding.not());
-        TextField stockPriceCurrencyField = componentFactory.createCurrencyField(transaction.getStockPrice().getCurrency());
+        TextField stockPriceCurrencyField = componentFactory.createCurrencyField(transaction.getStockCurrency());
         stockPriceCurrencyField.disableProperty().bind(buyOrSellBinding.not());
         Label stockPriceLabel = componentFactory.createLabel("Stock price / currency");
         stockPriceLabel.setLabelFor(stockPriceAmountField);
 
-        TextField stockValueAmountField = componentFactory.createDecimalField(transaction.getStockValue().getAmount(), 5);
+        TextField stockValueAmountField = componentFactory.createDecimalField(transaction.getStockValue(), 5);
         stockValueAmountField.setPrefWidth(100);
         stockValueAmountField.setDisable(true);
-        TextField stockValueCurrencyField = componentFactory.createCurrencyField(transaction.getStockValue().getCurrency());
+        TextField stockValueCurrencyField = componentFactory.createCurrencyField(transaction.getStockCurrency());
         stockValueCurrencyField.setDisable(true);
         Label stockValueLabel = componentFactory.createLabel("Stock value / currency");
         stockValueLabel.setLabelFor(stockValueAmountField);
 
-        TextField payoutAmountField = componentFactory.createDecimalField(transaction.getPayoutValue().getAmount(), 5);
+        TextField payoutAmountField = componentFactory.createDecimalField(transaction.getPayoutValue(), 5);
         payoutAmountField.setPrefWidth(100);
         payoutAmountField.disableProperty().bind(payoutBinding.not());
-        TextField payoutCurrencyField = componentFactory.createCurrencyField(transaction.getPayoutValue().getCurrency());
+        TextField payoutCurrencyField = componentFactory.createCurrencyField(transaction.getPayoutCurrency());
         payoutCurrencyField.disableProperty().bind(payoutBinding.not());
         Label payoutLabel = componentFactory.createLabel("Payout value / currency");
         payoutLabel.setLabelFor(payoutAmountField);
 
-        TextField bookingValueCurrencyField = componentFactory.createCurrencyField(transaction.getBookingValue().getCurrency());
+        TextField bookingValueCurrencyField = componentFactory.createCurrencyField(transaction.getBookingCurrency());
         TextField bookingValueConversionRateField = componentFactory.createDecimalField(transaction.getBookingConversionRate(), 5);
         bookingValueConversionRateField.setPrefWidth(100);
         Label bookingValueCurrencyLabel = componentFactory.createLabel("Booking currency / rate");
         bookingValueCurrencyLabel.setLabelFor(bookingValueCurrencyField);
-        TextField bookingValueAmountField = componentFactory.createDecimalField(transaction.getBookingValue().getAmount(), 5);
+        TextField bookingValueAmountField = componentFactory.createReadOnlyDecimalField(transaction.getBookingValue(), 5);
         bookingValueAmountField.setPrefWidth(100);
         bookingValueAmountField.setDisable(true);
         GridPane.setHgrow(bookingValueAmountField, Priority.ALWAYS);
         Label bookingValueAmountLabel = componentFactory.createLabel("Booking value");
         bookingValueAmountLabel.setLabelFor(bookingValueAmountField);
-        bookingValueConversionRateField.disableProperty().bind(Bindings.equal(bookingInputCurrency, transaction.getBookingValue().getCurrency()));
-        TextField bookingValueCurrencyField2 = componentFactory.createCurrencyField(transaction.getBookingValue().getCurrency());
+        bookingValueConversionRateField.disableProperty().bind(Bindings.equal(bookingInputCurrency, transaction.getBookingCurrency()));
+        TextField bookingValueCurrencyField2 = componentFactory.createCurrencyField(transaction.getBookingCurrency());
         bookingValueCurrencyField2.setDisable(true);
 
         GridPane middlePane = new GridPane();
@@ -209,29 +209,29 @@ class TransactionPane extends VBox {
 
     private Pane createBottomPane(Transaction transaction, ObservableList<Transaction> allTransactions, ComponentFactory componentFactory) {
 
-        TextField additionalChargesValueField = componentFactory.createDecimalField(transaction.getAdditionalCharges().getAmount(), 2);
+        TextField additionalChargesValueField = componentFactory.createDecimalField(transaction.getChargesValue(), 2);
         additionalChargesValueField.setPrefWidth(85);
-        ComboBox<String> additionalChargesCurrencyBox = componentFactory.createCurrencyComboBox(transaction.getAdditionalCharges().getCurrency(), transaction.getAvailableCurrencies());
+        ComboBox<String> additionalChargesCurrencyBox = componentFactory.createCurrencyComboBox(transaction.getChargesCurrency(), transaction.getAvailableCurrencies());
         Label additionalChargesLabel = componentFactory.createLabel("Charges");
         additionalChargesLabel.setLabelFor(additionalChargesValueField);
 
-        TextField additionalFinanceTaxValueField = componentFactory.createDecimalField(transaction.getAdditionalFinanceTax().getAmount(), 2);
+        TextField additionalFinanceTaxValueField = componentFactory.createDecimalField(transaction.getFinanceTaxValue(), 2);
         additionalFinanceTaxValueField.setPrefWidth(85);
-        ComboBox<String> additionalFinanceTaxCurrencyBox = componentFactory.createCurrencyComboBox(transaction.getAdditionalFinanceTax().getCurrency(), transaction.getAvailableCurrencies());
+        ComboBox<String> additionalFinanceTaxCurrencyBox = componentFactory.createCurrencyComboBox(transaction.getFinanceTaxCurrency(), transaction.getAvailableCurrencies());
         Label additionalFinanceTaxLabel = componentFactory.createLabel("Finance tax");
         additionalFinanceTaxLabel.setLabelFor(additionalFinanceTaxValueField);
 
-        TextField additionalSolidarityTaxValueField = componentFactory.createDecimalField(transaction.getAdditionalSolidarityTax().getAmount(), 2);
+        TextField additionalSolidarityTaxValueField = componentFactory.createDecimalField(transaction.getSolidarityTaxValue(), 2);
         additionalSolidarityTaxValueField.setPrefWidth(85);
-        ComboBox<String> additionalSolidarityTaxCurrencyBox = componentFactory.createCurrencyComboBox(transaction.getAdditionalSolidarityTax().getCurrency(), transaction.getAvailableCurrencies());
+        ComboBox<String> additionalSolidarityTaxCurrencyBox = componentFactory.createCurrencyComboBox(transaction.getSolidarityTaxCurrency(), transaction.getAvailableCurrencies());
         Label additionalSolidarityTaxLabel = componentFactory.createLabel("Solidarity tax");
         additionalSolidarityTaxLabel.setLabelFor(additionalSolidarityTaxValueField);
 
-        TextField totalValueField = componentFactory.createDecimalField(transaction.getTotalValue().getAmount(), 2);
+        TextField totalValueField = componentFactory.createReadOnlyDecimalField(transaction.getTotalValue(), 2);
         totalValueField.setPrefWidth(85);
         totalValueField.setDisable(true);
         GridPane.setHgrow(totalValueField, Priority.ALWAYS);
-        TextField totalCurrencyField = componentFactory.createCurrencyField(transaction.getTotalValue().getCurrency());
+        TextField totalCurrencyField = componentFactory.createReadOnlyCurrencyField(transaction.getTotalCurrency());
         totalCurrencyField.setDisable(true);
         Label totalLabel = componentFactory.createLabel("Total");
         totalLabel.setLabelFor(totalValueField);
