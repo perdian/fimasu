@@ -148,11 +148,9 @@ class TransactionPane extends VBox {
         Label stockPriceLabel = componentFactory.createLabel("Stock price / currency");
         stockPriceLabel.setLabelFor(stockPriceAmountField);
 
-        TextField stockValueAmountField = componentFactory.createDecimalField(transaction.getStockValue(), 5);
+        TextField stockValueAmountField = componentFactory.createReadOnlyDecimalField(transaction.getStockValue(), 5);
         stockValueAmountField.setPrefWidth(100);
-        stockValueAmountField.setDisable(true);
-        TextField stockValueCurrencyField = componentFactory.createCurrencyField(transaction.getStockCurrency());
-        stockValueCurrencyField.setDisable(true);
+        TextField stockValueCurrencyField = componentFactory.createReadOnlyCurrencyField(transaction.getStockCurrency());
         Label stockValueLabel = componentFactory.createLabel("Stock value / currency");
         stockValueLabel.setLabelFor(stockValueAmountField);
 

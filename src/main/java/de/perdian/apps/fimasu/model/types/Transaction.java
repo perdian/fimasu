@@ -32,7 +32,7 @@ public class Transaction implements Serializable {
     private ObjectProperty<BigDecimal> stockCount = null;
     private ObjectProperty<BigDecimal> stockPricePerUnit = null;
     private StringProperty stockCurrency = null;
-    private ObjectProperty<BigDecimal> stockValue = null;
+    private ReadOnlyObjectProperty<BigDecimal> stockValue = null;
     private ObjectProperty<BigDecimal> payoutValue = null;
     private StringProperty payoutCurrency = null;
     private ReadOnlyObjectProperty<BigDecimal> bookingValue = null;
@@ -164,6 +164,22 @@ public class Transaction implements Serializable {
     }
 
     public void writeValuesInto(Transaction targetTransaction) {
+        targetTransaction.getType().setValue(this.getType().getValue());
+        targetTransaction.getBookingDate().setValue(this.getBookingDate().getValue());
+        targetTransaction.getValutaDate().setValue(this.getValutaDate().getValue());
+        targetTransaction.getBookingConversionRate().setValue(this.getBookingConversionRate().getValue());
+        targetTransaction.getBookingCurrency().setValue(this.getBookingCurrency().getValue());
+        targetTransaction.getChargesCurrency().setValue(this.getChargesCurrency().getValue());
+        targetTransaction.getChargesValue().setValue(this.getChargesValue().getValue());
+        targetTransaction.getFinanceTaxCurrency().setValue(this.getFinanceTaxCurrency().getValue());
+        targetTransaction.getFinanceTaxValue().setValue(this.getFinanceTaxValue().getValue());
+        targetTransaction.getPayoutCurrency().setValue(this.getPayoutCurrency().getValue());
+        targetTransaction.getPayoutValue().setValue(this.getPayoutValue().getValue());
+        targetTransaction.getSolidarityTaxCurrency().setValue(this.getSolidarityTaxCurrency().getValue());
+        targetTransaction.getSolidarityTaxValue().setValue(this.getSolidarityTaxValue().getValue());
+        targetTransaction.getStockCount().setValue(this.getStockCount().getValue());
+        targetTransaction.getStockCurrency().setValue(this.getStockCurrency().getValue());
+        targetTransaction.getStockPricePerUnit().setValue(this.getStockPricePerUnit().getValue());
     }
 
     public ObjectProperty<TransactionType> getType() {
@@ -222,10 +238,10 @@ public class Transaction implements Serializable {
         this.stockCurrency = stockCurrency;
     }
 
-    public ObjectProperty<BigDecimal> getStockValue() {
+    public ReadOnlyObjectProperty<BigDecimal> getStockValue() {
         return this.stockValue;
     }
-    private void setStockValue(ObjectProperty<BigDecimal> stockValue) {
+    private void setStockValue(ReadOnlyObjectProperty<BigDecimal> stockValue) {
         this.stockValue = stockValue;
     }
 

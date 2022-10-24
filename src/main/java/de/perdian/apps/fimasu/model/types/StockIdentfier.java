@@ -24,9 +24,9 @@ public class StockIdentfier {
     @Override
     public String toString() {
         ToStringBuilder toStringBuilder = new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE);
-        toStringBuilder.append("wkn", this.getWkn());
-        toStringBuilder.append("isin", this.getIsin());
-        toStringBuilder.append("title", this.getTitle());
+        toStringBuilder.append("wkn", this.getWkn().getValue());
+        toStringBuilder.append("isin", this.getIsin().getValue());
+        toStringBuilder.append("title", this.getTitle().getValue());
         return toStringBuilder.toString();
     }
 
