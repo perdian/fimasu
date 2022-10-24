@@ -42,7 +42,7 @@ class TransactionHelper {
         if (stockPriceDecimal == null || stockCountDecimal == null) {
             stockValue.setValue(null);
         } else {
-            stockValue.setValue(stockPriceDecimal.multiply(stockCountDecimal).setScale(5));
+            stockValue.setValue(stockPriceDecimal.multiply(stockCountDecimal).setScale(5, RoundingMode.HALF_UP));
         }
     }
 
@@ -86,7 +86,7 @@ class TransactionHelper {
                 if (bookingConversionRateDecimal == null) {
                     bookingValue.setValue(null);
                 } else {
-                    bookingValue.setValue(inputValueDecimal.divide(bookingConversionRateDecimal, RoundingMode.HALF_UP).setScale(5));
+                    bookingValue.setValue(inputValueDecimal.divide(bookingConversionRateDecimal, RoundingMode.HALF_UP).setScale(5, RoundingMode.HALF_UP));
                 }
             }
         }

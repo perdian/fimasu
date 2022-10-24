@@ -17,6 +17,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableStringValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class Transaction implements Serializable {
@@ -114,58 +115,49 @@ public class Transaction implements Serializable {
         payoutValueProperty.addListener(recomputeBookingValueListener);
         payoutCurrencyProperty.addListener(recomputeBookingValueListener);
 
+        ObjectProperty<BigDecimal> chargesValueProperty = new SimpleObjectProperty<>();
+        chargesValueProperty.addListener(changeListenersDelegate);
+        this.setChargesValue(chargesValueProperty);
+        StringProperty chargesCurrencyProperty = new SimpleStringProperty("EUR");
+        chargesCurrencyProperty.addListener(changeListenersDelegate);
+        this.setChargesCurrency(chargesCurrencyProperty);
 
+        ObjectProperty<BigDecimal> financeTaxValueProperty = new SimpleObjectProperty<>();
+        financeTaxValueProperty.addListener(changeListenersDelegate);
+        this.setFinanceTaxValue(financeTaxValueProperty);
+        StringProperty financeTaxCurrencyProperty = new SimpleStringProperty("EUR");
+        financeTaxCurrencyProperty.addListener(changeListenersDelegate);
+        this.setFinanceTaxCurrency(financeTaxCurrencyProperty);
 
-//
-//        MonetaryValue stockValue = MonetaryValueBindings.multiply(stockPrice, stockCount);
-//        stockValue.addListener((o, oldValue, newValue) -> this.recomputeBookingValue(bookingValueSource.getValue()));
-//        stockValue.getCurrency().addListener((o, oldValue, newValue) -> this.recomputeAvailableCurrencies(oldValue, bookingValueSource.getValue()));
-//        this.setStockValue(stockValue);
-//
-//        MonetaryValue payoutValue = new MonetaryValue();
-//        payoutValue.addListener(changeListener);
-//        payoutValue.addListener((o, oldValue, newValue) -> this.recomputeBookingValue(bookingValueSource.getValue()));
-//        payoutValue.getCurrency().addListener((o, oldValue, newValue) -> this.recomputeAvailableCurrencies(oldValue, bookingValueSource.getValue()));
-//        this.setPayoutValue(payoutValue);
-//
-//        MonetaryValue bookingValue = new MonetaryValue();
-//        bookingValue.addListener(changeListener);
-//        bookingValue.addListener((o, oldValue, newValue) -> this.recomputeTotalValue());
-//        bookingValue.getCurrency().addListener((o, oldValue, newValue) -> this.recomputeBookingValue(bookingValueSource.getValue()));
-//        bookingValue.getCurrency().addListener((o, oldValue, newValue) -> this.recomputeAvailableCurrencies(oldValue, bookingValueSource.getValue()));
-//        this.setBookingValue(bookingValue);
-//
-//        ObjectProperty<BigDecimal> bookingConversionRate = new SimpleObjectProperty<>();
-//        bookingConversionRate.addListener((o, oldValue, newValue) -> this.recomputeBookingValue(bookingValueSource.getValue()));
-//        this.setBookingConversionRate(bookingConversionRate);
-//
-//        MonetaryValue additionalCharges = new MonetaryValue();
-//        additionalCharges.addListener(changeListener);
-//        additionalCharges.addListener((o, oldValue, newValue) -> this.recomputeTotalValue());
-//        this.setAdditionalCharges(additionalCharges);
-//
-//        MonetaryValue additionalFinanceTax = new MonetaryValue();
-//        additionalFinanceTax.addListener(changeListener);
-//        additionalFinanceTax.addListener((o, oldValue, newValue) -> this.recomputeTotalValue());
-//        this.setAdditionalFinanceTax(additionalFinanceTax);
-//
-//        MonetaryValue additionalSolidarityTax = new MonetaryValue();
-//        additionalSolidarityTax.addListener(changeListener);
-//        additionalSolidarityTax.addListener((o, oldValue, newValue) -> this.recomputeTotalValue());
-//        this.setAdditionalSolidarityTax(additionalSolidarityTax);
-//
-//        MonetaryValue totalValue = new MonetaryValue();
-//        this.setTotalValue(totalValue);
-//
-//        ObservableList<String> availableCurrencies = FXCollections.observableArrayList();
-//        if (StringUtils.isNotEmpty(bookingValue.getCurrency().getValue())) {
-//            availableCurrencies.add(bookingValue.getCurrency().getValue());
-//        }
-//        this.setAvailableCurrencies(availableCurrencies);
-//
-//        BooleanProperty persistent = new SimpleBooleanProperty();
-//        persistent.addListener(changeListener);
-//        this.setPersistent(persistent);
+        ObjectProperty<BigDecimal> solidarityTaxValueProperty = new SimpleObjectProperty<>();
+        solidarityTaxValueProperty.addListener(changeListenersDelegate);
+        this.setSolidarityTaxValue(solidarityTaxValueProperty);
+        StringProperty solidarityTaxCurrencyProperty = new SimpleStringProperty("EUR");
+        solidarityTaxCurrencyProperty.addListener(changeListenersDelegate);
+        this.setSolidarityTaxCurrency(solidarityTaxCurrencyProperty);
+
+        ObjectProperty<BigDecimal> totalValueProperty = new SimpleObjectProperty<>();
+        this.setTotalValue(totalValueProperty);
+        StringProperty totalCurrencyProperty = new SimpleStringProperty("EUR");
+        this.setTotalCurrency(totalCurrencyProperty);
+
+        ChangeListener<Object> recomputeTotalValueListener = (o, oldValue, newValue) -> {};
+        bookingValueProperty.addListener(recomputeTotalValueListener);
+        bookingCurrencyProperty.addListener(recomputeTotalValueListener);
+        bookingConversionRateProperty.addListener(recomputeTotalValueListener);
+        chargesValueProperty.addListener(recomputeTotalValueListener);
+        chargesCurrencyProperty.addListener(recomputeTotalValueListener);
+        financeTaxValueProperty.addListener(recomputeTotalValueListener);
+        financeTaxCurrencyProperty.addListener(recomputeTotalValueListener);
+        solidarityTaxValueProperty.addListener(recomputeTotalValueListener);
+        solidarityTaxCurrencyProperty.addListener(recomputeTotalValueListener);
+
+        ObservableList<String> availableCurrenciesProperty = FXCollections.observableArrayList("EUR");
+        this.setAvailableCurrencies(availableCurrenciesProperty);
+        ChangeListener<Object> recomputeAvailableCurrenciesListener = (o, oldValue, newValue) -> {};
+        bookingInputCurrencyProperty.addListener(recomputeAvailableCurrenciesListener);
+        bookingCurrencyProperty.addListener(recomputeAvailableCurrenciesListener);
+
 
     }
 
