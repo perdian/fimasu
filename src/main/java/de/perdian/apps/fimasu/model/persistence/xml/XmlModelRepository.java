@@ -27,7 +27,6 @@ import de.perdian.apps.fimasu.fx.FimasuPreferences;
 import de.perdian.apps.fimasu.model.FimasuModel;
 import de.perdian.apps.fimasu.model.persistence.FimasuModelRepository;
 import de.perdian.apps.fimasu.model.persistence.xml.XmlElementTranslator.ParentTranslator;
-import de.perdian.apps.fimasu.model.types.MonetaryValue;
 import de.perdian.apps.fimasu.model.types.StockIdentfier;
 import de.perdian.apps.fimasu.model.types.Transaction;
 import de.perdian.apps.fimasu.model.types.TransactionGroup;
@@ -41,9 +40,6 @@ public class XmlModelRepository implements FimasuModelRepository {
     private File modelFile = null;
 
     public XmlModelRepository(FimasuPreferences preferences) {
-
-        ParentTranslator<MonetaryValue> monetaryValueTranslator = new ParentTranslator<>();
-        monetaryValueTranslator.registerStringProperty("currency", MonetaryValue::getCurrency);
 
         ParentTranslator<StockIdentfier> stockIdentifierTranslator = new ParentTranslator<>();
         stockIdentifierTranslator.registerStringProperty("wkn", StockIdentfier::getWkn);

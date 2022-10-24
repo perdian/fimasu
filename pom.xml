@@ -27,6 +27,7 @@
         <commons-io.version>2.11.0</commons-io.version>
         <commons-fx.version>1.4.0</commons-fx.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
+        <hamcrest.version>2.2</hamcrest.version>
         <ikonli.version>12.3.1</ikonli.version>
         <java.version>19</java.version>
         <javafx.version>19</javafx.version>
@@ -87,6 +88,12 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

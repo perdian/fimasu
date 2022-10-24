@@ -77,7 +77,7 @@ public class Transaction implements Serializable {
         ObjectProperty<BigDecimal> stockPricePerUnitProperty = new SimpleObjectProperty<>();
         stockPricePerUnitProperty.addListener(changeListenersDelegate);
         this.setStockPricePerUnit(stockPricePerUnitProperty);
-        StringProperty stockCurrencyProperty = new SimpleStringProperty("EUR");
+        StringProperty stockCurrencyProperty = new SimpleStringProperty(TransactionHelper.DEFAULT_CURRENCY);
         stockCurrencyProperty.addListener(changeListenersDelegate);
         this.setStockCurrency(stockCurrencyProperty);
         ObjectProperty<BigDecimal> stockValueProperty = new SimpleObjectProperty<>();
@@ -89,13 +89,13 @@ public class Transaction implements Serializable {
         ObjectProperty<BigDecimal> payoutValueProperty = new SimpleObjectProperty<>();
         payoutValueProperty.addListener(changeListenersDelegate);
         this.setPayoutValue(payoutValueProperty);
-        StringProperty payoutCurrencyProperty = new SimpleStringProperty("EUR");
+        StringProperty payoutCurrencyProperty = new SimpleStringProperty(TransactionHelper.DEFAULT_CURRENCY);
         payoutCurrencyProperty.addListener(changeListenersDelegate);
         this.setPayoutCurrency(payoutCurrencyProperty);
 
         ObjectProperty<BigDecimal> bookingValueProperty = new SimpleObjectProperty<>();
         this.setBookingValue(bookingValueProperty);
-        StringProperty bookingCurrencyProperty = new SimpleStringProperty("EUR");
+        StringProperty bookingCurrencyProperty = new SimpleStringProperty(TransactionHelper.DEFAULT_CURRENCY);
         bookingCurrencyProperty.addListener(changeListenersDelegate);
         this.setBookingCurrency(bookingCurrencyProperty);
         ObjectProperty<BigDecimal> bookingConversionRateProperty = new SimpleObjectProperty<>();
@@ -118,30 +118,30 @@ public class Transaction implements Serializable {
         ObjectProperty<BigDecimal> chargesValueProperty = new SimpleObjectProperty<>();
         chargesValueProperty.addListener(changeListenersDelegate);
         this.setChargesValue(chargesValueProperty);
-        StringProperty chargesCurrencyProperty = new SimpleStringProperty("EUR");
+        StringProperty chargesCurrencyProperty = new SimpleStringProperty(TransactionHelper.DEFAULT_CURRENCY);
         chargesCurrencyProperty.addListener(changeListenersDelegate);
         this.setChargesCurrency(chargesCurrencyProperty);
 
         ObjectProperty<BigDecimal> financeTaxValueProperty = new SimpleObjectProperty<>();
         financeTaxValueProperty.addListener(changeListenersDelegate);
         this.setFinanceTaxValue(financeTaxValueProperty);
-        StringProperty financeTaxCurrencyProperty = new SimpleStringProperty("EUR");
+        StringProperty financeTaxCurrencyProperty = new SimpleStringProperty(TransactionHelper.DEFAULT_CURRENCY);
         financeTaxCurrencyProperty.addListener(changeListenersDelegate);
         this.setFinanceTaxCurrency(financeTaxCurrencyProperty);
 
         ObjectProperty<BigDecimal> solidarityTaxValueProperty = new SimpleObjectProperty<>();
         solidarityTaxValueProperty.addListener(changeListenersDelegate);
         this.setSolidarityTaxValue(solidarityTaxValueProperty);
-        StringProperty solidarityTaxCurrencyProperty = new SimpleStringProperty("EUR");
+        StringProperty solidarityTaxCurrencyProperty = new SimpleStringProperty(TransactionHelper.DEFAULT_CURRENCY);
         solidarityTaxCurrencyProperty.addListener(changeListenersDelegate);
         this.setSolidarityTaxCurrency(solidarityTaxCurrencyProperty);
 
         ObjectProperty<BigDecimal> totalValueProperty = new SimpleObjectProperty<>();
         this.setTotalValue(totalValueProperty);
-        StringProperty totalCurrencyProperty = new SimpleStringProperty("EUR");
+        StringProperty totalCurrencyProperty = new SimpleStringProperty(TransactionHelper.DEFAULT_CURRENCY);
         this.setTotalCurrency(totalCurrencyProperty);
 
-        ChangeListener<Object> recomputeTotalValueListener = (o, oldValue, newValue) -> {};
+        ChangeListener<Object> recomputeTotalValueListener = (o, oldValue, newValue) -> TransactionHelper.recomputeTotalValue(totalValueProperty, totalCurrencyProperty, bookingValueProperty, bookingCurrencyProperty, bookingConversionRateProperty, chargesValueProperty, chargesCurrencyProperty, financeTaxValueProperty, financeTaxCurrencyProperty, solidarityTaxValueProperty, solidarityTaxCurrencyProperty, transactionTypeProperty);
         bookingValueProperty.addListener(recomputeTotalValueListener);
         bookingCurrencyProperty.addListener(recomputeTotalValueListener);
         bookingConversionRateProperty.addListener(recomputeTotalValueListener);
@@ -151,87 +151,17 @@ public class Transaction implements Serializable {
         financeTaxCurrencyProperty.addListener(recomputeTotalValueListener);
         solidarityTaxValueProperty.addListener(recomputeTotalValueListener);
         solidarityTaxCurrencyProperty.addListener(recomputeTotalValueListener);
+        transactionTypeProperty.addListener(recomputeTotalValueListener);
 
-        ObservableList<String> availableCurrenciesProperty = FXCollections.observableArrayList("EUR");
+        ObservableList<String> availableCurrenciesProperty = FXCollections.observableArrayList(TransactionHelper.DEFAULT_CURRENCY);
         this.setAvailableCurrencies(availableCurrenciesProperty);
-        ChangeListener<Object> recomputeAvailableCurrenciesListener = (o, oldValue, newValue) -> {};
+        ChangeListener<Object> recomputeAvailableCurrenciesListener = (o, oldValue, newValue) -> TransactionHelper.recomputeAvailableCurrencies(availableCurrenciesProperty, bookingInputCurrencyProperty.getValue(), bookingCurrencyProperty);
         bookingInputCurrencyProperty.addListener(recomputeAvailableCurrenciesListener);
+        stockCurrencyProperty.addListener(recomputeAvailableCurrenciesListener);
+        payoutCurrencyProperty.addListener(recomputeAvailableCurrenciesListener);
         bookingCurrencyProperty.addListener(recomputeAvailableCurrenciesListener);
 
-
     }
-
-//    private void recomputeBookingValue(MonetaryValue inputValue) {
-//        MonetaryValue targetValue = this.getBookingValue();
-//        BigDecimal inputAmount = inputValue.getAmount().getValue();
-//        if (inputAmount == null) {
-//            targetValue.getAmount().setValue(null);
-//        } else {
-//            String inputCurrency = inputValue.getCurrency().getValue();
-//            String bookingCurrency = targetValue.getCurrency().getValue();
-//            if (Objects.equals(inputCurrency, bookingCurrency)) {
-//                targetValue.getAmount().setValue(inputValue.getAmount().getValue());
-//                this.getBookingConversionRate().setValue(null);
-//            } else {
-//                BigDecimal currencyConversionRate = this.getBookingConversionRate().getValue();
-//                if (currencyConversionRate == null) {
-//                    targetValue.getAmount().setValue(null);
-//                } else {
-//                    targetValue.getAmount().setValue(currencyConversionRate.multiply(inputValue.getAmount().getValue()));
-//                }
-//            }
-//        }
-//    }
-//
-//    private void recomputeTotalValue() {
-//        String bookingCurrency = this.getBookingValue().getCurrency().getValue();
-//        BigDecimal targetAmount = this.getBookingValue().getAmount().getValue();
-//        List<MonetaryValue> additionalValues = List.of(this.getAdditionalCharges(), this.getAdditionalFinanceTax(), this.getAdditionalSolidarityTax());
-//        for (MonetaryValue additionalValue : additionalValues) {
-//            BigDecimal additionalValueAmountInSourceCurrency = additionalValue.getAmount().getValue();
-//            BigDecimal additionalValueAmountInBookingCurrency = null;
-//            if (Objects.equals(additionalValue.getCurrency().getValue(), bookingCurrency)) {
-//                additionalValueAmountInBookingCurrency = additionalValueAmountInSourceCurrency;
-//            } else {
-//                BigDecimal conversionRate = this.getBookingConversionRate().getValue();
-//                if (conversionRate != null) {
-//                    additionalValueAmountInBookingCurrency = additionalValueAmountInSourceCurrency.multiply(conversionRate);
-//                }
-//            }
-//            if (additionalValueAmountInBookingCurrency != null) {
-//                TransactionType type = this.getType().getValue();
-//                BigDecimal targetAmountChangeFactor = type == null ? BigDecimal.ONE : BigDecimal.valueOf(type.getChargesFactor());
-//                BigDecimal targetAmountChange = additionalValueAmountInBookingCurrency.multiply(targetAmountChangeFactor);
-//                targetAmount = targetAmount == null ? targetAmountChange : targetAmount.add(targetAmountChange);
-//            }
-//        }
-//        this.getTotalValue().getCurrency().setValue(bookingCurrency);
-//        this.getTotalValue().getAmount().setValue(targetAmount);
-//    }
-//
-//    private void recomputeAvailableCurrencies(String oldCurrencyValue, MonetaryValue inputValue) {
-//        Set<String> availableCurrencies = new LinkedHashSet<>();
-//        if (StringUtils.isNotEmpty(this.getBookingValue().getCurrency().getValue())) {
-//            availableCurrencies.add(this.getBookingValue().getCurrency().getValue());
-//        }
-//        if (StringUtils.isNotEmpty(inputValue.getCurrency().getValue())) {
-//            availableCurrencies.add(inputValue.getCurrency().getValue());
-//        }
-//        if (availableCurrencies.isEmpty()) {
-//            availableCurrencies.add("EUR");
-//        }
-//        if (!this.getAvailableCurrencies().containsAll(availableCurrencies) || this.getAvailableCurrencies().size() != availableCurrencies.size()) {
-//            this.getAvailableCurrencies().setAll(availableCurrencies);
-//        }
-//        for (MonetaryValue additionalValue : List.of(this.getAdditionalCharges(), this.getAdditionalFinanceTax(), this.getAdditionalSolidarityTax())) {
-//            if (oldCurrencyValue != null && Objects.equals(oldCurrencyValue, additionalValue.getCurrency().getValue())) {
-//                additionalValue.getCurrency().setValue(inputValue.getCurrency().getValue());
-//            }
-//            if (!availableCurrencies.contains(additionalValue.getCurrency().getValue())) {
-//                additionalValue.getCurrency().setValue(availableCurrencies.iterator().next());
-//            }
-//        }
-//    }
 
     public void writeValuesInto(Transaction targetTransaction) {
     }

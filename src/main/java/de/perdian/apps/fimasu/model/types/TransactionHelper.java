@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,8 +16,11 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableStringValue;
+import javafx.collections.ObservableList;
 
 class TransactionHelper {
+
+    static final String DEFAULT_CURRENCY = "EUR";
 
     static ChangeListener<Object> createChangeListenerDelegate(List<ChangeListener<Object>> changeListeners) {
         return (o, oldValue, newValue) -> {
@@ -89,6 +94,53 @@ class TransactionHelper {
                     bookingValue.setValue(inputValueDecimal.divide(bookingConversionRateDecimal, RoundingMode.HALF_UP).setScale(5, RoundingMode.HALF_UP));
                 }
             }
+        }
+    }
+
+    static void recomputeTotalValue(ObjectProperty<BigDecimal> totalValue, StringProperty totalCurrency, ObservableObjectValue<BigDecimal> bookingValue, ObservableStringValue bookingCurrency, ObservableObjectValue<BigDecimal> bookingConversionRate, ObservableObjectValue<BigDecimal> chargesValue, ObservableStringValue chargesCurrency, ObservableObjectValue<BigDecimal> financeTaxValue, ObservableStringValue financeTaxCurrency, ObservableObjectValue<BigDecimal> solidarityTaxValue, ObservableStringValue solidarityTaxCurrency, ObservableObjectValue<TransactionType> transactionType) {
+        totalCurrency.setValue(bookingCurrency.getValue());
+        if (bookingValue.getValue() == null) {
+            totalValue.setValue(bookingValue.getValue());
+        } else {
+            BigDecimal totalValueDecimal = TransactionHelper.computeAdditionalValue(bookingValue.getValue(), bookingCurrency.getValue(), null, bookingCurrency.getValue(), bookingConversionRate.getValue());
+            totalValueDecimal = totalValueDecimal.add(TransactionHelper.computeAdditionalValue(chargesValue.getValue(), chargesCurrency.getValue(), transactionType.getValue(), bookingCurrency.getValue(), bookingConversionRate.getValue()));
+            totalValueDecimal = totalValueDecimal.add(TransactionHelper.computeAdditionalValue(financeTaxValue.getValue(), financeTaxCurrency.getValue(), transactionType.getValue(), bookingCurrency.getValue(), bookingConversionRate.getValue()));
+            totalValueDecimal = totalValueDecimal.add(TransactionHelper.computeAdditionalValue(solidarityTaxValue.getValue(), solidarityTaxCurrency.getValue(), transactionType.getValue(), bookingCurrency.getValue(), bookingConversionRate.getValue()));
+            totalValue.setValue(totalValueDecimal);
+        }
+    }
+
+    private static BigDecimal computeAdditionalValue(BigDecimal additionalValue, String additionalCurrency, TransactionType transactionType, String bookingCurrency, BigDecimal bookingConversionRate) {
+        if (additionalValue == null) {
+            return BigDecimal.ZERO;
+        } else {
+            BigDecimal additionalChangeFactor = transactionType == null ? BigDecimal.ONE : BigDecimal.valueOf(transactionType.getChargesFactor());
+            if (Objects.equals(additionalCurrency, bookingCurrency) || StringUtils.isEmpty(additionalCurrency)) {
+                return additionalValue.multiply(additionalChangeFactor).setScale(5, RoundingMode.HALF_UP);
+            } else if (bookingConversionRate == null) {
+                return BigDecimal.ZERO;
+            } else {
+                return additionalValue
+                    .multiply(additionalChangeFactor)
+                    .divide(bookingConversionRate, RoundingMode.HALF_UP)
+                    .setScale(5, RoundingMode.HALF_UP);
+            }
+        }
+    }
+
+    static void recomputeAvailableCurrencies(ObservableList<String> availableCurrencies, ObservableStringValue bookingCurrency, ObservableStringValue bookingInputCurrency) {
+        Set<String> newCurrenciesSet = new LinkedHashSet<>();
+        if (bookingCurrency != null && StringUtils.isNotEmpty(bookingCurrency.getValue())) {
+            newCurrenciesSet.add(bookingCurrency.getValue());
+        }
+        if (bookingInputCurrency != null && StringUtils.isNotEmpty(bookingInputCurrency.getValue())) {
+            newCurrenciesSet.add(bookingInputCurrency.getValue());
+        }
+        if (newCurrenciesSet.isEmpty()) {
+            newCurrenciesSet.add(TransactionHelper.DEFAULT_CURRENCY);
+        }
+        if (newCurrenciesSet.size() != availableCurrencies.size() || !availableCurrencies.containsAll(newCurrenciesSet)) {
+            availableCurrencies.setAll(newCurrenciesSet);
         }
     }
 

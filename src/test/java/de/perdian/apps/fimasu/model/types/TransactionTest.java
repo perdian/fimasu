@@ -3,6 +3,10 @@ package de.perdian.apps.fimasu.model.types;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.collection.IsCollectionWithSize;
+import org.hamcrest.collection.IsIterableContainingInAnyOrder;
+import org.hamcrest.core.IsEqual;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -133,7 +137,9 @@ public class TransactionTest {
         transaction.getStockPricePerUnit().setValue(BigDecimal.valueOf(3));
         transaction.getStockCount().setValue(BigDecimal.valueOf(2));
 
-        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getBookingValue().getValue());
+        MatcherAssert.assertThat(transaction.getAvailableCurrencies(), IsCollectionWithSize.hasSize(1));
+        MatcherAssert.assertThat(transaction.getAvailableCurrencies(), IsIterableContainingInAnyOrder.containsInAnyOrder("EUR"));
+        MatcherAssert.assertThat(transaction.getBookingValue().getValue(), IsEqual.equalTo(BigDecimal.valueOf(6).setScale(5)));
     }
 
     @Test
@@ -146,8 +152,10 @@ public class TransactionTest {
         transaction.getStockPricePerUnit().setValue(BigDecimal.valueOf(3));
         transaction.getStockCount().setValue(BigDecimal.valueOf(2));
 
-        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getStockValue().getValue());
-        Assertions.assertEquals(BigDecimal.valueOf(5.45455).setScale(5), transaction.getBookingValue().getValue());
+        MatcherAssert.assertThat(transaction.getAvailableCurrencies(), IsCollectionWithSize.hasSize(2));
+        MatcherAssert.assertThat(transaction.getAvailableCurrencies(), IsIterableContainingInAnyOrder.containsInAnyOrder("EUR", "USD"));
+        MatcherAssert.assertThat(transaction.getStockValue().getValue(), IsEqual.equalTo(BigDecimal.valueOf(6).setScale(5)));
+        MatcherAssert.assertThat(transaction.getBookingValue().getValue(), IsEqual.equalTo(BigDecimal.valueOf(5.45455).setScale(5)));
     }
 
     @Test
@@ -162,6 +170,108 @@ public class TransactionTest {
 
         Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getStockValue().getValue());
         Assertions.assertNull(transaction.getBookingValue().getValue());
+    }
+
+    @Test
+    public void computeTotalValueFromBUY_noAdditionals() {
+        Transaction transaction = new Transaction();
+        transaction.getType().setValue(TransactionType.BUY);
+        transaction.getBookingCurrency().setValue("EUR");
+        transaction.getStockCurrency().setValue("EUR");
+        transaction.getStockPricePerUnit().setValue(BigDecimal.valueOf(3));
+        transaction.getStockCount().setValue(BigDecimal.valueOf(2));
+
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getStockValue().getValue());
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getBookingValue().getValue());
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getTotalValue().getValue());
+        Assertions.assertEquals("EUR", transaction.getTotalCurrency().getValue());
+    }
+
+    @Test
+    public void computeTotalValueFromBUY_withAdditionalsCharges() {
+        Transaction transaction = new Transaction();
+        transaction.getType().setValue(TransactionType.BUY);
+        transaction.getBookingCurrency().setValue("EUR");
+        transaction.getStockCurrency().setValue("EUR");
+        transaction.getStockPricePerUnit().setValue(BigDecimal.valueOf(3));
+        transaction.getStockCount().setValue(BigDecimal.valueOf(2));
+        transaction.getChargesValue().setValue(BigDecimal.valueOf(1.5d));
+
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getStockValue().getValue());
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getBookingValue().getValue());
+        Assertions.assertEquals(BigDecimal.valueOf(7.5).setScale(5), transaction.getTotalValue().getValue());
+        Assertions.assertEquals("EUR", transaction.getTotalCurrency().getValue());
+    }
+
+    @Test
+    public void computeTotalValueFromBUY_withAdditionalsCharges_inDifferentCurrency() {
+        Transaction transaction = new Transaction();
+        transaction.getType().setValue(TransactionType.BUY);
+        transaction.getBookingCurrency().setValue("EUR");
+        transaction.getBookingConversionRate().setValue(BigDecimal.valueOf(1.2));
+        transaction.getStockCurrency().setValue("EUR");
+        transaction.getStockPricePerUnit().setValue(BigDecimal.valueOf(3));
+        transaction.getStockCount().setValue(BigDecimal.valueOf(2));
+        transaction.getChargesValue().setValue(BigDecimal.valueOf(1.5d));
+        transaction.getChargesCurrency().setValue("USD");
+
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getStockValue().getValue());
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getBookingValue().getValue());
+        Assertions.assertEquals(BigDecimal.valueOf(7.25).setScale(5), transaction.getTotalValue().getValue());
+        Assertions.assertEquals("EUR", transaction.getTotalCurrency().getValue());
+    }
+
+    @Test
+    public void computeTotalValueFromBUY_withAdditionalsChargesAndFinanceTax() {
+        Transaction transaction = new Transaction();
+        transaction.getType().setValue(TransactionType.BUY);
+        transaction.getBookingCurrency().setValue("EUR");
+        transaction.getStockCurrency().setValue("EUR");
+        transaction.getStockPricePerUnit().setValue(BigDecimal.valueOf(3));
+        transaction.getStockCount().setValue(BigDecimal.valueOf(2));
+        transaction.getChargesValue().setValue(BigDecimal.valueOf(1.5d));
+        transaction.getFinanceTaxValue().setValue(BigDecimal.valueOf(2.2d));
+
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getStockValue().getValue());
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getBookingValue().getValue());
+        Assertions.assertEquals(BigDecimal.valueOf(9.7).setScale(5), transaction.getTotalValue().getValue());
+        Assertions.assertEquals("EUR", transaction.getTotalCurrency().getValue());
+    }
+
+    @Test
+    public void computeTotalValueFromBUY_withAdditionalsChargesAndFinanceTaxAndSolidarityTax() {
+        Transaction transaction = new Transaction();
+        transaction.getType().setValue(TransactionType.BUY);
+        transaction.getBookingCurrency().setValue("EUR");
+        transaction.getStockCurrency().setValue("EUR");
+        transaction.getStockPricePerUnit().setValue(BigDecimal.valueOf(3));
+        transaction.getStockCount().setValue(BigDecimal.valueOf(2));
+        transaction.getChargesValue().setValue(BigDecimal.valueOf(1.5d));
+        transaction.getFinanceTaxValue().setValue(BigDecimal.valueOf(2.2d));
+        transaction.getSolidarityTaxValue().setValue(BigDecimal.valueOf(1.1d));
+
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getStockValue().getValue());
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getBookingValue().getValue());
+        Assertions.assertEquals(BigDecimal.valueOf(10.8).setScale(5), transaction.getTotalValue().getValue());
+        Assertions.assertEquals("EUR", transaction.getTotalCurrency().getValue());
+    }
+
+    @Test
+    public void computeTotalValueFromSELL_withAdditionalsChargesAndFinanceTaxAndSolidarityTax() {
+        Transaction transaction = new Transaction();
+        transaction.getType().setValue(TransactionType.SELL);
+        transaction.getBookingCurrency().setValue("EUR");
+        transaction.getStockCurrency().setValue("EUR");
+        transaction.getStockPricePerUnit().setValue(BigDecimal.valueOf(3));
+        transaction.getStockCount().setValue(BigDecimal.valueOf(2));
+        transaction.getChargesValue().setValue(BigDecimal.valueOf(1.5d));
+        transaction.getFinanceTaxValue().setValue(BigDecimal.valueOf(2.2d));
+        transaction.getSolidarityTaxValue().setValue(BigDecimal.valueOf(1.1d));
+
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getStockValue().getValue());
+        Assertions.assertEquals(BigDecimal.valueOf(6).setScale(5), transaction.getBookingValue().getValue());
+        Assertions.assertEquals(BigDecimal.valueOf(1.2).setScale(5), transaction.getTotalValue().getValue());
+        Assertions.assertEquals("EUR", transaction.getTotalCurrency().getValue());
     }
 
 }
