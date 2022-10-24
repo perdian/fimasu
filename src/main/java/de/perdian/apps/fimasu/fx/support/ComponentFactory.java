@@ -77,6 +77,7 @@ public class ComponentFactory {
         TextField textField = new TextField();
         textField.textProperty().bind(currencyProperty);
         textField.setPrefWidth(50);
+        textField.setDisable(true);
         return textField;
     }
 
