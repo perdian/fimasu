@@ -24,17 +24,17 @@
     </developers>
 
     <properties>
-        <commons-io.version>2.11.0</commons-io.version>
+        <commons-io.version>2.13.0</commons-io.version>
         <commons-fx.version>1.4.0</commons-fx.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <hamcrest.version>2.2</hamcrest.version>
         <ikonli.version>12.3.1</ikonli.version>
-        <java.version>19</java.version>
-        <javafx.version>19</javafx.version>
+        <java.version>20</java.version>
+        <javafx.version>20</javafx.version>
         <junit-jupiter.version>5.9.1</junit-jupiter.version>
-        <logback.version>1.4.4</logback.version>
+        <logback.version>1.4.8</logback.version>
         <pdfbox.version>2.0.25</pdfbox.version>
-        <slf4j.version>2.0.3</slf4j.version>
+        <slf4j.version>2.0.7</slf4j.version>
     </properties>
 
     <dependencies>
@@ -139,7 +139,7 @@
                     <plugin>
                         <groupId>de.perdian.maven.plugins</groupId>
                         <artifactId>macosappbundler-maven-plugin</artifactId>
-                        <version>1.17.0</version>
+                        <version>1.19.0</version>
                         <configuration>
                             <plist>
                                 <CFBundleIconFile>src/bundle/macos/resources/fimasu.icns</CFBundleIconFile>
@@ -150,6 +150,9 @@
                                     <string>-Xdock:name=${project.name}</string>
                                 </JVMOptions>
                             </plist>
+                            <codesign>
+                                <identity>-</identity>
+                            </codesign>
                         </configuration>
                         <executions>
                             <execution>
