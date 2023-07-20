@@ -25,13 +25,16 @@ import de.perdian.apps.fimasu.quicken.model.TotalAmountRecordItem;
 import de.perdian.apps.fimasu.quicken.model.TransactionTypeRecordItem;
 import de.perdian.apps.fimasu.quicken.model.ValutaDateRecordItem;
 import de.perdian.apps.fimasu.quicken.model.WknRecordItem;
+import org.apache.commons.lang3.StringUtils;
 
 public class RecordListBuilder {
 
     public RecordList buildRecordList(TransactionGroup transactionGroup) {
         List<Record> records = new ArrayList<>(transactionGroup.getTransactions().size());
         for (Transaction transaction : transactionGroup.getTransactions()) {
-            records.add(this.buildRecord(transactionGroup, transaction));
+            if (transaction.isValid()) {
+                records.add(this.buildRecord(transactionGroup, transaction));
+            }
         }
         return new RecordList(records);
     }

@@ -19,6 +19,7 @@ import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.apache.commons.lang3.StringUtils;
 
 public class Transaction implements Serializable {
 
@@ -180,6 +181,10 @@ public class Transaction implements Serializable {
         targetTransaction.getStockCount().setValue(this.getStockCount().getValue());
         targetTransaction.getStockCurrency().setValue(this.getStockCurrency().getValue());
         targetTransaction.getStockPricePerUnit().setValue(this.getStockPricePerUnit().getValue());
+    }
+
+    public boolean isValid() {
+        return this.getTotalValue().getValue() != null && StringUtils.isNotEmpty(this.getStockIdentifier().getIsin().getValue());
     }
 
     public ObjectProperty<TransactionType> getType() {
