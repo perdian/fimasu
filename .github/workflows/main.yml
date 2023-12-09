@@ -1,0 +1,26 @@
+name: Maven Build
+
+on: [push]
+
+jobs:
+  build:
+    name: Build application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+      - name: Prepare JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+      - name: Build application
+        run: mvn --batch-mode clean package
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JUnit test results
+          path: target/surefire-reports/*.xml
+          reporter: java-junit
