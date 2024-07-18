@@ -13,6 +13,7 @@ public class RecordList {
 
     public String toQifString() {
         StringBuilder result = new StringBuilder();
+        result.append("!Option:MDY\n");
         result.append("!Type:").append(this.getType().getQifValue()).append("\n");
         for (int recordIndex=0; recordIndex < this.getRecords().size(); recordIndex++) {
             result.append(this.getRecords().get(recordIndex).toQifString());
