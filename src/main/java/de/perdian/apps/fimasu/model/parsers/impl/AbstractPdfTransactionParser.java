@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public abstract class AbstractPdfTransactionParser implements TransactionParser 
     public List<Transaction> parseTransactionsFromFile(File pdfFile) {
         try {
             log.debug("Analyzing PDF file at: {}", pdfFile.getAbsolutePath());
-            try (PDDocument pdfDocument = PDDocument.load(pdfFile)) {
+            try (PDDocument pdfDocument = Loader.loadPDF(pdfFile)) {
                 PDFTextStripper pdfStripper = new PDFTextStripper();
                 String pdfText = pdfStripper.getText(pdfDocument);
                 Transaction transaction = this.createTransaction(pdfText, pdfFile);
