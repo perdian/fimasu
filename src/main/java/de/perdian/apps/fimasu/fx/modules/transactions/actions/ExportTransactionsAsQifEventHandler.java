@@ -43,7 +43,7 @@ public class ExportTransactionsAsQifEventHandler implements EventHandler<ActionE
                 File qifFile = new File(qifFileLocation);
                 log.info("Exporting transaction group into file at '{}': {}", qifFile.getAbsolutePath(), transactionGroup);
                 FileUtils.write(qifFile, qifString, "UTF-8");
-                this.showAlert(AlertType.INFORMATION, "Export completed", "Exported transactions into file: " + qifFile.getName());
+                this.showAlert(AlertType.INFORMATION, "Export completed", "Exported " + qifRecordList.getRecords().size() + " transactions into file: " + qifFile.getName());
             } catch (Exception e) {
                 this.showAlert(AlertType.ERROR, "Export failed", "Export failed: " + e.toString());
             }
